@@ -28,7 +28,7 @@ public class SecurityConfig {
     private String jwtSecretKey;
     private final String[] PUBLIC_ENDPOINTS = {
             "/api/auth/register",
-            "/api/auth/login",
+            "/api/auth/authenticate",
             "/api/auth/change-password",
     };
 

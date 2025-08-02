@@ -20,12 +20,12 @@ import java.util.Date;
 public class JwtServiceImpl implements JwtService {
     @Value("${jwt.accessTokenSecretKey}")
     private String accessSecretKey;
-    @Value("${jwt.refreshTokenSecretKey}")
-    private String refreshSecretKey;
+    @Value("${jwt.forgotPasswordTokenSecretKey}")
+    private String forgotPasswordSecretKey;
     @Value("${jwt.accessExpiration}")
     private Long accessExpiration;
-    @Value("${jwt.refreshExpiration}")
-    private Long refreshExpiration;
+    @Value("${jwt.forgotPasswordExpiration}")
+    private Long forgotPasswordExpiration;
     @Value("${jwt.issuer}")
     private String issuer;
 
@@ -33,7 +33,7 @@ public class JwtServiceImpl implements JwtService {
     public String generateToken(UserEntity user, TokenType type) throws JOSEException {
         return switch (type){
             case ACCESS_TOKEN -> this.generateToken(user, accessSecretKey, accessExpiration);
-            case REFRESH_TOKEN -> this.generateToken(user, refreshSecretKey, refreshExpiration);
+            case FORGOT_PASSWORD_TOKEN -> this.generateToken(user, forgotPasswordSecretKey, forgotPasswordExpiration);
         };
     }
 

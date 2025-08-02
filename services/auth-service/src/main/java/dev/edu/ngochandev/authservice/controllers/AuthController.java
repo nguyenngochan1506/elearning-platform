@@ -30,7 +30,7 @@ public class AuthController {
                 .build();
     }
 
-    @PostMapping("/login")
+    @PostMapping("/authenticate")
     @ResponseStatus(HttpStatus.OK)
     public SuccessResponseDto<TokenResponseDto> login(@RequestBody @Valid AuthenticationRequestDto req) throws JOSEException {
         return SuccessResponseDto.<TokenResponseDto>builder()
@@ -46,6 +46,16 @@ public class AuthController {
                 .status(HttpStatus.OK.value())
                 .message(Translator.translate("user.change-password.success"))
                 .data(userService.changePassword(req))
+                .build();
+    }
+
+    @PostMapping("/refresh-token")
+    @ResponseStatus(HttpStatus.OK)
+    public SuccessResponseDto<TokenResponseDto> refreshToken(@RequestHeader("Authorization") String authorizationHeader) throws JOSEException {
+        return SuccessResponseDto.<TokenResponseDto>builder()
+                .status(HttpStatus.OK.value())
+                .message(Translator.translate("user.refresh-token.success"))
+                .data(userService.refreshToken(authorizationHeader))
                 .build();
     }
 }

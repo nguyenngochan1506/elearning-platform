@@ -18,8 +18,11 @@ import dev.edu.ngochandev.authservice.services.AuthService;
 import dev.edu.ngochandev.authservice.services.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 @Service
 @Slf4j(topic = "USER-SERVICE")
@@ -29,6 +32,8 @@ public class AuthServiceImpl implements AuthService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    @Value("${jwt.accessExpiration}")
+    private Long accessExpiration;
 
     @Override
     public UserResponseDto register(UserRegisterRequestDto req) {
@@ -57,7 +62,7 @@ public class AuthServiceImpl implements AuthService {
         }
         return TokenResponseDto.builder()
                 .accessToken(jwtService.generateToken(user, TokenType.ACCESS_TOKEN))
-                .refreshToken(jwtService.generateToken(user, TokenType.REFRESH_TOKEN))
+                .expirationTime(new Date(System.currentTimeMillis() + accessExpiration))
                 .build();
     }
 

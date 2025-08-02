@@ -17,7 +17,7 @@ server:
 
 jwt:
   accessTokenSecretKey: f0da559ea59ced68b4d657496bee9753c0447d70702af1a351c7577226d97723
-  refreshTokenSecretKey: 4b8c1f2d3e5f6a7b8c9d0e1f2a3b4c5d6e7f8g9h0a1b2c3d4e5f6a7b8c9d0e1
-  accessExpiration: 3600 # 1 hour
-  refreshExpiration: 604800 # 7 days
+  forgotPasswordTokenSecretKey: 4b8c1f2d3e5f6a7b8c9d0e1f2a3b4c5d6e7f8g9h0a1b2c3d4e5f6a7b8c9d0e1
+  accessExpiration: 172800000 # 2 days
+  forgotPasswordExpiration: 300000 # 5 minutes
   issuer: ngochandev
