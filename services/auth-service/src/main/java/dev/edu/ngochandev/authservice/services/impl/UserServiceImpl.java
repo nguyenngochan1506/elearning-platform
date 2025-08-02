@@ -5,6 +5,7 @@ import dev.edu.ngochandev.authservice.dtos.res.UserResponseDto;
 import dev.edu.ngochandev.authservice.entities.UserEntity;
 import dev.edu.ngochandev.authservice.enums.UserStatus;
 import dev.edu.ngochandev.authservice.exceptions.DuplicateResourceException;
+import dev.edu.ngochandev.authservice.mapper.UserMapper;
 import dev.edu.ngochandev.authservice.repositories.UserRepository;
 import dev.edu.ngochandev.authservice.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -18,14 +19,15 @@ import java.time.format.DateTimeFormatter;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @Override
     public UserResponseDto register(UserRegisterRequestDto req) {
         if(userRepository.existsByUsername((req.getUsername()))){
-            throw new DuplicateResourceException(req.getUsername() + " already exists");
+            throw new DuplicateResourceException("Username already exists" + req.getUsername());
         }
         if(userRepository.existsByEmail((req.getEmail()))){
-            throw new DuplicateResourceException(req.getEmail() + " already exists");
+            throw new DuplicateResourceException( "Email already exists" +req.getEmail() );
         }
         UserEntity savedUser = userRepository.save(UserEntity.builder()
                         .fullName(req.getFullName())
@@ -34,12 +36,6 @@ public class UserServiceImpl implements UserService {
                         .password(req.getPassword())
                         .status(UserStatus.INACTIVE)
                         .build());
-        return UserResponseDto.builder()
-                .id(savedUser.getId())
-                .username(savedUser.getUsername())
-                .email(savedUser.getEmail())
-                .status(savedUser.getStatus())
-                .createdAt(savedUser.getCreatedAt().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")))
-                .build();
+        return userMapper.toResponseDto(savedUser);
     }
 }
