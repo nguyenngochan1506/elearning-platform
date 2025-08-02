@@ -12,7 +12,7 @@ import java.util.Map;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ErrorResponse implements Serializable {
+public class ErrorResponseDto implements Serializable {
     private int status;
     private String error;
     private String message;
