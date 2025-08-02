@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: auth-service
+  datasource:
+    url: ${AUTH_DB_URL}${AUTH_DB_NAME}
+    username: ${AUTH_DB_USER}
+    password: ${AUTH_DB_PASSWORD}
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+server:
+  port: 8080
