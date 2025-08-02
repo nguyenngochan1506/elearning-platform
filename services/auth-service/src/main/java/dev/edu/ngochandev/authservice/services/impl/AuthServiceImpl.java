@@ -1,8 +1,9 @@
 package dev.edu.ngochandev.authservice.services.impl;
 
 import com.nimbusds.jose.JOSEException;
-import dev.edu.ngochandev.authservice.dtos.reqs.AuthenticationRequestDto;
-import dev.edu.ngochandev.authservice.dtos.reqs.UserRegisterRequestDto;
+import dev.edu.ngochandev.authservice.dtos.req.AuthenticationRequestDto;
+import dev.edu.ngochandev.authservice.dtos.req.UserChangePasswordRequestDto;
+import dev.edu.ngochandev.authservice.dtos.req.UserRegisterRequestDto;
 import dev.edu.ngochandev.authservice.dtos.res.TokenResponseDto;
 import dev.edu.ngochandev.authservice.dtos.res.UserResponseDto;
 import dev.edu.ngochandev.authservice.entities.UserEntity;
@@ -58,5 +59,22 @@ public class AuthServiceImpl implements AuthService {
                 .accessToken(jwtService.generateToken(user, TokenType.ACCESS_TOKEN))
                 .refreshToken(jwtService.generateToken(user, TokenType.REFRESH_TOKEN))
                 .build();
+    }
+
+    @Override
+    public Long changePassword(UserChangePasswordRequestDto req) {
+        UserEntity user = this.getUserById(req.getUserId());
+        if(!passwordEncoder.matches(req.getOldPassword(), user.getPassword())){
+            throw new UnauthorizedException("error.invalid.old-password");
+        }
+        if(!req.getNewPassword().equals(req.getConfirmPassword())){
+            throw new UnauthorizedException("error.passwords.not-match");
+        }
+        user.setPassword(passwordEncoder.encode(req.getNewPassword()));
+        return userRepository.save(user).getId();
+    }
+
+    private UserEntity getUserById(Long id){
+        return userRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("error.user.not-found"));
     }
 }

@@ -2,6 +2,7 @@ package dev.edu.ngochandev.authservice.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JWSAlgorithm;
+import dev.edu.ngochandev.authservice.common.Translator;
 import dev.edu.ngochandev.authservice.dtos.res.ErrorResponseDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +29,7 @@ public class SecurityConfig {
     private final String[] PUBLIC_ENDPOINTS = {
             "/api/auth/register",
             "/api/auth/login",
+            "/api/auth/change-password",
     };
 
     @Bean
@@ -68,13 +70,14 @@ public class SecurityConfig {
             errorResponse.setTimestamp(new Date());
             String message = authException.getMessage();
             if(message.contains("Jwt expired")){
-                errorResponse.setMessage("JWT token has expired.");
+                errorResponse.setMessage(Translator.translate("error.token.expired"));
             } else {
-                errorResponse.setMessage("Invalid or missing JWT token.");
+                errorResponse.setMessage(Translator.translate("error.token.invalid"));
             }
 
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
             response.getWriter().write(new ObjectMapper().writeValueAsString(errorResponse));
         };
     }

@@ -1,14 +1,12 @@
-package dev.edu.ngochandev.authservice.dtos.reqs;
+package dev.edu.ngochandev.authservice.dtos.req;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Builder;
 import lombok.Getter;
 
 import java.io.Serializable;
 
-@Builder
 @Getter
 public class UserRegisterRequestDto implements Serializable {
     @NotBlank(message = "error.username.not-blank")

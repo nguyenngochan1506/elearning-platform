@@ -2,8 +2,9 @@ package dev.edu.ngochandev.authservice.controllers;
 
 import com.nimbusds.jose.JOSEException;
 import dev.edu.ngochandev.authservice.common.Translator;
-import dev.edu.ngochandev.authservice.dtos.reqs.AuthenticationRequestDto;
-import dev.edu.ngochandev.authservice.dtos.reqs.UserRegisterRequestDto;
+import dev.edu.ngochandev.authservice.dtos.req.AuthenticationRequestDto;
+import dev.edu.ngochandev.authservice.dtos.req.UserChangePasswordRequestDto;
+import dev.edu.ngochandev.authservice.dtos.req.UserRegisterRequestDto;
 import dev.edu.ngochandev.authservice.dtos.res.SuccessResponseDto;
 import dev.edu.ngochandev.authservice.dtos.res.TokenResponseDto;
 import dev.edu.ngochandev.authservice.dtos.res.UserResponseDto;
@@ -38,5 +39,13 @@ public class AuthController {
                 .data(userService.authenticate(req))
                 .build();
     }
-
+    @PatchMapping("/change-password")
+    @ResponseStatus(HttpStatus.OK)
+    public SuccessResponseDto<Long> changePassword(@RequestBody @Valid UserChangePasswordRequestDto req){
+        return SuccessResponseDto.<Long>builder()
+                .status(HttpStatus.OK.value())
+                .message(Translator.translate("user.change-password.success"))
+                .data(userService.changePassword(req))
+                .build();
+    }
 }
