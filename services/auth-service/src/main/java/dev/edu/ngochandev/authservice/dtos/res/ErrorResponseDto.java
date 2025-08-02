@@ -12,13 +12,13 @@ import java.util.Map;
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorResponseDto implements Serializable {
     private int status;
     private String error;
     private String message;
     private Date timestamp;
     private String path;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Map<String, String> errors;
 
     public void addValidationError(String field, String message) {

@@ -17,3 +17,6 @@
   }
 }
 ```
+
+## kiến trúc của spring security
+![img.png](img.png)
