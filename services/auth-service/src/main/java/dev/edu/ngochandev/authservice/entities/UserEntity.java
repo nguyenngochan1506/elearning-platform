@@ -2,13 +2,14 @@ package dev.edu.ngochandev.authservice.entities;
 
 import dev.edu.ngochandev.authservice.enums.UserStatus;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name = "tbl_user")
 @Getter
-@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserEntity extends BaseEntity {
     @Column(name = "username", nullable = false, unique = true)
     private String username;
