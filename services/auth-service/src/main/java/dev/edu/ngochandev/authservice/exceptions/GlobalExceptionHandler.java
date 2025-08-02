@@ -17,38 +17,20 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponseDto handleGlobalException(Exception ex, WebRequest req) {
-        ErrorResponseDto res = new ErrorResponseDto();
-        res.setPath(req.getDescription(false).replace("uri=", ""));
-        res.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        res.setTimestamp(new Date());
-        res.setError(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
-        res.setMessage(ex.getMessage() != null ? ex.getMessage() : "An unexpected error occurred");
-
-        return res;
+        String message = ex.getMessage() != null ? ex.getMessage() : "An unexpected error occurred";
+        return new ErrorResponseDto(HttpStatus.INTERNAL_SERVER_ERROR,message, req);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponseDto handleResourceNotFound(Exception ex, WebRequest req) {
-        ErrorResponseDto res = new ErrorResponseDto();
-        res.setPath(req.getDescription(false).replace("uri=", ""));
-        res.setStatus(HttpStatus.NOT_FOUND.value());
-        res.setTimestamp(new Date());
-        res.setError(HttpStatus.NOT_FOUND.getReasonPhrase());
-        res.setMessage(Translator.translate(ex.getMessage()));
-
-        return res;
+        return new ErrorResponseDto(HttpStatus.NOT_FOUND, Translator.translate(ex.getMessage()), req);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponseDto handleValidationExceptions(MethodArgumentNotValidException ex, WebRequest req) {
-        ErrorResponseDto res = new ErrorResponseDto();
-        res.setPath(req.getDescription(false).replace("uri=", ""));
-        res.setStatus(HttpStatus.BAD_REQUEST.value());
-        res.setTimestamp(new Date());
-        res.setError(HttpStatus.BAD_REQUEST.getReasonPhrase());
-        res.setMessage(Translator.translate("error.body.invalid"));
+        ErrorResponseDto res = new ErrorResponseDto(HttpStatus.BAD_REQUEST, Translator.translate("error.body.invalid"), req);
         ex.getFieldErrors().forEach(error ->{
             res.addValidationError(error.getField(), Translator.translate(error.getDefaultMessage()));
         });
@@ -59,26 +41,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UnauthorizedException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorResponseDto handleUnauthorizedException(UnauthorizedException ex, WebRequest req) {
-        ErrorResponseDto res = new ErrorResponseDto();
-        res.setPath(req.getDescription(false).replace("uri=", ""));
-        res.setStatus(HttpStatus.UNAUTHORIZED.value());
-        res.setTimestamp(new Date());
-        res.setMessage(Translator.translate(ex.getMessage()));
-        res.setError(HttpStatus.UNAUTHORIZED.getReasonPhrase());
-
-        return res;
+        return  new ErrorResponseDto(HttpStatus.UNAUTHORIZED,Translator.translate(ex.getMessage()), req);
     }
 
     @ExceptionHandler(DuplicateResourceException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponseDto handleDuplicateResourceException(DuplicateResourceException ex, WebRequest req) {
-        ErrorResponseDto res = new ErrorResponseDto();
-        res.setPath(req.getDescription(false).replace("uri=", ""));
-        res.setStatus(HttpStatus.CONFLICT.value());
-        res.setTimestamp(new Date());
-        res.setMessage(Translator.translate(ex.getMessage()));
-        res.setError(HttpStatus.CONFLICT.getReasonPhrase());
-
-        return res;
+        return new ErrorResponseDto(HttpStatus.CONFLICT,Translator.translate(ex.getMessage()), req);
     }
 }
