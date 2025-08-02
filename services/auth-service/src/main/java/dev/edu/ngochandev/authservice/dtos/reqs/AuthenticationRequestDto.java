@@ -7,8 +7,8 @@ import lombok.Getter;
 @Getter
 @Builder
 public class AuthenticationRequestDto {
-    @NotBlank(message = "Identifier cannot be blank")
+    @NotBlank(message = "error.identifier.not-blank")
     private String identifier; // can be username or email
-    @NotBlank(message = "Password cannot be blank")
+    @NotBlank(message = "error.password.not-blank")
     private String password;
 }

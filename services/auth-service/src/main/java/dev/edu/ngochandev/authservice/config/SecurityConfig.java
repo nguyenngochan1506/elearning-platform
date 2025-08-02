@@ -26,7 +26,7 @@ public class SecurityConfig {
     @Value("${jwt.accessTokenSecretKey}")
     private String jwtSecretKey;
     private final String[] PUBLIC_ENDPOINTS = {
-//            "/api/auth/register",
+            "/api/auth/register",
             "/api/auth/login",
     };
 

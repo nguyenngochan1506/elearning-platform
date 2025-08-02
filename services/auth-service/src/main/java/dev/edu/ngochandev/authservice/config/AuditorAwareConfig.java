@@ -6,9 +6,9 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
-public class AuditorAwareConfig implements AuditorAware<String> {
+public class AuditorAwareConfig implements AuditorAware<Long> {
     @Override
-    public Optional<String> getCurrentAuditor() {
-        return Optional.of("system");
+    public Optional<Long> getCurrentAuditor() {
+        return Optional.of(-1L);
     }
 }

@@ -32,10 +32,10 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public UserResponseDto register(UserRegisterRequestDto req) {
         if(userRepository.existsByUsername((req.getUsername()))){
-            throw new DuplicateResourceException("Username already exists" + req.getUsername());
+            throw new DuplicateResourceException("error.duplicate.username");
         }
         if(userRepository.existsByEmail((req.getEmail()))){
-            throw new DuplicateResourceException( "Email already exists" +req.getEmail() );
+            throw new DuplicateResourceException("error.duplicate.email");
         }
         UserEntity savedUser = userRepository.save(UserEntity.builder()
                         .fullName(req.getFullName())
@@ -50,9 +50,9 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public TokenResponseDto authenticate(AuthenticationRequestDto req) throws JOSEException {
         UserEntity user = userRepository.findByUsernameOrEmail(req.getIdentifier())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with identifier: " + req.getIdentifier()));
+                .orElseThrow(() -> new ResourceNotFoundException("error.user.not-found"));
         if(!passwordEncoder.matches(req.getPassword(), user.getPassword())){
-            throw new UnauthorizedException("Username or password is incorrect");
+            throw new UnauthorizedException("error.invalid.username-or-email");
         }
         return TokenResponseDto.builder()
                 .accessToken(jwtService.generateToken(user, TokenType.ACCESS_TOKEN))

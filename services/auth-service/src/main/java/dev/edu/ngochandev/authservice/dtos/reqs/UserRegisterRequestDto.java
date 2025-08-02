@@ -11,17 +11,17 @@ import java.io.Serializable;
 @Builder
 @Getter
 public class UserRegisterRequestDto implements Serializable {
-    @NotBlank(message = "Username must not be blank")
+    @NotBlank(message = "error.username.not-blank")
     private String username;
 
-    @NotBlank(message = "Full name must not be blank")
+    @NotBlank(message = "error.fullname.not-blank")
     private String fullName;
 
-    @NotBlank(message = "Email must not be blank")
-    @Email(message = "Email must be a valid email address")
+    @NotBlank(message = "error.email.not-blank")
+    @Email(message = "error.email.invalid")
     private String email;
 
-    @NotBlank(message = "Password must not be blank")
-    @Size(min = 8, message = "Password must be at least 8 characters long")
+    @NotBlank(message = "error.password.not-blank")
+    @Size(min = 8, message = "error.password.too-short")
     private String password;
 }

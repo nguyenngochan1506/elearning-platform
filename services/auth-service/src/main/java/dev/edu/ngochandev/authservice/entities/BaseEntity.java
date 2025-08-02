@@ -35,11 +35,11 @@ public class BaseEntity {
 
     @Column(name = "created_by", nullable = true, updatable = false)
     @CreatedBy
-    private String createdBy;
+    private Long createdBy;
 
     @Column(name = "updated_by", nullable = true)
     @LastModifiedBy
-    private String updatedBy;
+    private Long updatedBy;
 
     @PrePersist
     public void prePersist() {

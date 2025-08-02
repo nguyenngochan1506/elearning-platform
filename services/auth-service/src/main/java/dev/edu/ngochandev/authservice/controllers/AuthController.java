@@ -1,6 +1,7 @@
 package dev.edu.ngochandev.authservice.controllers;
 
 import com.nimbusds.jose.JOSEException;
+import dev.edu.ngochandev.authservice.common.Translator;
 import dev.edu.ngochandev.authservice.dtos.reqs.AuthenticationRequestDto;
 import dev.edu.ngochandev.authservice.dtos.reqs.UserRegisterRequestDto;
 import dev.edu.ngochandev.authservice.dtos.res.SuccessResponseDto;
@@ -23,7 +24,7 @@ public class AuthController {
     public SuccessResponseDto<UserResponseDto> register(@RequestBody @Valid UserRegisterRequestDto req) {
         return SuccessResponseDto.<UserResponseDto>builder()
                 .status(HttpStatus.CREATED.value())
-                .message("User registered successfully")
+                .message(Translator.translate("user.register.success"))
                 .data(userService.register(req))
                 .build();
     }
@@ -33,7 +34,7 @@ public class AuthController {
     public SuccessResponseDto<TokenResponseDto> login(@RequestBody @Valid AuthenticationRequestDto req) throws JOSEException {
         return SuccessResponseDto.<TokenResponseDto>builder()
                 .status(HttpStatus.OK.value())
-                .message("Login successful")
+                .message(Translator.translate("user.authenticate.success"))
                 .data(userService.authenticate(req))
                 .build();
     }
