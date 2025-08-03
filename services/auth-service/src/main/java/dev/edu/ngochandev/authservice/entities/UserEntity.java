@@ -1,6 +1,6 @@
 package dev.edu.ngochandev.authservice.entities;
 
-import dev.edu.ngochandev.authservice.enums.UserStatus;
+import dev.edu.ngochandev.authservice.commons.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
 

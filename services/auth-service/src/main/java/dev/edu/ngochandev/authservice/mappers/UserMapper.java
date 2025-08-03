@@ -1,4 +1,4 @@
-package dev.edu.ngochandev.authservice.mapper;
+package dev.edu.ngochandev.authservice.mappers;
 
 import dev.edu.ngochandev.authservice.dtos.res.UserResponseDto;
 import dev.edu.ngochandev.authservice.entities.UserEntity;

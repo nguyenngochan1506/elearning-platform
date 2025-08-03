@@ -1,10 +1,8 @@
 package dev.edu.ngochandev.authservice.services;
 
 import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.KeyLengthException;
-import dev.edu.ngochandev.authservice.dtos.res.TokenResponseDto;
 import dev.edu.ngochandev.authservice.entities.UserEntity;
-import dev.edu.ngochandev.authservice.enums.TokenType;
+import dev.edu.ngochandev.authservice.commons.enums.TokenType;
 
 import java.text.ParseException;
 import java.util.Date;

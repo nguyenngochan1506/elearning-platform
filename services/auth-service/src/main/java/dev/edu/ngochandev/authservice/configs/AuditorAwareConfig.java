@@ -1,4 +1,4 @@
-package dev.edu.ngochandev.authservice.config;
+package dev.edu.ngochandev.authservice.configs;
 
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.stereotype.Component;

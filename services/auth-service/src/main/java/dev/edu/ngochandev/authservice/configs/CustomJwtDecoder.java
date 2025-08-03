@@ -1,9 +1,6 @@
-package dev.edu.ngochandev.authservice.config;
+package dev.edu.ngochandev.authservice.configs;
 
-import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
-import dev.edu.ngochandev.authservice.enums.TokenType;
-import dev.edu.ngochandev.authservice.exceptions.UnauthorizedException;
 import dev.edu.ngochandev.authservice.repositories.InvalidatedTokenRepository;
 import dev.edu.ngochandev.authservice.services.JwtService;
 import jakarta.annotation.PostConstruct;

@@ -1,7 +1,7 @@
 package dev.edu.ngochandev.authservice.controllers;
 
 import com.nimbusds.jose.JOSEException;
-import dev.edu.ngochandev.authservice.common.Translator;
+import dev.edu.ngochandev.authservice.commons.Translator;
 import dev.edu.ngochandev.authservice.dtos.req.*;
 import dev.edu.ngochandev.authservice.dtos.res.SuccessResponseDto;
 import dev.edu.ngochandev.authservice.dtos.res.TokenResponseDto;

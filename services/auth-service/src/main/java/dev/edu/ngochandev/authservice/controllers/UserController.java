@@ -1,17 +1,15 @@
 package dev.edu.ngochandev.authservice.controllers;
 
+import dev.edu.ngochandev.authservice.dtos.req.FilterRequestDto;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
     @PostMapping("/list")
     @ResponseStatus(HttpStatus.OK)
-    public String listUsers() {
-        return "List of users";
+    public Object listUsers(@RequestBody  FilterRequestDto filter) {
+        return filter;
     }
 }

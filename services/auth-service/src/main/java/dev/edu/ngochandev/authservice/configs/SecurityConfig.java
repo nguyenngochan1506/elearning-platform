@@ -1,11 +1,9 @@
-package dev.edu.ngochandev.authservice.config;
+package dev.edu.ngochandev.authservice.configs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.jose.JWSAlgorithm;
-import dev.edu.ngochandev.authservice.common.Translator;
+import dev.edu.ngochandev.authservice.commons.Translator;
 import dev.edu.ngochandev.authservice.dtos.res.ErrorResponseDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -14,14 +12,8 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-
-import javax.crypto.spec.SecretKeySpec;
-import java.util.Date;
 
 @Configuration
 @RequiredArgsConstructor

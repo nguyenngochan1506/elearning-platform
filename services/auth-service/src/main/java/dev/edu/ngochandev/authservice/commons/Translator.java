@@ -1,6 +1,5 @@
-package dev.edu.ngochandev.authservice.common;
+package dev.edu.ngochandev.authservice.commons;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ResourceBundleMessageSource;
