@@ -9,6 +9,7 @@ import com.nimbusds.jwt.SignedJWT;
 import dev.edu.ngochandev.authservice.dtos.res.TokenResponseDto;
 import dev.edu.ngochandev.authservice.entities.UserEntity;
 import dev.edu.ngochandev.authservice.enums.TokenType;
+import dev.edu.ngochandev.authservice.repositories.InvalidatedTokenRepository;
 import dev.edu.ngochandev.authservice.services.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,7 @@ import java.util.UUID;
 
 @Service
 @Slf4j(topic = "JWT-SERVICE")
+@RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {
     @Value("${jwt.accessTokenSecretKey}")
     private String accessSecretKey;
@@ -32,6 +34,7 @@ public class JwtServiceImpl implements JwtService {
     private Long forgotPasswordExpiration;
     @Value("${jwt.issuer}")
     private String issuer;
+    private final InvalidatedTokenRepository invalidatedTokenRepository;
 
     @Override
     public String generateToken(UserEntity user, TokenType type) throws JOSEException {
@@ -69,7 +72,10 @@ public class JwtServiceImpl implements JwtService {
         JWSVerifier verifier = new MACVerifier(secretKey);
         SignedJWT signedJWT = SignedJWT.parse(token);
         Date expirationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
-        return expirationTime != null && expirationTime.after(new Date()) && signedJWT.verify(verifier);
+        if(!signedJWT.verify(verifier) || expirationTime.before(new Date())){
+            return false;
+        }
+        return !invalidatedTokenRepository.existsById(this.extractJti(token));
     }
 
     @Override

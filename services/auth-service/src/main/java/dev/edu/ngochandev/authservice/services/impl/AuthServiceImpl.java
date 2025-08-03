@@ -18,7 +18,6 @@ import dev.edu.ngochandev.authservice.services.AuthService;
 import dev.edu.ngochandev.authservice.services.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -81,8 +80,26 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public TokenResponseDto refreshToken(AuthRefreshTokenRequestDto req) {
-        return null;
+    public TokenResponseDto refreshToken(AuthRefreshTokenRequestDto req) throws ParseException, JOSEException {
+        boolean isValid = jwtService.validateToken(req.getToken(), TokenType.ACCESS_TOKEN);
+        if(!isValid){
+            throw new UnauthorizedException("error.token.invalid");
+        }
+        //disable current token
+        String currentJti = jwtService.extractJti(req.getToken());
+        Date currentExpiration = jwtService.extractExpiration(req.getToken());
+        invalidatedTokenRepository.save(InvalidatedTokenEntity.builder()
+                        .id(currentJti)
+                        .expiredTime(currentExpiration)
+                .build());
+        //return new token
+        String username = jwtService.extractUsername(req.getToken());
+        UserEntity user = userRepository.findByUsernameOrEmail(username).orElseThrow(() -> new ResourceNotFoundException("error.user.not-found"));
+        String newToken = jwtService.generateToken(user, TokenType.ACCESS_TOKEN);
+        return TokenResponseDto.builder()
+                .accessToken(newToken)
+                .expirationTime(jwtService.extractExpiration(newToken))
+                .build();
     }
 
     @Override

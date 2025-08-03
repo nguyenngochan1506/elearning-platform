@@ -13,7 +13,7 @@ public interface AuthService {
 
     Long changePassword(UserChangePasswordRequestDto req);
 
-    TokenResponseDto refreshToken( AuthRefreshTokenRequestDto req);
+    TokenResponseDto refreshToken( AuthRefreshTokenRequestDto req) throws ParseException, JOSEException;
 
     String logout(AuthLogoutRequestDto req) throws ParseException, JOSEException;
 }

@@ -51,7 +51,7 @@ public class AuthController {
 
     @PostMapping("/refresh-token")
     @ResponseStatus(HttpStatus.OK)
-    public SuccessResponseDto<TokenResponseDto> refreshToken(@RequestBody @Valid AuthRefreshTokenRequestDto req) throws JOSEException {
+    public SuccessResponseDto<TokenResponseDto> refreshToken(@RequestBody @Valid AuthRefreshTokenRequestDto req) throws JOSEException, ParseException {
         return SuccessResponseDto.<TokenResponseDto>builder()
                 .status(HttpStatus.OK.value())
                 .message(Translator.translate("user.refresh-token.success"))
