@@ -7,7 +7,6 @@ import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.context.request.WebRequest;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +15,7 @@ import java.util.Map;
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ErrorResponseDto implements Serializable {
+public class ErrorResponseDto {
     private int status;
     private String error;
     private String message;
@@ -29,7 +28,7 @@ public class ErrorResponseDto implements Serializable {
         this.error = status.getReasonPhrase();
         this.message = message;
         this.timestamp = new Date();
-        this.path = webRequest.getDescription(false).replace("uri=", "");
+        this.path = webRequest != null ? webRequest.getDescription(false).replace("uri=", "") : null;
     }
 
     public void addValidationError(String field, String message) {

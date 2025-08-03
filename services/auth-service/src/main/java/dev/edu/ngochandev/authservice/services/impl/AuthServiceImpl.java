@@ -1,11 +1,10 @@
 package dev.edu.ngochandev.authservice.services.impl;
 
 import com.nimbusds.jose.JOSEException;
-import dev.edu.ngochandev.authservice.dtos.req.AuthenticationRequestDto;
-import dev.edu.ngochandev.authservice.dtos.req.UserChangePasswordRequestDto;
-import dev.edu.ngochandev.authservice.dtos.req.UserRegisterRequestDto;
+import dev.edu.ngochandev.authservice.dtos.req.*;
 import dev.edu.ngochandev.authservice.dtos.res.TokenResponseDto;
 import dev.edu.ngochandev.authservice.dtos.res.UserResponseDto;
+import dev.edu.ngochandev.authservice.entities.InvalidatedTokenEntity;
 import dev.edu.ngochandev.authservice.entities.UserEntity;
 import dev.edu.ngochandev.authservice.enums.TokenType;
 import dev.edu.ngochandev.authservice.enums.UserStatus;
@@ -13,6 +12,7 @@ import dev.edu.ngochandev.authservice.exceptions.DuplicateResourceException;
 import dev.edu.ngochandev.authservice.exceptions.ResourceNotFoundException;
 import dev.edu.ngochandev.authservice.exceptions.UnauthorizedException;
 import dev.edu.ngochandev.authservice.mapper.UserMapper;
+import dev.edu.ngochandev.authservice.repositories.InvalidatedTokenRepository;
 import dev.edu.ngochandev.authservice.repositories.UserRepository;
 import dev.edu.ngochandev.authservice.services.AuthService;
 import dev.edu.ngochandev.authservice.services.JwtService;
@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.util.Date;
 
 @Service
@@ -32,8 +33,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-    @Value("${jwt.accessExpiration}")
-    private Long accessExpiration;
+    private final InvalidatedTokenRepository invalidatedTokenRepository;
 
     @Override
     public UserResponseDto register(UserRegisterRequestDto req) {
@@ -54,15 +54,16 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public TokenResponseDto authenticate(AuthenticationRequestDto req) throws JOSEException {
+    public TokenResponseDto authenticate(AuthenticationRequestDto req) throws JOSEException, ParseException {
         UserEntity user = userRepository.findByUsernameOrEmail(req.getIdentifier())
                 .orElseThrow(() -> new ResourceNotFoundException("error.user.not-found"));
         if(!passwordEncoder.matches(req.getPassword(), user.getPassword())){
             throw new UnauthorizedException("error.invalid.username-or-email");
         }
+        String token = jwtService.generateToken(user, TokenType.ACCESS_TOKEN);
         return TokenResponseDto.builder()
-                .accessToken(jwtService.generateToken(user, TokenType.ACCESS_TOKEN))
-                .expirationTime(new Date(System.currentTimeMillis() + accessExpiration))
+                .accessToken(token)
+                .expirationTime(jwtService.extractExpiration(token))
                 .build();
     }
 
@@ -77,6 +78,28 @@ public class AuthServiceImpl implements AuthService {
         }
         user.setPassword(passwordEncoder.encode(req.getNewPassword()));
         return userRepository.save(user).getId();
+    }
+
+    @Override
+    public TokenResponseDto refreshToken(AuthRefreshTokenRequestDto req) {
+        return null;
+    }
+
+    @Override
+    public String logout(AuthLogoutRequestDto req) throws ParseException, JOSEException {
+        boolean isValid = jwtService.validateToken(req.getToken(), TokenType.ACCESS_TOKEN);
+        if(!isValid){
+            throw new UnauthorizedException("error.token.invalid");
+        }
+        String jti = jwtService.extractJti(req.getToken());
+        Date expiration = jwtService.extractExpiration(req.getToken());
+
+        InvalidatedTokenEntity invalidToken = InvalidatedTokenEntity.builder()
+                .id(jti)
+                .expiredTime(expiration)
+                .build();
+
+        return invalidatedTokenRepository.save(invalidToken).getId();
     }
 
     private UserEntity getUserById(Long id){

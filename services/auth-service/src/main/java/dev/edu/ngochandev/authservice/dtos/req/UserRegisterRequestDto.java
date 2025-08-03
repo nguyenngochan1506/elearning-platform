@@ -5,10 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
-import java.io.Serializable;
-
 @Getter
-public class UserRegisterRequestDto implements Serializable {
+public class UserRegisterRequestDto {
     @NotBlank(message = "error.username.not-blank")
     private String username;
 

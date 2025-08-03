@@ -3,7 +3,9 @@ package dev.edu.ngochandev.authservice.services.impl;
 
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import dev.edu.ngochandev.authservice.dtos.res.TokenResponseDto;
 import dev.edu.ngochandev.authservice.entities.UserEntity;
 import dev.edu.ngochandev.authservice.enums.TokenType;
@@ -13,7 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.util.Date;
+import java.util.UUID;
 
 @Service
 @Slf4j(topic = "JWT-SERVICE")
@@ -45,6 +49,7 @@ public class JwtServiceImpl implements JwtService {
                 .expirationTime(new Date(System.currentTimeMillis() + expirationTime))
                 .subject(user.getUsername())
                 .issuer(issuer)
+                .jwtID(UUID.randomUUID().toString())
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
@@ -55,17 +60,31 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public boolean validateToken(String token, String username) {
-        return false;
+    public boolean validateToken(String token, TokenType type) throws JOSEException, ParseException {
+        byte[] secretKey = switch (type) {
+            case ACCESS_TOKEN -> accessSecretKey.getBytes();
+            case FORGOT_PASSWORD_TOKEN -> forgotPasswordSecretKey.getBytes();
+        };
+
+        JWSVerifier verifier = new MACVerifier(secretKey);
+        SignedJWT signedJWT = SignedJWT.parse(token);
+        Date expirationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+        return expirationTime != null && expirationTime.after(new Date()) && signedJWT.verify(verifier);
     }
 
     @Override
-    public String extractUsername(String token) {
-        return "";
+    public String extractUsername(String token) throws ParseException {
+        return  SignedJWT.parse(token).getJWTClaimsSet().getSubject();
     }
 
     @Override
-    public String refreshToken(String token) {
-        return "";
+    public String extractJti(String token) throws ParseException {
+        return SignedJWT.parse(token).getJWTClaimsSet().getJWTID();
     }
+
+    @Override
+    public Date extractExpiration(String token) throws ParseException {
+        return SignedJWT.parse(token).getJWTClaimsSet().getExpirationTime();
+    }
+
 }

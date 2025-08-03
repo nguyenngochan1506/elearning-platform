@@ -6,12 +6,17 @@ import dev.edu.ngochandev.authservice.dtos.res.TokenResponseDto;
 import dev.edu.ngochandev.authservice.entities.UserEntity;
 import dev.edu.ngochandev.authservice.enums.TokenType;
 
+import java.text.ParseException;
+import java.util.Date;
+
 public interface JwtService {
     String generateToken(UserEntity user, TokenType type) throws JOSEException;
 
-    boolean validateToken(String token, String username);
+    boolean validateToken(String token, TokenType type) throws JOSEException, ParseException;
 
-    String extractUsername(String token);
+    String extractUsername(String token) throws ParseException;
 
-    String refreshToken(String token);
+    String extractJti(String token) throws ParseException;
+
+    Date extractExpiration(String token) throws ParseException;
 }

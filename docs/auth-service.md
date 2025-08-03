@@ -5,6 +5,7 @@
 - password không nên được lưu trữ trong database, thay vào đó nên sử dụng hash để mã hóa password.
 
 ## Các chức năng của auth-service
+- Trả về danh sách người dùng
 - Đăng ký người dùng mới và Xác thực người dùng
 - Thay đổi mật khẩu và quên mật khẩu
 - Phân quyền người dùng
@@ -43,3 +44,57 @@
 **POST** `/api/auth/forgot-password` -> gửi email chứa link reset password  
 **POST** `/api/auth/reset-password` -> reset password
 
+### 6. Trả về danh sách người dùng
+
+**POST** `/api/v1/users/list`
+#### Request body
+```json
+{
+  "filters": [
+    {
+      "field": "username",
+      "operator": "equals",
+      "value": "123"
+    },
+    {
+      "field": "age",
+      "operator": "between",
+      "value": [18, 65]
+    },
+    {
+      "field": "status",
+      "operator": "in",
+      "value": ["ACTIVE", "PENDING"]
+    }
+  ],
+  "sort": "id:DESC",
+  "search": "ad",
+  "page": 1,
+  "size": 10
+}
+```
+#### Response body
+
+```json
+{
+  "status": 200,
+  "message": "success",
+  "data": {
+    "users": [
+      {
+        "id": 1,
+        "username": "john_doe",
+        "email": "123@gmail.com",
+        "status": "ACTIVE",
+        "createdAt": "2023-01-01T00:00:00Z",
+        "updatedAt": "2023-01-01T00:00:00Z"
+      }
+    ],
+    "pagination": {
+      "currentPage": 1,
+      "totalElements": 100,
+      "totalPages": 10
+    }
+  }
+}
+```
