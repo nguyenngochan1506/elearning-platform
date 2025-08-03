@@ -59,10 +59,11 @@ public class AuthServiceImpl implements AuthService {
         if(!passwordEncoder.matches(req.getPassword(), user.getPassword())){
             throw new UnauthorizedException("error.invalid.username-or-email");
         }
-        String token = jwtService.generateToken(user, TokenType.ACCESS_TOKEN);
+        String accessToken = jwtService.generateToken(user, TokenType.ACCESS_TOKEN);
+        String refreshToken = jwtService.generateToken(user, TokenType.REFRESH_TOKEN);
         return TokenResponseDto.builder()
-                .accessToken(token)
-                .expirationTime(jwtService.extractExpiration(token))
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 
@@ -81,7 +82,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public TokenResponseDto refreshToken(AuthRefreshTokenRequestDto req) throws ParseException, JOSEException {
-        boolean isValid = jwtService.validateToken(req.getToken(), TokenType.ACCESS_TOKEN);
+        boolean isValid = jwtService.validateToken(req.getToken(), TokenType.REFRESH_TOKEN);
         if(!isValid){
             throw new UnauthorizedException("error.token.invalid");
         }
@@ -95,10 +96,11 @@ public class AuthServiceImpl implements AuthService {
         //return new token
         String username = jwtService.extractUsername(req.getToken());
         UserEntity user = userRepository.findByUsernameOrEmail(username).orElseThrow(() -> new ResourceNotFoundException("error.user.not-found"));
-        String newToken = jwtService.generateToken(user, TokenType.ACCESS_TOKEN);
+        String accessToken = jwtService.generateToken(user, TokenType.ACCESS_TOKEN);
+        String refreshToken = jwtService.generateToken(user, TokenType.REFRESH_TOKEN);
         return TokenResponseDto.builder()
-                .accessToken(newToken)
-                .expirationTime(jwtService.extractExpiration(newToken))
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 

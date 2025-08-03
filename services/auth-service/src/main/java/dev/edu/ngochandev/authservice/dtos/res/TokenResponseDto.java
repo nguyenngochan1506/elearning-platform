@@ -10,5 +10,5 @@ import java.util.Date;
 @Builder
 public class TokenResponseDto {
     private String accessToken;
-    private Date expirationTime;
+    private String refreshToken;
 }

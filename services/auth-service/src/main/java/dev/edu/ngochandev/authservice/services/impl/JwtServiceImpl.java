@@ -16,6 +16,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.Date;
 import java.util.UUID;
 
@@ -23,14 +26,24 @@ import java.util.UUID;
 @Slf4j(topic = "JWT-SERVICE")
 @RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {
-    @Value("${jwt.accessTokenSecretKey}")
+    @Value("${jwt.access-token-secret}")
     private String accessSecretKey;
-    @Value("${jwt.forgotPasswordTokenSecretKey}")
+
+    @Value("${jwt.forgot-password-token-secret}")
     private String forgotPasswordSecretKey;
-    @Value("${jwt.accessExpiration}")
+
+    @Value("${jwt.access-expiration}")
     private Long accessExpiration;
-    @Value("${jwt.forgotPasswordExpiration}")
+
+    @Value("${jwt.forgot-password-expiration}")
     private Long forgotPasswordExpiration;
+
+    @Value("${jwt.refresh-token-secret}")
+    private String refreshSecretKey;
+
+    @Value("${jwt.refresh-expiration}")
+    private Long refreshExpiration;
+
     @Value("${jwt.issuer}")
     private String issuer;
     private final InvalidatedTokenRepository invalidatedTokenRepository;
@@ -39,6 +52,7 @@ public class JwtServiceImpl implements JwtService {
     public String generateToken(UserEntity user, TokenType type) throws JOSEException {
         return switch (type){
             case ACCESS_TOKEN -> this.generateToken(user, accessSecretKey, accessExpiration);
+            case REFRESH_TOKEN -> this.generateToken(user, refreshSecretKey, refreshExpiration);
             case FORGOT_PASSWORD_TOKEN -> this.generateToken(user, forgotPasswordSecretKey, forgotPasswordExpiration);
         };
     }
@@ -48,7 +62,7 @@ public class JwtServiceImpl implements JwtService {
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .issueTime(new Date())
-                .expirationTime(new Date(System.currentTimeMillis() + expirationTime))
+                .expirationTime(new Date(Instant.now().plus(expirationTime, ChronoUnit.MINUTES).toEpochMilli()))
                 .subject(user.getUsername())
                 .issuer(issuer)
                 .jwtID(UUID.randomUUID().toString())
@@ -65,6 +79,7 @@ public class JwtServiceImpl implements JwtService {
     public boolean validateToken(String token, TokenType type) throws JOSEException, ParseException {
         byte[] secretKey = switch (type) {
             case ACCESS_TOKEN -> accessSecretKey.getBytes();
+            case REFRESH_TOKEN -> refreshSecretKey.getBytes();
             case FORGOT_PASSWORD_TOKEN -> forgotPasswordSecretKey.getBytes();
         };
 

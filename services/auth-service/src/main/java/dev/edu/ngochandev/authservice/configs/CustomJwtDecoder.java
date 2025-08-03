@@ -16,7 +16,7 @@ import java.text.ParseException;
 @Component
 @RequiredArgsConstructor
 public class CustomJwtDecoder implements JwtDecoder {
-    @Value("${jwt.accessTokenSecretKey}")
+    @Value("${jwt.access-token-secret}")
     private String jwtSecretKey;
 
     private final JwtService jwtService;
