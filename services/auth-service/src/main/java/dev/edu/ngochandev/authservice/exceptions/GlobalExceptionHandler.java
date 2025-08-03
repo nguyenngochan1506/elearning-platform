@@ -31,10 +31,12 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponseDto handleValidationExceptions(MethodArgumentNotValidException ex, WebRequest req) {
         ErrorResponseDto res = new ErrorResponseDto(HttpStatus.BAD_REQUEST, Translator.translate("error.body.invalid"), req);
-        ex.getBindingResult().getFieldErrors().forEach(fieldError -> {
-            String message = Translator.translate(fieldError.getDefaultMessage());
-            res.addValidationError(fieldError.getField(), message);
-        });
+        if(ex.getBindingResult().hasErrors()) {
+            ex.getBindingResult().getFieldErrors().forEach(fieldError -> {
+                String message = Translator.translate(fieldError.getDefaultMessage());
+                res.addValidationError(fieldError.getField(), message);
+            });
+        }
         return res;
     }
 

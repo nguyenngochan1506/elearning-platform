@@ -80,7 +80,7 @@
   "status": 200,
   "message": "success",
   "data": {
-    "users": [
+    "items": [
       {
         "id": 1,
         "username": "john_doe",
@@ -90,11 +90,9 @@
         "updatedAt": "2023-01-01T00:00:00Z"
       }
     ],
-    "pagination": {
-      "currentPage": 1,
-      "totalElements": 100,
-      "totalPages": 10
-    }
+    "currentPage": 1,
+    "totalElements": 100,
+    "totalPages": 10
   }
 }
 ```
