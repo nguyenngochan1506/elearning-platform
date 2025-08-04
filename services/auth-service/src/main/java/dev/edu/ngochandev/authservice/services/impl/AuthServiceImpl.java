@@ -99,10 +99,7 @@ public class AuthServiceImpl implements AuthService {
         //disable current token
         String currentJti = jwtService.extractJti(req.getToken());
         Date currentExpiration = jwtService.extractExpiration(req.getToken());
-        invalidatedTokenRepository.save(InvalidatedTokenEntity.builder()
-                        .id(currentJti)
-                        .expiredTime(currentExpiration)
-                .build());
+        jwtService.disableToken(InvalidatedTokenEntity.builder().id(currentJti).expiredTime(currentExpiration).build());
         //return new token
         String username = jwtService.extractUsername(req.getToken());
         UserEntity user = userRepository.findByUsernameOrEmail(username).orElseThrow(() -> new ResourceNotFoundException("error.user.not-found"));
@@ -154,7 +151,26 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Boolean resetPassword(UserResetPasswordRequestDto req) throws ParseException, JOSEException {
-        return null;
+        // check token validity
+        boolean isValid = jwtService.validateToken(req.getToken(), TokenType.FORGOT_PASSWORD_TOKEN);
+        if(!isValid){
+            throw new UnauthorizedException("error.token.invalid");
+        }
+        if(!req.getNewPassword().equals(req.getConfirmPassword())){
+            throw new UnauthorizedException("error.passwords.not-match");
+        }
+        //get user from token
+        String email = jwtService.extractUsername(req.getToken());
+        UserEntity user = this.getUserByEmail(email);
+        //update password
+        user.setPassword(passwordEncoder.encode(req.getNewPassword()));
+        userRepository.save(user);
+
+        //disable current token
+        String jti = jwtService.extractJti(req.getToken());
+        Date expiration = jwtService.extractExpiration(req.getToken());
+        jwtService.disableToken(InvalidatedTokenEntity.builder().id(jti).expiredTime(expiration).build());
+        return true;
     }
 
     private UserEntity getUserById(Long id){

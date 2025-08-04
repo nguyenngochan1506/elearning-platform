@@ -1,6 +1,7 @@
 package dev.edu.ngochandev.authservice.services;
 
 import com.nimbusds.jose.JOSEException;
+import dev.edu.ngochandev.authservice.entities.InvalidatedTokenEntity;
 import dev.edu.ngochandev.authservice.entities.UserEntity;
 import dev.edu.ngochandev.authservice.commons.enums.TokenType;
 
@@ -17,4 +18,6 @@ public interface JwtService {
     String extractJti(String token) throws ParseException;
 
     Date extractExpiration(String token) throws ParseException;
+
+    String disableToken(InvalidatedTokenEntity invalidatedToken) ;
 }

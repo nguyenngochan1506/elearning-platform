@@ -6,6 +6,7 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import dev.edu.ngochandev.authservice.entities.InvalidatedTokenEntity;
 import dev.edu.ngochandev.authservice.entities.UserEntity;
 import dev.edu.ngochandev.authservice.commons.enums.TokenType;
 import dev.edu.ngochandev.authservice.repositories.InvalidatedTokenRepository;
@@ -105,6 +106,11 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public Date extractExpiration(String token) throws ParseException {
         return SignedJWT.parse(token).getJWTClaimsSet().getExpirationTime();
+    }
+
+    @Override
+    public String disableToken(InvalidatedTokenEntity invalidatedToken) {
+        return invalidatedTokenRepository.save(invalidatedToken).getId();
     }
 
 }

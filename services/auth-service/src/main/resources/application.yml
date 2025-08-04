@@ -39,7 +39,7 @@ jwt:
   refresh-token-secret: 9250e1b99bca8e9074b9393b0d7c194b42b5549d3b0d7c194b42b5549d
   access-expiration: 180 # 3 hours
   refresh-expiration: 4320 # 3 days
-  forgot-password-expiration: 5 # 5 minutes
+  forgot-password-expiration: 30 # 5 minutes
   issuer: ngochandev
 
 app:
