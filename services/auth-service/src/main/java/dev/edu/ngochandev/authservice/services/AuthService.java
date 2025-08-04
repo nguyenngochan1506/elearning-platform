@@ -16,4 +16,7 @@ public interface AuthService {
     TokenResponseDto refreshToken( AuthRefreshTokenRequestDto req) throws ParseException, JOSEException;
 
     String logout(AuthLogoutRequestDto req) throws ParseException, JOSEException;
+
+    Boolean forgotPassword(UserForgotPasswordRequestDto req) throws ParseException, JOSEException;
+    Boolean resetPassword(UserResetPasswordRequestDto req) throws ParseException, JOSEException;
 }

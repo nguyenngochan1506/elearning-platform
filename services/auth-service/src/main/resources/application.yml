@@ -12,8 +12,26 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
+  mail:
+    port: 587
+    host: smtp.gmail.com
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    protocol: smtp
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          auth: true
+          connection-timeout: 5000
+          write-timeout: 5000
+          timeout: 5000
+          starttls:
+            enable: true
+
 server:
   port: 8080
+
 
 jwt:
   access-token-secret: f0da559ea59ced68b4d657496bee9753c0447d70702af1a351c7577226d97723
@@ -23,3 +41,7 @@ jwt:
   refresh-expiration: 4320 # 3 days
   forgot-password-expiration: 5 # 5 minutes
   issuer: ngochandev
+
+app:
+  frontend:
+    main-url: http://localhost:3000

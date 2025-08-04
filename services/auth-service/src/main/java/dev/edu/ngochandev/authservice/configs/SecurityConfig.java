@@ -26,6 +26,8 @@ public class SecurityConfig {
             "/api/auth/change-password",
             "/api/auth/refresh-token",
             "/api/auth/logout",
+            "/api/auth/reset-password",
+            "/api/auth/forgot-password",
     };
 
     @Bean

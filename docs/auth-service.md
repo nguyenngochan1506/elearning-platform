@@ -28,17 +28,17 @@
 ![img.png](img.png)
 
 ## Các API của auth-service
-### 1. Đăng ký người dùng mới
+### 1. Đăng ký người dùng mới ☑️
 **POST** `/api/auth/register`
 
-### 2. Xác thực người dùng
+### 2. Xác thực người dùng ☑️
 **POST** `/api/auth/login`
 
 ### 3. Làm mới token
-**POST** `/api/auth/refresh-token`
+**POST** `/api/auth/refresh-token` ☑️
 
 ### 4. Thay đổi mật khẩu
-**POST** `/api/auth/change-password`
+**POST** `/api/auth/change-password` ☑️
 
 ### 5. Quên mật khẩu
 **POST** `/api/auth/forgot-password` -> gửi email chứa link reset password  
@@ -46,14 +46,14 @@
 
 ### 6. Trả về danh sách người dùng
 
-**POST** `/api/v1/users/list`
+**POST** `/api/v1/users/list` ☑️
 #### Request body
 ```json
 {
   "filters": [
     {
       "field": "username",
-      "operator": "equals",
+      "operator": "eq",
       "value": "123"
     },
     {
@@ -94,5 +94,29 @@
     "totalElements": 100,
     "totalPages": 10
   }
+}
+```
+### 7. Khôi phục password
+<p align="center">
+  <img src="img_1.png" alt="Sơ đồ luồng tổng quan" height="303" width="321" title="Sơ đồ luồng tổng quan">
+</p>
+
+#### bước 1: Gửi email chứa link reset password
+**POST** `/api/auth/forgot-password`
+#### Request body
+```json
+{
+  "email": "123@example.com"
+}
+```
+#### bước 2: Reset password
+**POST** `/api/auth/reset-password`
+#### Request
+body
+```json
+{
+  "token": "reset_token",
+  "newPassword": "new_password"
+  "confirmPassword": "new_password"
 }
 ```

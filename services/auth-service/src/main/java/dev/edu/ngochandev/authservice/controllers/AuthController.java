@@ -67,4 +67,22 @@ public class AuthController {
                 .data(userService.logout(req))
                 .build();
     }
+    @PostMapping("/forgot-password")
+    @ResponseStatus(HttpStatus.OK)
+    public SuccessResponseDto<Boolean> forgotPassword(@RequestBody @Valid UserForgotPasswordRequestDto req) throws ParseException, JOSEException {
+        return SuccessResponseDto.<Boolean>builder()
+                .status(HttpStatus.OK.value())
+                .message(Translator.translate("user.forgot-password.success"))
+                .data(userService.forgotPassword(req))
+                .build();
+    }
+    @PostMapping("/reset-password")
+    @ResponseStatus(HttpStatus.OK)
+    public SuccessResponseDto<Boolean> resetPassword(@RequestBody @Valid UserResetPasswordRequestDto req) throws ParseException, JOSEException {
+        return SuccessResponseDto.<Boolean>builder()
+                .status(HttpStatus.OK.value())
+                .message(Translator.translate("user.reset-password.success"))
+                .data(userService.resetPassword(req))
+                .build();
+    }
 }

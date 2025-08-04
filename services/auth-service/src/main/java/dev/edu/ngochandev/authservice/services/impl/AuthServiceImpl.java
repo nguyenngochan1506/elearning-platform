@@ -1,10 +1,12 @@
 package dev.edu.ngochandev.authservice.services.impl;
 
 import com.nimbusds.jose.JOSEException;
+import dev.edu.ngochandev.authservice.commons.enums.MailType;
 import dev.edu.ngochandev.authservice.dtos.req.*;
 import dev.edu.ngochandev.authservice.dtos.res.TokenResponseDto;
 import dev.edu.ngochandev.authservice.dtos.res.UserResponseDto;
 import dev.edu.ngochandev.authservice.entities.InvalidatedTokenEntity;
+import dev.edu.ngochandev.authservice.entities.MailEntity;
 import dev.edu.ngochandev.authservice.entities.UserEntity;
 import dev.edu.ngochandev.authservice.commons.enums.TokenType;
 import dev.edu.ngochandev.authservice.commons.enums.UserStatus;
@@ -16,13 +18,17 @@ import dev.edu.ngochandev.authservice.repositories.InvalidatedTokenRepository;
 import dev.edu.ngochandev.authservice.repositories.UserRepository;
 import dev.edu.ngochandev.authservice.services.AuthService;
 import dev.edu.ngochandev.authservice.services.JwtService;
+import dev.edu.ngochandev.authservice.services.MailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @Slf4j(topic = "USER-SERVICE")
@@ -33,6 +39,10 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final InvalidatedTokenRepository invalidatedTokenRepository;
+    private final MailService mailService;
+
+    @Value("${app.frontend.main-url}")
+    private String frontendUrl;
 
     @Override
     public UserResponseDto register(UserRegisterRequestDto req) {
@@ -121,7 +131,36 @@ public class AuthServiceImpl implements AuthService {
         return invalidatedTokenRepository.save(invalidToken).getId();
     }
 
+    @Override
+    public Boolean forgotPassword(UserForgotPasswordRequestDto req) throws ParseException, JOSEException {
+        UserEntity user = this.getUserByEmail(req.getEmail());
+
+        String token = jwtService.generateToken(user, TokenType.FORGOT_PASSWORD_TOKEN);
+        String resetLink = frontendUrl + "/reset-password?token=" + token;
+
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("fullName", user.getFullName());
+        variables.put("resetLink", resetLink);
+
+        MailEntity mail = new MailEntity();
+        mail.setTo(user.getEmail());
+        mail.setSubject("Yêu cầu đặt lại mật khẩu");
+        mail.setType(MailType.FORGOT_PASSWORD);
+
+        mailService.sendMail(mail, "forgot-password-mail", variables);
+
+        return true;
+    }
+
+    @Override
+    public Boolean resetPassword(UserResetPasswordRequestDto req) throws ParseException, JOSEException {
+        return null;
+    }
+
     private UserEntity getUserById(Long id){
         return userRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("error.user.not-found"));
+    }
+    private UserEntity getUserByEmail(String email){
+        return userRepository.findByUsernameOrEmail(email).orElseThrow(()-> new ResourceNotFoundException("error.user.not-found"));
     }
 }
