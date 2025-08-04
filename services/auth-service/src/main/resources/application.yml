@@ -34,12 +34,12 @@ server:
 
 
 jwt:
-  access-token-secret: f0da559ea59ced68b4d657496bee9753c0447d70702af1a351c7577226d97723
-  forgot-password-token-secret: 4b8c1f2d3e5f6a7b88g9h0a1b2c3d4e5f6a7b8c9d0e18g9h0a1b2c3d4e5f6a7
-  refresh-token-secret: 9250e1b99bca8e9074b9393b0d7c194b42b5549d3b0d7c194b42b5549d
+  access-token-secret: ${ACCESS_TOKEN_SECRET}
+  forgot-password-token-secret: ${FORGOT_PASSWORD_TOKEN_SECRET}
+  refresh-token-secret: ${REFRESH_TOKEN_SECRET}
   access-expiration: 180 # 3 hours
   refresh-expiration: 4320 # 3 days
-  forgot-password-expiration: 30 # 5 minutes
+  forgot-password-expiration: 30 # 30 minutes
   issuer: ngochandev
 
 app:
