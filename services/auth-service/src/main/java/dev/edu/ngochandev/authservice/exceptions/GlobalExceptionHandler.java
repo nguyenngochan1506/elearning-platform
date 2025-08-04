@@ -20,11 +20,22 @@ public class GlobalExceptionHandler {
         String message = ex.getMessage() != null ? ex.getMessage() : "An unexpected error occurred";
         return new ErrorResponseDto(HttpStatus.INTERNAL_SERVER_ERROR,message, req);
     }
+    @ExceptionHandler(FilterDataException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponseDto handleFilterDataException(FilterDataException ex, WebRequest req) {
+        return new ErrorResponseDto(HttpStatus.BAD_REQUEST, ex.getMessage(), req);
+    }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponseDto handleResourceNotFound(Exception ex, WebRequest req) {
         return new ErrorResponseDto(HttpStatus.NOT_FOUND, Translator.translate(ex.getMessage()), req);
+    }
+
+    @ExceptionHandler(DateFormatException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponseDto handleDateFormatException(DateFormatException ex, WebRequest req) {
+        return new ErrorResponseDto(HttpStatus.BAD_REQUEST, Translator.translate(ex.getMessage()), req);
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
