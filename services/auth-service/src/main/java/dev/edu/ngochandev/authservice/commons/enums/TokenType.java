@@ -4,4 +4,5 @@ public enum TokenType {
     ACCESS_TOKEN,
     FORGOT_PASSWORD_TOKEN,
     REFRESH_TOKEN,
+    EMAIL_VERIFICATION_TOKEN,
 }

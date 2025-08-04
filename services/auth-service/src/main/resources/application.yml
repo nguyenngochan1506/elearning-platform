@@ -37,9 +37,11 @@ jwt:
   access-token-secret: ${ACCESS_TOKEN_SECRET}
   forgot-password-token-secret: ${FORGOT_PASSWORD_TOKEN_SECRET}
   refresh-token-secret: ${REFRESH_TOKEN_SECRET}
+  email-verification-token-secret: ${EMAIL_VERIFICATION_TOKEN_SECRET}
   access-expiration: 180 # 3 hours
   refresh-expiration: 4320 # 3 days
   forgot-password-expiration: 30 # 30 minutes
+  email-verification-expiration: 1440 # 24 hours
   issuer: ngochandev
 
 app:

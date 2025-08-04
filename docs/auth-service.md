@@ -5,10 +5,20 @@
 - password không nên được lưu trữ trong database, thay vào đó nên sử dụng hash để mã hóa password.
 
 ## Các chức năng của auth-service
-- Trả về danh sách người dùng
-- Đăng ký người dùng mới và Xác thực người dùng
-- Thay đổi mật khẩu và quên mật khẩu
-- Phân quyền người dùng
+- Quản lý người dùng
+  - Tạo người dùng mới.
+  - Cập nhật thông tin người dùng.
+  - Xóa người dùng.
+  - Lấy danh sách người dùng.
+
+- Xác thực và phân quyền người dùng.
+  - Thực hiện đăng ký người dùng mới(đang ký).
+  - Xác thực người dùng (đăng nhập).
+  - Làm mới token.
+  - Thay đổi mật khẩu.
+  - Xác thực email người dùng sau khi đăng ký.
+  - Khôi phục mật khẩu người dùng.
+  - Phân quyền người dùng dựa trên vai trò (role) và quyền (permission). (Phần phức tạp nhât)
 
 ## mẫu data response
 
@@ -40,9 +50,11 @@
 ### 4. Thay đổi mật khẩu
 **POST** `/api/auth/change-password` ☑️
 
-### 5. Quên mật khẩu
-**POST** `/api/auth/forgot-password` -> gửi email chứa link reset password  
-**POST** `/api/auth/reset-password` -> reset password
+### 5. Verify email
+**POST** `/api/auth/verify-email` -> xác thực email người dùng sau khi đăng ký
+- Cập nhật lại api `/regiter` để gửi email xác thực sau khi đăng ký thành công.
+- Ta sẽ gửi một email chứa link xác thực đến địa chỉ email của người dùng. Link này sẽ chứa một token duy nhất để xác thực.
+- Sau khi người dùng nhấp vào link, hệ thống sẽ xác thực token và cập nhật trạng thái email của người dùng thành đã xác thực.
 
 ### 6. Trả về danh sách người dùng
 

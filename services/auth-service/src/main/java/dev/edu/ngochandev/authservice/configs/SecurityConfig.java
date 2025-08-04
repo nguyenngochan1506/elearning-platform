@@ -28,6 +28,7 @@ public class SecurityConfig {
             "/api/auth/logout",
             "/api/auth/reset-password",
             "/api/auth/forgot-password",
+            "/api/auth/verify-email",
     };
 
     @Bean

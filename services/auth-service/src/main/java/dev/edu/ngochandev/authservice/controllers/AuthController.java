@@ -22,7 +22,7 @@ public class AuthController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public SuccessResponseDto<UserResponseDto> register(@RequestBody @Valid UserRegisterRequestDto req) {
+    public SuccessResponseDto<UserResponseDto> register(@RequestBody @Valid UserRegisterRequestDto req) throws JOSEException {
         return SuccessResponseDto.<UserResponseDto>builder()
                 .status(HttpStatus.CREATED.value())
                 .message(Translator.translate("user.register.success"))
@@ -83,6 +83,15 @@ public class AuthController {
                 .status(HttpStatus.OK.value())
                 .message(Translator.translate("user.reset-password.success"))
                 .data(userService.resetPassword(req))
+                .build();
+    }
+    @PostMapping("/verify-email")
+    @ResponseStatus(HttpStatus.OK)
+    public SuccessResponseDto<Boolean> verifyEmail(@RequestBody @Valid UserVerifyEmailRequestDto req) throws ParseException, JOSEException {
+        return SuccessResponseDto.<Boolean>builder()
+                .status(HttpStatus.OK.value())
+                .message(Translator.translate("user.verify-email.success"))
+                .data(userService.verifyEmail(req))
                 .build();
     }
 }

@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -45,7 +46,8 @@ public class AuthServiceImpl implements AuthService {
     private String frontendUrl;
 
     @Override
-    public UserResponseDto register(UserRegisterRequestDto req) {
+    @Transactional(rollbackFor = Exception.class)
+    public UserResponseDto register(UserRegisterRequestDto req) throws JOSEException {
         if(userRepository.existsByUsername((req.getUsername()))){
             throw new DuplicateResourceException("error.duplicate.username");
         }
@@ -59,6 +61,21 @@ public class AuthServiceImpl implements AuthService {
                         .password(passwordEncoder.encode(req.getPassword()))
                         .status(UserStatus.INACTIVE)
                         .build());
+
+        //generate email verification token
+        String token = jwtService.generateToken(savedUser, TokenType.EMAIL_VERIFICATION_TOKEN);
+        String verificationLink = frontendUrl + "/verify-email?token=" + token;
+        //prepare email variables
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("fullName", savedUser.getFullName());
+        variables.put("verificationLink", verificationLink);
+        //send email
+        MailEntity mail = new MailEntity();
+        mail.setTo(savedUser.getEmail());
+        mail.setSubject("Xác thực tài khoản");
+        mail.setType(MailType.EMAIL_VERIFICATION);
+        mailService.sendMail(mail, "email-verification-mail", variables);
+
         return userMapper.toResponseDto(savedUser);
     }
 
@@ -170,6 +187,27 @@ public class AuthServiceImpl implements AuthService {
         String jti = jwtService.extractJti(req.getToken());
         Date expiration = jwtService.extractExpiration(req.getToken());
         jwtService.disableToken(InvalidatedTokenEntity.builder().id(jti).expiredTime(expiration).build());
+        return true;
+    }
+
+    @Override
+    public Boolean verifyEmail(UserVerifyEmailRequestDto req) throws ParseException, JOSEException {
+        // check token validity
+        boolean isValid = jwtService.validateToken(req.getToken(), TokenType.EMAIL_VERIFICATION_TOKEN);
+        if(!isValid){
+            throw new UnauthorizedException("error.token.invalid");
+        }
+        //get user from token
+        String email = jwtService.extractUsername(req.getToken());
+        UserEntity user = this.getUserByEmail(email);
+
+        user.setStatus(UserStatus.ACTIVE);
+        userRepository.save(user);
+        //disable current token
+        String jti = jwtService.extractJti(req.getToken());
+        Date expiration = jwtService.extractExpiration(req.getToken());
+        jwtService.disableToken(InvalidatedTokenEntity.builder().id(jti).expiredTime(expiration).build());
+
         return true;
     }
 

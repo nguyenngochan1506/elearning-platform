@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "tbl_email")
+@Table(name = "tbl_emails")
 @Setter
 @Getter
 public class MailEntity extends BaseEntity {

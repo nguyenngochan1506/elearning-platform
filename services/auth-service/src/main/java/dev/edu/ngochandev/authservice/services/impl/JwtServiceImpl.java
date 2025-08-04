@@ -33,6 +33,9 @@ public class JwtServiceImpl implements JwtService {
     @Value("${jwt.forgot-password-token-secret}")
     private String forgotPasswordSecretKey;
 
+    @Value("${jwt.email-verification-token-secret}")
+    private String emailSecretKey;
+
     @Value("${jwt.access-expiration}")
     private Long accessExpiration;
 
@@ -41,6 +44,9 @@ public class JwtServiceImpl implements JwtService {
 
     @Value("${jwt.refresh-token-secret}")
     private String refreshSecretKey;
+
+    @Value("${jwt.email-verification-expiration}")
+    private Long emailVerificationExpiration;
 
     @Value("${jwt.refresh-expiration}")
     private Long refreshExpiration;
@@ -55,12 +61,13 @@ public class JwtServiceImpl implements JwtService {
             case ACCESS_TOKEN -> this.generateToken(user, accessSecretKey, accessExpiration);
             case REFRESH_TOKEN -> this.generateToken(user, refreshSecretKey, refreshExpiration);
             case FORGOT_PASSWORD_TOKEN -> this.generateToken(user, forgotPasswordSecretKey, forgotPasswordExpiration);
+            case EMAIL_VERIFICATION_TOKEN -> this.generateToken(user, emailSecretKey, emailVerificationExpiration);
         };
     }
 
     private String generateToken(UserEntity user, String secretKey, Long expirationTime) throws JOSEException {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS256);
-
+        System.out.println(secretKey);
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .issueTime(new Date())
                 .expirationTime(new Date(Instant.now().plus(expirationTime, ChronoUnit.MINUTES).toEpochMilli()))
@@ -82,6 +89,7 @@ public class JwtServiceImpl implements JwtService {
             case ACCESS_TOKEN -> accessSecretKey.getBytes();
             case REFRESH_TOKEN -> refreshSecretKey.getBytes();
             case FORGOT_PASSWORD_TOKEN -> forgotPasswordSecretKey.getBytes();
+            case EMAIL_VERIFICATION_TOKEN -> emailSecretKey.getBytes();
         };
 
         JWSVerifier verifier = new MACVerifier(secretKey);
