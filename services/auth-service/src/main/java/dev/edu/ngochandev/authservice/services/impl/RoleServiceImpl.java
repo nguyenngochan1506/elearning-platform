@@ -57,7 +57,9 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public RoleDetailResponseDto getRoleById(Long id) {
-        return null;
+        RoleEntity foundRole = roleRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("error.role.not.found"));
+        return roleMapper.mapToDetailResponseDto(foundRole);
     }
 
     @Override

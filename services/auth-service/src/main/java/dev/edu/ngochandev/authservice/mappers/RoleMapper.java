@@ -10,6 +10,5 @@ import org.mapstruct.Mapping;
 public interface RoleMapper {
     RoleSummaryResponseDto mapToSummaryResponseDto(RoleEntity roleEntity);
 
-    @Mapping(source = "rolePermissions", target = "permissions")
     RoleDetailResponseDto mapToDetailResponseDto(RoleEntity roleEntity);
 }

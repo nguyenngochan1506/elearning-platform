@@ -38,4 +38,13 @@ public class RoleController {
                 .data(roleService.createRole(req))
                 .build();
     }
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public SuccessResponseDto<RoleDetailResponseDto> getRoleById(@PathVariable Long id){
+        return SuccessResponseDto.<RoleDetailResponseDto>builder()
+                .status(HttpStatus.OK.value())
+                .message(Translator.translate("role.get.success"))
+                .data(roleService.getRoleById(id))
+                .build();
+    }
 }

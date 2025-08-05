@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "tbl_roles")
@@ -25,4 +26,12 @@ public class RoleEntity extends BaseEntity{
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<RolePermissionEntity> rolePermissions;
 
+    public Set<PermissionEntity> getPermissions() {
+        if (rolePermissions == null) {
+            return null;
+        }
+        return rolePermissions.stream()
+                .map(RolePermissionEntity::getPermission)
+                .collect(Collectors.toSet());
+    }
 }
