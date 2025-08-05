@@ -3,7 +3,8 @@ package dev.edu.ngochandev.authservice.dtos.req;
 import lombok.Getter;
 
 import java.util.List;
+
 @Getter
-public class UserManyDeleteRequestDto{
-    private final List<Long> ids = List.of();
+public class RoleManyDeleteRequestDto {
+    private List<Long> ids = List.of();
 }

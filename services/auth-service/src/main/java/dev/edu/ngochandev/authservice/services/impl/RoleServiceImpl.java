@@ -2,6 +2,7 @@ package dev.edu.ngochandev.authservice.services.impl;
 
 import dev.edu.ngochandev.authservice.commons.MyUtils;
 import dev.edu.ngochandev.authservice.dtos.req.RoleCreateRequestDto;
+import dev.edu.ngochandev.authservice.dtos.req.RoleManyDeleteRequestDto;
 import dev.edu.ngochandev.authservice.dtos.req.SimpleFilterRequestDto;
 import dev.edu.ngochandev.authservice.dtos.res.PageResponseDto;
 import dev.edu.ngochandev.authservice.dtos.res.RoleDetailResponseDto;
@@ -101,5 +102,22 @@ public class RoleServiceImpl implements RoleService {
         });
         roleRepository.save(foundRole);
         return foundRole.getId();
+    }
+
+    @Override
+    public void deleteManyRoles(RoleManyDeleteRequestDto req) {
+        List<RoleEntity> roles = roleRepository.findAllById(req.getIds());
+        if (roles.size() != req.getIds().size()) {
+            throw new ResourceNotFoundException("error.role.not.found");
+        }
+        for (RoleEntity role : roles) {
+            role.setIsDeleted(true);
+            roleRepository.save(role);
+            // Soft delete role permissions
+            role.getRolePermissions().forEach(rolePermission -> {
+                rolePermission.setIsDeleted(true);
+                rolePermissionRepository.save(rolePermission);
+            });
+        }
     }
 }

@@ -1,6 +1,7 @@
 package dev.edu.ngochandev.authservice.services;
 
 import dev.edu.ngochandev.authservice.dtos.req.RoleCreateRequestDto;
+import dev.edu.ngochandev.authservice.dtos.req.RoleManyDeleteRequestDto;
 import dev.edu.ngochandev.authservice.dtos.req.SimpleFilterRequestDto;
 import dev.edu.ngochandev.authservice.dtos.res.PageResponseDto;
 import dev.edu.ngochandev.authservice.dtos.res.RoleDetailResponseDto;
@@ -12,4 +13,6 @@ public interface RoleService {
     Long createRole(RoleCreateRequestDto req);
 
     Long deleteRoleById(Long id);
+
+    void deleteManyRoles(RoleManyDeleteRequestDto req);
 }

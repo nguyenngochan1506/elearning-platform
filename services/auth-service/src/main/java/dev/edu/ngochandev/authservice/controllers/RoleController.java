@@ -2,6 +2,7 @@ package dev.edu.ngochandev.authservice.controllers;
 
 import dev.edu.ngochandev.authservice.commons.Translator;
 import dev.edu.ngochandev.authservice.dtos.req.RoleCreateRequestDto;
+import dev.edu.ngochandev.authservice.dtos.req.RoleManyDeleteRequestDto;
 import dev.edu.ngochandev.authservice.dtos.req.SimpleFilterRequestDto;
 import dev.edu.ngochandev.authservice.dtos.res.PageResponseDto;
 import dev.edu.ngochandev.authservice.dtos.res.RoleDetailResponseDto;
@@ -54,6 +55,15 @@ public class RoleController {
                 .status(HttpStatus.OK.value())
                 .message(Translator.translate("role.delete.success"))
                 .data(roleService.deleteRoleById(id))
+                .build();
+    }
+    @DeleteMapping("/batch")
+    @ResponseStatus(HttpStatus.OK)
+    public SuccessResponseDto<Void> deleteRolesByIds(@RequestBody RoleManyDeleteRequestDto req){
+        roleService.deleteManyRoles(req);
+        return SuccessResponseDto.<Void>builder()
+                .status(HttpStatus.OK.value())
+                .message(Translator.translate("role.delete.success"))
                 .build();
     }
 }

@@ -106,8 +106,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteManyUsers(UserManyDeleteRequestDto req) {
-        List<UserEntity> users = userRepository.findAllById(req.ids());
-        if(users.size() != req.ids().size()){
+        List<UserEntity> users = userRepository.findAllById(req.getIds());
+        if(users.size() != req.getIds().size()){
             throw new ResourceNotFoundException("error.user.not-found");
         }
         users.forEach(user -> {
