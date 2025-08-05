@@ -4,6 +4,7 @@ import dev.edu.ngochandev.authservice.commons.MyUtils;
 import dev.edu.ngochandev.authservice.commons.enums.UserStatus;
 import dev.edu.ngochandev.authservice.dtos.req.AdminUserCreateRequestDto;
 import dev.edu.ngochandev.authservice.dtos.req.AdvancedFilterRequestDto;
+import dev.edu.ngochandev.authservice.dtos.req.UserManyDeleteRequestDto;
 import dev.edu.ngochandev.authservice.dtos.res.AdminUserResponse;
 import dev.edu.ngochandev.authservice.dtos.res.PageResponseDto;
 import dev.edu.ngochandev.authservice.dtos.res.UserResponseDto;
@@ -101,6 +102,23 @@ public class UserServiceImpl implements UserService {
         });
 
         return user.getId();
+    }
+
+    @Override
+    public void deleteManyUsers(UserManyDeleteRequestDto req) {
+        List<UserEntity> users = userRepository.findAllById(req.ids());
+        if(users.size() != req.ids().size()){
+            throw new ResourceNotFoundException("error.user.not-found");
+        }
+        users.forEach(user -> {
+            user.setIsDeleted(true);
+            userRepository.save(user);
+            //soft delete user-roles
+            user.getUserRoles().forEach(userRole -> {
+                userRole.setIsDeleted(true);
+                userRoleRepository.save(userRole);
+            });
+        });
     }
 
 }

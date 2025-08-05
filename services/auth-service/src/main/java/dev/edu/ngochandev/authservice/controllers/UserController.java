@@ -3,6 +3,7 @@ package dev.edu.ngochandev.authservice.controllers;
 import dev.edu.ngochandev.authservice.commons.Translator;
 import dev.edu.ngochandev.authservice.dtos.req.AdminUserCreateRequestDto;
 import dev.edu.ngochandev.authservice.dtos.req.AdvancedFilterRequestDto;
+import dev.edu.ngochandev.authservice.dtos.req.UserManyDeleteRequestDto;
 import dev.edu.ngochandev.authservice.dtos.res.AdminUserResponse;
 import dev.edu.ngochandev.authservice.dtos.res.PageResponseDto;
 import dev.edu.ngochandev.authservice.dtos.res.SuccessResponseDto;
@@ -43,6 +44,15 @@ public class UserController {
                 .status(HttpStatus.OK.value())
                 .message(Translator.translate("user.delete.success"))
                 .data(userService.deleteUser(id))
+                .build();
+    }
+    @DeleteMapping("/batch")
+    @ResponseStatus(HttpStatus.OK)
+    public SuccessResponseDto<Void> deleteUsers(@RequestBody UserManyDeleteRequestDto req) {
+        userService.deleteManyUsers(req);
+        return SuccessResponseDto.<Void>builder()
+                .status(HttpStatus.OK.value())
+                .message(Translator.translate("user.delete.success"))
                 .build();
     }
 }
