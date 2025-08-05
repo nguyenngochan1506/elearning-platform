@@ -30,7 +30,9 @@ public class SecurityConfig {
             "/api/auth/forgot-password",
             "/api/auth/verify-email",
 
-            "/api/v1/permissions/list"
+            "/api/v1/permissions/list",
+            "/api/v1/roles/list",
+            "/api/v1/roles",
     };
 
     @Bean

@@ -1,5 +1,6 @@
 package dev.edu.ngochandev.authservice.services.impl;
 
+import dev.edu.ngochandev.authservice.commons.MyUtils;
 import dev.edu.ngochandev.authservice.dtos.req.SimpleFilterRequestDto;
 import dev.edu.ngochandev.authservice.dtos.res.PageResponseDto;
 import dev.edu.ngochandev.authservice.dtos.res.PermissionResponseDto;
@@ -25,15 +26,9 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     public PageResponseDto<PermissionResponseDto> getAllPermissions(SimpleFilterRequestDto filter) {
-        //sort
-        String[] sort = filter.getSort().split(":");
-        String sortField = sort[0];
-        Sort.Direction direction = sort[1].equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-        //pageable
-        int page = filter.getPage() > 0 ? filter.getPage() - 1 : 0;
-        int size = filter.getSize();
+        //create pageable
+        Pageable pageable = MyUtils.createPageable(filter);
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
         Page<PermissionEntity> pageItems = null;
          if(StringUtils.hasLength(filter.getSearch())){
              pageItems = permissionRepository.findBySearch("%"+filter.getSearch()+"%", pageable);
