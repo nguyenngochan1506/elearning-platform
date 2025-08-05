@@ -10,5 +10,5 @@ import java.util.List;
 public class AdminUserCreateRequestDto extends UserRegisterRequestDto{
     @NotNull(message = "user.status.not-null")
     private UserStatus status;
-    private List<Long> roleIds = List.of();
+    private final List<Long> roleIds = List.of();
 }

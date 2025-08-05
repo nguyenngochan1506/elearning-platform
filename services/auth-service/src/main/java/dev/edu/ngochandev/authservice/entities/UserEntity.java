@@ -3,6 +3,7 @@ package dev.edu.ngochandev.authservice.entities;
 import dev.edu.ngochandev.authservice.commons.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLRestriction("is_deleted = false")
 public class UserEntity extends BaseEntity {
     @Column(name = "username", nullable = false, unique = true)
     private String username;

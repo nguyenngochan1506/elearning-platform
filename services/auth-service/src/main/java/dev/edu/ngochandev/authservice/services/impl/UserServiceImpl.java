@@ -88,4 +88,19 @@ public class UserServiceImpl implements UserService {
         return savedUser.getId();
     }
 
+    @Override
+    public Long deleteUser(Long id) {
+        UserEntity user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("error.user.not-found"));
+        user.setIsDeleted(true);
+        userRepository.save(user);
+        //soft delete user-roles
+        user.getUserRoles().forEach(userRole -> {
+            userRole.setIsDeleted(true);
+            userRoleRepository.save(userRole);
+        });
+
+        return user.getId();
+    }
+
 }

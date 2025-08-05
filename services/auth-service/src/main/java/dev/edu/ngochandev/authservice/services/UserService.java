@@ -10,4 +10,6 @@ public interface UserService {
     PageResponseDto<AdminUserResponse> listUsers(AdvancedFilterRequestDto filter);
 
     Long createUser( AdminUserCreateRequestDto req);
+
+    Long deleteUser(Long id);
 }

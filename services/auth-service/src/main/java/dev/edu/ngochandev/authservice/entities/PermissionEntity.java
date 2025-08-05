@@ -3,6 +3,7 @@ package dev.edu.ngochandev.authservice.entities;
 import dev.edu.ngochandev.authservice.commons.enums.HttpMethod;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.Set;
 
@@ -11,6 +12,7 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
+@SQLRestriction("is_deleted = false")
 public class PermissionEntity extends BaseEntity {
     @Column(name = "name", nullable = false)
     private String name;

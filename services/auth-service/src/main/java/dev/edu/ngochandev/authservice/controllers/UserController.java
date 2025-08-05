@@ -36,4 +36,13 @@ public class UserController {
                 .data(userService.createUser(req))
                 .build();
     }
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public SuccessResponseDto<Long> deleteUser(@PathVariable Long id) {
+        return SuccessResponseDto.<Long>builder()
+                .status(HttpStatus.OK.value())
+                .message(Translator.translate("user.delete.success"))
+                .data(userService.deleteUser(id))
+                .build();
+    }
 }
