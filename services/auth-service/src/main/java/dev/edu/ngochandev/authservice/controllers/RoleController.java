@@ -47,4 +47,13 @@ public class RoleController {
                 .data(roleService.getRoleById(id))
                 .build();
     }
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public SuccessResponseDto<Long> deleteRoleById(@PathVariable Long id){
+        return SuccessResponseDto.<Long>builder()
+                .status(HttpStatus.OK.value())
+                .message(Translator.translate("role.delete.success"))
+                .data(roleService.deleteRoleById(id))
+                .build();
+    }
 }

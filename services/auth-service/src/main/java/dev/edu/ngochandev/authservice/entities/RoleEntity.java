@@ -3,6 +3,7 @@ package dev.edu.ngochandev.authservice.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@SQLRestriction("is_deleted = false")
 public class RoleEntity extends BaseEntity{
     @Column(name = "name", nullable = false)
     private String name;

@@ -10,4 +10,6 @@ public interface RoleService {
     PageResponseDto<RoleSummaryResponseDto> getAllRoles(SimpleFilterRequestDto filter);
     RoleDetailResponseDto getRoleById(Long id);
     Long createRole(RoleCreateRequestDto req);
+
+    Long deleteRoleById(Long id);
 }

@@ -88,4 +88,18 @@ public class RoleServiceImpl implements RoleService {
         rolePermissionRepository.saveAll(permissionsToAssign);
         return newRole.getId();
     }
+
+    @Override
+    public Long deleteRoleById(Long id) {
+        RoleEntity foundRole = roleRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("error.role.not.found"));
+        // Soft delete
+        foundRole.setIsDeleted(true);
+        foundRole.getRolePermissions().forEach(rolePermission -> {
+            rolePermission.setIsDeleted(true);
+            rolePermissionRepository.save(rolePermission);
+        });
+        roleRepository.save(foundRole);
+        return foundRole.getId();
+    }
 }
