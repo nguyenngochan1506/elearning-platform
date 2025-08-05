@@ -1,9 +1,13 @@
 package dev.edu.ngochandev.authservice.services;
 
+import dev.edu.ngochandev.authservice.dtos.req.AdminUserCreateRequestDto;
 import dev.edu.ngochandev.authservice.dtos.req.AdvancedFilterRequestDto;
+import dev.edu.ngochandev.authservice.dtos.res.AdminUserResponse;
 import dev.edu.ngochandev.authservice.dtos.res.PageResponseDto;
-import dev.edu.ngochandev.authservice.dtos.res.UserResponseDto;
+import jakarta.validation.Valid;
 
 public interface UserService {
-    PageResponseDto<UserResponseDto> listUsers(AdvancedFilterRequestDto filter);
+    PageResponseDto<AdminUserResponse> listUsers(AdvancedFilterRequestDto filter);
+
+    Long createUser( AdminUserCreateRequestDto req);
 }

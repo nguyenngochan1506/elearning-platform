@@ -4,7 +4,9 @@ import dev.edu.ngochandev.authservice.commons.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "tbl_users")
@@ -30,6 +32,16 @@ public class UserEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private UserStatus status;
 
+    @Column(name = "last_login_at", nullable = true)
+    @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime lastLoginAt;
+
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "user")
     private Set<UserRoleEntity> userRoles;
+
+    public Set<RoleEntity> getRoles() {
+        return userRoles.stream()
+                .map(UserRoleEntity::getRole)
+                .collect(Collectors.toSet());
+    }
 }

@@ -319,3 +319,4 @@ public class OrderService {
 - **POST** `/api/v1/users` - Tạo mới một người dùng. (khác với api `/api/auth/register`, nó sẽ không gửi email xác thực, mà sẽ tạo luôn user với quyền do admin chỉ định)
 - **PUT** `/api/v1/users/{userId}` - Cập nhật thông tin của một người dùng.
 - **DELETE** `/api/v1/users/{userId}` - Xoá một người dùng.
+note: cần update lại api `/register` để nó gán 1 role mặc định cho user mới đăng ký, ví dụ: `default_user`

@@ -1,7 +1,9 @@
 package dev.edu.ngochandev.authservice.controllers;
 
 import dev.edu.ngochandev.authservice.commons.Translator;
+import dev.edu.ngochandev.authservice.dtos.req.AdminUserCreateRequestDto;
 import dev.edu.ngochandev.authservice.dtos.req.AdvancedFilterRequestDto;
+import dev.edu.ngochandev.authservice.dtos.res.AdminUserResponse;
 import dev.edu.ngochandev.authservice.dtos.res.PageResponseDto;
 import dev.edu.ngochandev.authservice.dtos.res.SuccessResponseDto;
 import dev.edu.ngochandev.authservice.dtos.res.UserResponseDto;
@@ -18,11 +20,20 @@ public class UserController {
     private final UserService userService;
     @PostMapping("/list")
     @ResponseStatus(HttpStatus.OK)
-    public SuccessResponseDto<PageResponseDto<UserResponseDto>> listUsers(@RequestBody @Valid AdvancedFilterRequestDto filter) {
-        return SuccessResponseDto.<PageResponseDto<UserResponseDto>>builder()
+    public SuccessResponseDto<PageResponseDto<AdminUserResponse>> listUsers(@RequestBody @Valid AdvancedFilterRequestDto filter) {
+        return SuccessResponseDto.<PageResponseDto<AdminUserResponse>>builder()
                 .status(HttpStatus.OK.value())
                 .message(Translator.translate("user.get.success"))
                 .data(userService.listUsers(filter))
+                .build();
+    }
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public SuccessResponseDto<Long> createUser(@RequestBody @Valid AdminUserCreateRequestDto req) {
+        return SuccessResponseDto.<Long>builder()
+                .status(HttpStatus.CREATED.value())
+                .message(Translator.translate("user.create.success"))
+                .data(userService.createUser(req))
                 .build();
     }
 }

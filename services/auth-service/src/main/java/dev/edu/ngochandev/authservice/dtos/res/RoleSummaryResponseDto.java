@@ -10,4 +10,8 @@ public class RoleSummaryResponseDto {
     private Long id;
     private String name;
     private String description;
+    private String createdAt;
+    private String updatedAt;
+    private String createdBy;
+    private String updatedBy;
 }

@@ -1,7 +1,17 @@
 package dev.edu.ngochandev.authservice.dtos.res;
 
 import dev.edu.ngochandev.authservice.commons.enums.UserStatus;
-import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
-@Builder
-public record UserResponseDto (Long id, String username, String fullName, String email, UserStatus status, String createdAt){}
+
+@Getter
+@Setter
+public class UserResponseDto {
+    private Long id;
+    private String username;
+    private String fullName;
+    private String email;
+    private UserStatus status;
+    private String createdAt;
+}

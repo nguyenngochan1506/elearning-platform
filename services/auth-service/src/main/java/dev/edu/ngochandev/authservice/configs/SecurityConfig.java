@@ -33,6 +33,8 @@ public class SecurityConfig {
             "/api/v1/permissions/list",
             "/api/v1/roles",
             "/api/v1/roles/**",
+            "/api/v1/users",
+            "/api/v1/users/**",
     };
 
     @Bean

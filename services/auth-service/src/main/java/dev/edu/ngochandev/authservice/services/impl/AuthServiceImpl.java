@@ -1,13 +1,12 @@
 package dev.edu.ngochandev.authservice.services.impl;
 
 import com.nimbusds.jose.JOSEException;
+import dev.edu.ngochandev.authservice.commons.DataInitializer;
 import dev.edu.ngochandev.authservice.commons.enums.MailType;
 import dev.edu.ngochandev.authservice.dtos.req.*;
 import dev.edu.ngochandev.authservice.dtos.res.TokenResponseDto;
 import dev.edu.ngochandev.authservice.dtos.res.UserResponseDto;
-import dev.edu.ngochandev.authservice.entities.InvalidatedTokenEntity;
-import dev.edu.ngochandev.authservice.entities.MailEntity;
-import dev.edu.ngochandev.authservice.entities.UserEntity;
+import dev.edu.ngochandev.authservice.entities.*;
 import dev.edu.ngochandev.authservice.commons.enums.TokenType;
 import dev.edu.ngochandev.authservice.commons.enums.UserStatus;
 import dev.edu.ngochandev.authservice.exceptions.DuplicateResourceException;
@@ -15,7 +14,9 @@ import dev.edu.ngochandev.authservice.exceptions.ResourceNotFoundException;
 import dev.edu.ngochandev.authservice.exceptions.UnauthorizedException;
 import dev.edu.ngochandev.authservice.mappers.UserMapper;
 import dev.edu.ngochandev.authservice.repositories.InvalidatedTokenRepository;
+import dev.edu.ngochandev.authservice.repositories.RoleRepository;
 import dev.edu.ngochandev.authservice.repositories.UserRepository;
+import dev.edu.ngochandev.authservice.repositories.UserRoleRepository;
 import dev.edu.ngochandev.authservice.services.AuthService;
 import dev.edu.ngochandev.authservice.services.JwtService;
 import dev.edu.ngochandev.authservice.services.MailService;
@@ -27,9 +28,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 @Slf4j(topic = "USER-SERVICE")
@@ -41,6 +44,8 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final InvalidatedTokenRepository invalidatedTokenRepository;
     private final MailService mailService;
+    private final RoleRepository roleRepository;
+    private final UserRoleRepository userRoleRepository;
 
     @Value("${app.frontend.main-url}")
     private String frontendUrl;
@@ -54,6 +59,7 @@ public class AuthServiceImpl implements AuthService {
         if(userRepository.existsByEmail((req.getEmail()))){
             throw new DuplicateResourceException("error.duplicate.email");
         }
+
         UserEntity savedUser = userRepository.save(UserEntity.builder()
                         .fullName(req.getFullName())
                         .username(req.getUsername())
@@ -61,6 +67,11 @@ public class AuthServiceImpl implements AuthService {
                         .password(passwordEncoder.encode(req.getPassword()))
                         .status(UserStatus.INACTIVE)
                         .build());
+        RoleEntity role = roleRepository.findByName(DataInitializer.DEFAULT_ROLE).orElseThrow();
+        UserRoleEntity userRole = new UserRoleEntity();
+        userRole.setRole(role);
+        userRole.setUser(savedUser);
+        userRoleRepository.save(userRole);
 
         //generate email verification token
         String token = jwtService.generateToken(savedUser, TokenType.EMAIL_VERIFICATION_TOKEN);
@@ -86,6 +97,8 @@ public class AuthServiceImpl implements AuthService {
         if(!passwordEncoder.matches(req.getPassword(), user.getPassword())){
             throw new UnauthorizedException("error.invalid.username-or-email");
         }
+        user.setLastLoginAt(LocalDateTime.now());
+        userRepository.save(user);
         String accessToken = jwtService.generateToken(user, TokenType.ACCESS_TOKEN);
         String refreshToken = jwtService.generateToken(user, TokenType.REFRESH_TOKEN);
         return TokenResponseDto.builder()
