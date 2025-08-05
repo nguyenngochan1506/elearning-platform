@@ -4,6 +4,8 @@ import dev.edu.ngochandev.authservice.commons.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Set;
+
 @Entity
 @Table(name = "tbl_users")
 @Getter
@@ -28,4 +30,6 @@ public class UserEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private UserStatus status;
 
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "user")
+    private Set<UserRoleEntity> userRoles;
 }

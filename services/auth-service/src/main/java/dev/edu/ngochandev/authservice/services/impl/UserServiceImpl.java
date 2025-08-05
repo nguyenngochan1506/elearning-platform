@@ -1,6 +1,6 @@
 package dev.edu.ngochandev.authservice.services.impl;
 
-import dev.edu.ngochandev.authservice.dtos.req.FilterRequestDto;
+import dev.edu.ngochandev.authservice.dtos.req.AdvancedFilterRequestDto;
 import dev.edu.ngochandev.authservice.dtos.res.PageResponseDto;
 import dev.edu.ngochandev.authservice.dtos.res.UserResponseDto;
 import dev.edu.ngochandev.authservice.entities.UserEntity;
@@ -27,9 +27,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     @Override
-    public PageResponseDto<UserResponseDto> listUsers(FilterRequestDto filter) {
-        // valid fields
-
+    public PageResponseDto<UserResponseDto> listUsers(AdvancedFilterRequestDto filter) {
         Pageable pageable = createPageable(filter);
         Specification<UserEntity> spec = new UserSpecification(filter.getFilters(), filter.getSearch());
         Page<UserEntity> pageOfUsers = userRepository.findAll(spec, pageable);
@@ -44,7 +42,7 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
-    private Pageable createPageable(FilterRequestDto filter) {
+    private Pageable createPageable(AdvancedFilterRequestDto filter) {
         String[] sortParams = filter.getSort().split(":");
         String sortField = sortParams[0];
         Sort.Direction direction = sortParams.length > 1

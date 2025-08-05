@@ -47,3 +47,6 @@ jwt:
 app:
   frontend:
     main-url: http://localhost:3000
+logging:
+  level:
+    org.springframework.security: DEBUG

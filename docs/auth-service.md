@@ -232,7 +232,6 @@ public class OrderService {
 > Khứa user này có `permission` nào khớp với cái api mà nó đang gọi không fen...
   - **Có**: vô tiếp vòng trong...
   - **Không**: đi về nhà, với góc vườn nhiều chó nhiều gà...
-
 #### Thế khác biệt giữa `RBAC` và `RBAC+` là gì ?
 - Với `RBAC` ta sẽ gán quyền qua anotation, vấn đề đặt ra là:
   - Nếu ta muốn thay đổi, thêm, xoá role của 1 api, ta phải mò nó nằm ở đâu để sửa code, build lại, deploy lại.
@@ -243,3 +242,27 @@ public class OrderService {
   - Vấn đề duy nhất của nó là performance, vì mỗi lần gọi api ta phải query database để kiểm tra quyền, nhưng với các hệ thống nhỏ thì không vấn đề gì.
   - Nếu sau này có lớn thì mình sẽ cache lại....
 #### Kết luận: Quá đã, thứ mà anh tìm kiếm bấy lâu nay...
+## Bắt tay vào làm...
+<p align="center">
+  <img src="img_3.png" alt="Sơ đồ luồng tổng quan" title="Sơ đồ erd">
+</p>
+
+### Những api sẽ có mặt trong cuộc chơi phân quyền này...
+
+### 1. Nhóm quyền (Roles)
+- **POST** `/api/v1/roles` - Lấy danh sách tất cả các roles.
+- **POST** `/api/v1/roles` - Tạo mới một role.
+- **PUT** `/api/v1/roles/{roleId}` - Cập nhật thông tin của một role.
+- **DELETE** `/api/v1/roles/{roleId}` - Xoá một role.
+
+### 2. Nhóm quản lý quyền (Permissions)
+- **POST** `/api/v1/permissions` - Lấy danh sách tất cả các permissions.
+- sẽ không có api tạo mới, vì permissions sẽ được lấy từ các api của mình.
+- Dối với api có dạng `/api/v1/users/{userId}` ta sẽ chuyển nó về `/api/v1/users/*` 
+- Sau đó sẽ dùng `AntPathMatcher` để so pattern
+
+### 3. Nhóm người dùng (Users)
+- **POST** `/api/v1/users` - Lấy danh sách tất cả người dùng. (cần cập nhật lại để nó lôi tất cả các role, permission của user ra)
+- **POST** `/api/v1/users` - Tạo mới một người dùng. (khác với api `/api/auth/register`, nó sẽ không gửi email xác thực, mà sẽ tạo luôn user với quyền do admin chỉ định)
+- **PUT** `/api/v1/users/{userId}` - Cập nhật thông tin của một người dùng.
+- **DELETE** `/api/v1/users/{userId}` - Xoá một người dùng.

@@ -1,7 +1,7 @@
 package dev.edu.ngochandev.authservice.controllers;
 
 import dev.edu.ngochandev.authservice.commons.Translator;
-import dev.edu.ngochandev.authservice.dtos.req.FilterRequestDto;
+import dev.edu.ngochandev.authservice.dtos.req.AdvancedFilterRequestDto;
 import dev.edu.ngochandev.authservice.dtos.res.PageResponseDto;
 import dev.edu.ngochandev.authservice.dtos.res.SuccessResponseDto;
 import dev.edu.ngochandev.authservice.dtos.res.UserResponseDto;
@@ -18,7 +18,7 @@ public class UserController {
     private final UserService userService;
     @PostMapping("/list")
     @ResponseStatus(HttpStatus.OK)
-    public SuccessResponseDto<PageResponseDto<UserResponseDto>> listUsers(@RequestBody @Valid FilterRequestDto filter) {
+    public SuccessResponseDto<PageResponseDto<UserResponseDto>> listUsers(@RequestBody @Valid AdvancedFilterRequestDto filter) {
         return SuccessResponseDto.<PageResponseDto<UserResponseDto>>builder()
                 .status(HttpStatus.OK.value())
                 .message(Translator.translate("user.get.success"))

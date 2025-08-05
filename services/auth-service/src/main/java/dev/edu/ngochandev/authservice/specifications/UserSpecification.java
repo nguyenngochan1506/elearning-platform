@@ -1,13 +1,11 @@
 package dev.edu.ngochandev.authservice.specifications;
 
 import dev.edu.ngochandev.authservice.commons.MyUtils;
-import dev.edu.ngochandev.authservice.dtos.req.FilterRequestDto;
+import dev.edu.ngochandev.authservice.dtos.req.AdvancedFilterRequestDto;
 import dev.edu.ngochandev.authservice.entities.UserEntity;
 import dev.edu.ngochandev.authservice.exceptions.FilterDataException;
 import jakarta.persistence.criteria.*;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
@@ -15,10 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserSpecification implements Specification<UserEntity> {
-    private final List<FilterRequestDto.FilterData> filterData;
+    private final List<AdvancedFilterRequestDto.FilterData> filterData;
     private final String search;
 
-    public UserSpecification(List<FilterRequestDto.FilterData> filterData, String search) {
+    public UserSpecification(List<AdvancedFilterRequestDto.FilterData> filterData, String search) {
         this.filterData = filterData;
         this.search = search;
     }
@@ -39,7 +37,7 @@ public class UserSpecification implements Specification<UserEntity> {
         }
         //filter
         if(filterData != null && !filterData.isEmpty()) {
-            for(FilterRequestDto.FilterData filter : filterData) {
+            for(AdvancedFilterRequestDto.FilterData filter : filterData) {
                 String field = null;
                 Class<?> fieldType =null;
                 try{
