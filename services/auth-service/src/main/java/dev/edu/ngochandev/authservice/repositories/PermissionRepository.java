@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
+
 
 @Repository
 public interface PermissionRepository extends JpaRepository<PermissionEntity, Long> {
@@ -19,4 +21,5 @@ public interface PermissionRepository extends JpaRepository<PermissionEntity, Lo
             " LOWER(p.module) LIKE LOWER(:search)"
     )
     Page<PermissionEntity> findBySearch(@Param("search") String search, Pageable pageable);
+    long countByIdIn(Collection<Long> id);
 }

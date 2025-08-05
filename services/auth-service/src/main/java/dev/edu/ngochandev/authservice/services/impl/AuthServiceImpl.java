@@ -47,7 +47,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public UserResponseDto register(UserRegisterRequestDto req) throws JOSEException {
+    public Long register(UserRegisterRequestDto req) throws JOSEException {
         if(userRepository.existsByUsername((req.getUsername()))){
             throw new DuplicateResourceException("error.duplicate.username");
         }
@@ -76,7 +76,7 @@ public class AuthServiceImpl implements AuthService {
         mail.setType(MailType.EMAIL_VERIFICATION);
         mailService.sendMail(mail, "email-verification-mail", variables);
 
-        return userMapper.toResponseDto(savedUser);
+        return savedUser.getId();
     }
 
     @Override

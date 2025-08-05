@@ -22,8 +22,8 @@ public class AuthController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public SuccessResponseDto<UserResponseDto> register(@RequestBody @Valid UserRegisterRequestDto req) throws JOSEException {
-        return SuccessResponseDto.<UserResponseDto>builder()
+    public SuccessResponseDto<Long> register(@RequestBody @Valid UserRegisterRequestDto req) throws JOSEException {
+        return SuccessResponseDto.<Long>builder()
                 .status(HttpStatus.CREATED.value())
                 .message(Translator.translate("user.register.success"))
                 .data(userService.register(req))

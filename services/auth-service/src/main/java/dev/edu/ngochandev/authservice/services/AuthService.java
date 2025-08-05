@@ -9,7 +9,7 @@ import jakarta.validation.Valid;
 import java.text.ParseException;
 
 public interface AuthService {
-    UserResponseDto register(UserRegisterRequestDto req) throws JOSEException;
+    Long register(UserRegisterRequestDto req) throws JOSEException;
     TokenResponseDto authenticate(AuthenticationRequestDto req) throws JOSEException, ParseException;
 
     Long changePassword(UserChangePasswordRequestDto req);

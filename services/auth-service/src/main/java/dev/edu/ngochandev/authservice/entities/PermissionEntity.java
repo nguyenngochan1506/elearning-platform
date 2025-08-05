@@ -2,8 +2,7 @@ package dev.edu.ngochandev.authservice.entities;
 
 import dev.edu.ngochandev.authservice.commons.enums.HttpMethod;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Set;
 
@@ -11,6 +10,7 @@ import java.util.Set;
 @Table(name = "tbl_permissions")
 @Getter
 @Setter
+@NoArgsConstructor
 public class PermissionEntity extends BaseEntity {
     @Column(name = "name", nullable = false)
     private String name;
@@ -24,4 +24,8 @@ public class PermissionEntity extends BaseEntity {
 
     @OneToMany(mappedBy = "permission", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<RolePermissionEntity> rolePermissions;
+
+    public PermissionEntity(Long id){
+        this.setId(id);
+    }
 }
