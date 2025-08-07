@@ -29,6 +29,8 @@ public class BeanStorage {
                 "/api/auth/reset-password",
                 "/api/auth/forgot-password",
                 "/api/auth/verify-email",
+                "/swagger-ui/**",
+                "/v3/api-docs/**",
         };
     }
 

@@ -5,7 +5,6 @@ import dev.edu.ngochandev.authservice.commons.DataInitializer;
 import dev.edu.ngochandev.authservice.commons.enums.MailType;
 import dev.edu.ngochandev.authservice.dtos.req.*;
 import dev.edu.ngochandev.authservice.dtos.res.TokenResponseDto;
-import dev.edu.ngochandev.authservice.dtos.res.UserResponseDto;
 import dev.edu.ngochandev.authservice.entities.*;
 import dev.edu.ngochandev.authservice.commons.enums.TokenType;
 import dev.edu.ngochandev.authservice.commons.enums.UserStatus;
@@ -32,7 +31,6 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 @Service
 @Slf4j(topic = "USER-SERVICE")

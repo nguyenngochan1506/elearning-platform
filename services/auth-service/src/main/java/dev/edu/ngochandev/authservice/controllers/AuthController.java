@@ -5,7 +5,6 @@ import dev.edu.ngochandev.authservice.commons.Translator;
 import dev.edu.ngochandev.authservice.dtos.req.*;
 import dev.edu.ngochandev.authservice.dtos.res.SuccessResponseDto;
 import dev.edu.ngochandev.authservice.dtos.res.TokenResponseDto;
-import dev.edu.ngochandev.authservice.dtos.res.UserResponseDto;
 import dev.edu.ngochandev.authservice.services.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +38,7 @@ public class AuthController {
                 .data(userService.authenticate(req))
                 .build();
     }
+
     @PatchMapping("/change-password")
     @ResponseStatus(HttpStatus.OK)
     public SuccessResponseDto<Long> changePassword(@RequestBody @Valid UserChangePasswordRequestDto req){
@@ -58,6 +58,7 @@ public class AuthController {
                 .data(userService.refreshToken(req))
                 .build();
     }
+
     @PostMapping("/logout")
     @ResponseStatus(HttpStatus.OK)
     public SuccessResponseDto<String> logout(@RequestBody @Valid AuthLogoutRequestDto req) throws ParseException, JOSEException {

@@ -50,3 +50,15 @@ app:
 logging:
   level:
     org.springframework.security: DEBUG
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+openapi:
+  service:
+    api-docs: auth-service
+    server: http://localhost:${server.port}
+    title: Auth Service
+    version: 1.0.0

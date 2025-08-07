@@ -1,5 +1,6 @@
 package dev.edu.ngochandev.authservice.repositories;
 
+import dev.edu.ngochandev.authservice.commons.enums.HttpMethod;
 import dev.edu.ngochandev.authservice.entities.PermissionEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -30,4 +32,6 @@ public interface PermissionRepository extends JpaRepository<PermissionEntity, Lo
             "JOIN rp.role r " +
             "WHERE r.name IN :roleNames")
     List<PermissionEntity> findAllByRoleNames(@Param("roleNames") Collection<String> roleNames);
+
+    Optional<PermissionEntity> findByApiPathAndMethod(String apiPath, HttpMethod method);
 }
