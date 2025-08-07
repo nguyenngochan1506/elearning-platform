@@ -9,6 +9,9 @@ import dev.edu.ngochandev.authservice.dtos.res.RoleDetailResponseDto;
 import dev.edu.ngochandev.authservice.dtos.res.RoleSummaryResponseDto;
 import dev.edu.ngochandev.authservice.dtos.res.SuccessResponseDto;
 import dev.edu.ngochandev.authservice.services.RoleService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.extensions.Extension;
+import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,6 +25,14 @@ public class RoleController {
 
     @PostMapping("/list")
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "permission.role.list",
+            description = "Lists all permissions based on the provided filter.",
+            extensions = {
+                    @Extension(name = "x-module", properties = {
+                            @ExtensionProperty(name = "value", value = "role")
+                    })
+            }
+    )
     public SuccessResponseDto<PageResponseDto<RoleSummaryResponseDto>> listRoles(@RequestBody @Valid SimpleFilterRequestDto filter){
         return  SuccessResponseDto.<PageResponseDto<RoleSummaryResponseDto>>builder()
                 .status(HttpStatus.OK.value())
@@ -32,6 +43,14 @@ public class RoleController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "permission.role.create",
+            description = "Lists all permissions based on the provided filter.",
+            extensions = {
+                    @Extension(name = "x-module", properties = {
+                            @ExtensionProperty(name = "value", value = "role")
+                    })
+            }
+    )
     public SuccessResponseDto<Long> createRole(@RequestBody @Valid RoleCreateRequestDto req){
         return SuccessResponseDto.<Long>builder()
                 .status(HttpStatus.CREATED.value())
@@ -41,6 +60,14 @@ public class RoleController {
     }
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "permission.role.get-detail",
+            description = "Get role by ID.",
+            extensions = {
+                    @Extension(name = "x-module", properties = {
+                            @ExtensionProperty(name = "value", value = "role")
+                    })
+            }
+    )
     public SuccessResponseDto<RoleDetailResponseDto> getRoleById(@PathVariable Long id){
         return SuccessResponseDto.<RoleDetailResponseDto>builder()
                 .status(HttpStatus.OK.value())
@@ -50,6 +77,14 @@ public class RoleController {
     }
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "permission.role.delete",
+            description = "Delete role by ID.",
+            extensions = {
+                    @Extension(name = "x-module", properties = {
+                            @ExtensionProperty(name = "value", value = "role")
+                    })
+            }
+    )
     public SuccessResponseDto<Long> deleteRoleById(@PathVariable Long id){
         return SuccessResponseDto.<Long>builder()
                 .status(HttpStatus.OK.value())
@@ -59,6 +94,14 @@ public class RoleController {
     }
     @DeleteMapping("/batch")
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "permission.role.delete-many",
+            description = "Delete multiple roles by their IDs.",
+            extensions = {
+                    @Extension(name = "x-module", properties = {
+                            @ExtensionProperty(name = "value", value = "role")
+                    })
+            }
+    )
     public SuccessResponseDto<Void> deleteRolesByIds(@RequestBody RoleManyDeleteRequestDto req){
         roleService.deleteManyRoles(req);
         return SuccessResponseDto.<Void>builder()

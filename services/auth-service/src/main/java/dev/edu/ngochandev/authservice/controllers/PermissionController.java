@@ -6,6 +6,9 @@ import dev.edu.ngochandev.authservice.dtos.res.PageResponseDto;
 import dev.edu.ngochandev.authservice.dtos.res.PermissionResponseDto;
 import dev.edu.ngochandev.authservice.dtos.res.SuccessResponseDto;
 import dev.edu.ngochandev.authservice.services.PermissionService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.extensions.Extension;
+import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +22,14 @@ public class PermissionController {
 
     @PostMapping("/list")
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "permission.permission-list",
+            description = "Lists all permissions based on the provided filter.",
+            extensions = {
+                    @Extension(name = "x-module", properties = {
+                            @ExtensionProperty(name = "value", value = "permission")
+                    })
+            }
+    )
     public SuccessResponseDto<PageResponseDto<PermissionResponseDto>> getAllPermissions(@RequestBody @Valid SimpleFilterRequestDto filter) {
         return SuccessResponseDto.<PageResponseDto<PermissionResponseDto>>builder()
                 .status(HttpStatus.OK.value())

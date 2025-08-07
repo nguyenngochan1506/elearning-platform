@@ -9,6 +9,10 @@ import dev.edu.ngochandev.authservice.dtos.res.AdminUserResponse;
 import dev.edu.ngochandev.authservice.dtos.res.PageResponseDto;
 import dev.edu.ngochandev.authservice.dtos.res.SuccessResponseDto;
 import dev.edu.ngochandev.authservice.services.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.extensions.Extension;
+import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,10 +21,19 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
+@Tag(name = "USER-CONTROLLER", description = "User management operations")
 public class UserController {
     private final UserService userService;
     @PostMapping("/list")
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "permission.user.list",
+            description = "List users with advanced filtering",
+            extensions = {
+                    @Extension(name = "x-module", properties = {
+                            @ExtensionProperty(name = "value", value = "user")
+                    })
+            }
+    )
     public SuccessResponseDto<PageResponseDto<AdminUserResponse>> listUsers(@RequestBody @Valid AdvancedFilterRequestDto filter) {
         return SuccessResponseDto.<PageResponseDto<AdminUserResponse>>builder()
                 .status(HttpStatus.OK.value())
@@ -30,6 +43,14 @@ public class UserController {
     }
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "permission.user.create",
+            description = "Create a new user",
+            extensions = {
+                    @Extension(name = "x-module", properties = {
+                            @ExtensionProperty(name = "value", value = "user")
+                    })
+            }
+    )
     public SuccessResponseDto<Long> createUser(@RequestBody @Valid AdminUserCreateRequestDto req) {
         return SuccessResponseDto.<Long>builder()
                 .status(HttpStatus.CREATED.value())
@@ -39,6 +60,14 @@ public class UserController {
     }
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
+@Operation(summary = "permission.user.delete",
+            description = "Delete a user by ID",
+            extensions = {
+                    @Extension(name = "x-module", properties = {
+                            @ExtensionProperty(name = "value", value = "user")
+                    })
+            }
+    )
     public SuccessResponseDto<Long> deleteUser(@PathVariable Long id) {
         return SuccessResponseDto.<Long>builder()
                 .status(HttpStatus.OK.value())
@@ -48,6 +77,14 @@ public class UserController {
     }
     @DeleteMapping("/batch")
     @ResponseStatus(HttpStatus.OK)
+@Operation(summary = "permission.user.delete-many",
+            description = "Delete multiple users by IDs",
+            extensions = {
+                    @Extension(name = "x-module", properties = {
+                            @ExtensionProperty(name = "value", value = "user")
+                    })
+            }
+    )
     public SuccessResponseDto<Void> deleteUsers(@RequestBody UserManyDeleteRequestDto req) {
         userService.deleteManyUsers(req);
         return SuccessResponseDto.<Void>builder()
@@ -57,6 +94,14 @@ public class UserController {
     }
     @PutMapping("/update")
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "permission.user.update",
+            description = "Update user details",
+            extensions = {
+                    @Extension(name = "x-module", properties = {
+                            @ExtensionProperty(name = "value", value = "user")
+                    })
+            }
+    )
     public SuccessResponseDto<Long> updateUser(@RequestBody @Valid UserUpdateRequestDto req){
         return SuccessResponseDto.<Long>builder()
                 .status(HttpStatus.OK.value())

@@ -16,28 +16,56 @@ import java.util.List;
 
 @Configuration
 public class OpenApiConfig {
+    private static final String SECURITY_SCHEME_NAME = "bearerAuth";
+    private static final String LICENSE_NAME = "Apache 2.0";
+    private static final String LICENSE_URL = "https://springdoc.org";
+    private static final String API_DESCRIPTION = "API documents for Auth service";
+
+    @Value("${openapi.service.title}")
+    private String title;
+
+    @Value("${openapi.service.version}")
+    private String version;
+
+    @Value("${openapi.service.server}")
+    private String serverUrl;
 
     @Bean
-    public OpenAPI openAPI(
-            @Value("${openapi.service.title}") String title,
-            @Value("${openapi.service.version}") String version,
-            @Value("${openapi.service.server}") String serverUrl) {
-        final String securitySchemeName = "bearerAuth";
+    public OpenAPI openAPI() {
         return new OpenAPI()
-                .servers(List.of(new Server().url(serverUrl)))
-                .components(
-                        new Components()
-                                .addSecuritySchemes(
-                                        securitySchemeName,
-                                        new SecurityScheme()
-                                                .type(SecurityScheme.Type.HTTP)
-                                                .scheme("bearer")
-                                                .bearerFormat("JWT")))
-                .security(List.of(new SecurityRequirement().addList(securitySchemeName)))
-                .info(new Info().title(title)
-                        .description("API documents for Auth service")
-                        .version(version)
-                        .license(new License().name("Apache 2.0").url("https://springdoc.org")));
+                .servers(createServers())
+                .components(createComponents())
+                .security(createSecurityRequirements())
+                .info(createApiInfo());
     }
+    private List<Server> createServers() {
+        return List.of(new Server().url(serverUrl));
+    }
+    private Components createComponents() {
+        Components components = new Components();
+        components.addSecuritySchemes(SECURITY_SCHEME_NAME, createSecurityScheme());
+        return components;
 
+    }
+    private SecurityScheme createSecurityScheme() {
+        return new SecurityScheme()
+                .type(SecurityScheme.Type.HTTP)
+                .scheme("bearer")
+                .bearerFormat("JWT");
+    }
+    private List<SecurityRequirement> createSecurityRequirements() {
+        return List.of(new SecurityRequirement().addList(SECURITY_SCHEME_NAME));
+    }
+    private Info createApiInfo() {
+        return new Info()
+                .title(title)
+                .description(API_DESCRIPTION)
+                .version(version)
+                .license(createLicense());
+    }
+    private License createLicense() {
+        return new License()
+                .name(LICENSE_NAME)
+                .url(LICENSE_URL);
+    }
 }

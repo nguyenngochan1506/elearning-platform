@@ -1,6 +1,7 @@
 package dev.edu.ngochandev.authservice.dtos.res;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +16,7 @@ import java.util.Map;
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Schema(name = "ErrorResponseDto", description = "Represents an error response with details about the error that occurred.")
 public class ErrorResponseDto {
     private int status;
     private String error;
