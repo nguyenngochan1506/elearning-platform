@@ -4,6 +4,7 @@ import dev.edu.ngochandev.authservice.commons.Translator;
 import dev.edu.ngochandev.authservice.dtos.req.AdminUserCreateRequestDto;
 import dev.edu.ngochandev.authservice.dtos.req.AdvancedFilterRequestDto;
 import dev.edu.ngochandev.authservice.dtos.req.UserManyDeleteRequestDto;
+import dev.edu.ngochandev.authservice.dtos.req.UserUpdateRequestDto;
 import dev.edu.ngochandev.authservice.dtos.res.AdminUserResponse;
 import dev.edu.ngochandev.authservice.dtos.res.PageResponseDto;
 import dev.edu.ngochandev.authservice.dtos.res.SuccessResponseDto;
@@ -53,6 +54,15 @@ public class UserController {
         return SuccessResponseDto.<Void>builder()
                 .status(HttpStatus.OK.value())
                 .message(Translator.translate("user.delete.success"))
+                .build();
+    }
+    @PutMapping("/update")
+    @ResponseStatus(HttpStatus.OK)
+    public SuccessResponseDto<Long> updateUser(@RequestBody @Valid UserUpdateRequestDto req){
+        return SuccessResponseDto.<Long>builder()
+                .status(HttpStatus.OK.value())
+                .message(Translator.translate("user.update.success"))
+                .data(userService.updateUser(req))
                 .build();
     }
 }

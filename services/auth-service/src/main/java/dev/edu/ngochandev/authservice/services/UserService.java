@@ -3,6 +3,7 @@ package dev.edu.ngochandev.authservice.services;
 import dev.edu.ngochandev.authservice.dtos.req.AdminUserCreateRequestDto;
 import dev.edu.ngochandev.authservice.dtos.req.AdvancedFilterRequestDto;
 import dev.edu.ngochandev.authservice.dtos.req.UserManyDeleteRequestDto;
+import dev.edu.ngochandev.authservice.dtos.req.UserUpdateRequestDto;
 import dev.edu.ngochandev.authservice.dtos.res.AdminUserResponse;
 import dev.edu.ngochandev.authservice.dtos.res.PageResponseDto;
 import jakarta.validation.Valid;
@@ -15,4 +16,6 @@ public interface UserService {
     Long deleteUser(Long id);
 
     void deleteManyUsers(UserManyDeleteRequestDto req);
+
+    Long updateUser(UserUpdateRequestDto req);
 }

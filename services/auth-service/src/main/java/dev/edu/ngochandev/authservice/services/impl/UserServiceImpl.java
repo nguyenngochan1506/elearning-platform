@@ -5,9 +5,10 @@ import dev.edu.ngochandev.authservice.commons.enums.UserStatus;
 import dev.edu.ngochandev.authservice.dtos.req.AdminUserCreateRequestDto;
 import dev.edu.ngochandev.authservice.dtos.req.AdvancedFilterRequestDto;
 import dev.edu.ngochandev.authservice.dtos.req.UserManyDeleteRequestDto;
+import dev.edu.ngochandev.authservice.dtos.req.UserUpdateRequestDto;
 import dev.edu.ngochandev.authservice.dtos.res.AdminUserResponse;
 import dev.edu.ngochandev.authservice.dtos.res.PageResponseDto;
-import dev.edu.ngochandev.authservice.dtos.res.UserResponseDto;
+import dev.edu.ngochandev.authservice.entities.BaseEntity;
 import dev.edu.ngochandev.authservice.entities.RoleEntity;
 import dev.edu.ngochandev.authservice.entities.UserEntity;
 import dev.edu.ngochandev.authservice.entities.UserRoleEntity;
@@ -27,7 +28,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -119,6 +123,68 @@ public class UserServiceImpl implements UserService {
                 userRoleRepository.save(userRole);
             });
         });
+    }
+
+    @Override
+    public Long updateUser(UserUpdateRequestDto req) {
+        //check user
+        UserEntity user = userRepository.findById(req.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("error.user.not-found"));
+        user.setStatus(req.getStatus());
+        user.setFullName(req.getFullName());
+
+        //check role ids
+        if(!req.getRoleIds().isEmpty()){
+            //update user roles
+            List<RoleEntity> roles = roleRepository.findAllById(req.getRoleIds());
+            // valid role ids
+            if(roles.size() != req.getRoleIds().size()){
+                throw new ResourceNotFoundException("error.role.not-found");
+            }
+            //get current user roles
+            List<UserRoleEntity> currentUserRoles = userRoleRepository.findAllById(user.getUserRoles().stream().map(BaseEntity::getId).collect(Collectors.toList()));
+            Set<Long> currentRoleIds = currentUserRoles.stream()
+                    .map(userRole -> userRole.getRole().getId())
+                    .collect(Collectors.toSet());
+            //new role ids
+            Set<Long> newRoleIds = new HashSet<>(req.getRoleIds());
+            //remove roles that are not in new role ids
+            Set<Long> rolesToDelete = new HashSet<>(currentRoleIds);
+            rolesToDelete.removeAll(newRoleIds);
+            System.out.println("Roles to delete: " + rolesToDelete);
+
+            if(!rolesToDelete.isEmpty()){
+                for(UserRoleEntity currentUserRole : currentUserRoles) {
+                    if(rolesToDelete.contains(currentUserRole.getRole().getId())){
+                        currentUserRole.setIsDeleted(true);
+                        userRoleRepository.save(currentUserRole);
+                        }
+                    }
+                }
+            //add new roles
+            List<Long> rolesToAdd = newRoleIds.stream().filter(roleId -> !currentRoleIds.contains(roleId)).toList();
+            if(!rolesToAdd.isEmpty()){
+                List<UserRoleEntity> newUserRoles = rolesToAdd.stream()
+                        .map(roleId -> {
+                            UserRoleEntity userRole = new UserRoleEntity();
+                            userRole.setUser(user);
+                            userRole.setRole(roleRepository.findById(roleId)
+                                    .orElseThrow(() -> new ResourceNotFoundException("error.role.not-found")));
+                            return userRole;
+                        })
+                        .toList();
+                userRoleRepository.saveAll(newUserRoles);
+            }
+        }else{
+            //if no role ids, remove all roles
+            user.getUserRoles().forEach(userRole -> {
+                userRole.setIsDeleted(true);
+                userRoleRepository.save(userRole);
+            });
+        }
+        userRepository.save(user);
+
+        return req.getId();
     }
 
 }

@@ -318,7 +318,7 @@ public class OrderService {
 
 - **POST** `/api/v1/users` - Lấy danh sách tất cả người dùng. (cần cập nhật lại để nó lôi tất cả các role, permission của user ra)
 - **POST** `/api/v1/users` - Tạo mới một người dùng. (khác với api `/api/auth/register`, nó sẽ không gửi email xác thực, mà sẽ tạo luôn user với quyền do admin chỉ định)
-- **PUT** `/api/v1/users/{userId}` - Cập nhật thông tin của một người dùng.
+- **PUT** `/api/v1/users/update` - Cập nhật thông tin của một người dùng.
 - **DELETE** `/api/v1/users/{userId}` - Xoá một người dùng.
 - **DELETE** `/api/v1/users/batch` - Xoá nhiều người dùng cùng lúc.
 note: cần update lại api `/register` để nó gán 1 role mặc định cho user mới đăng ký, ví dụ: `default_user`
