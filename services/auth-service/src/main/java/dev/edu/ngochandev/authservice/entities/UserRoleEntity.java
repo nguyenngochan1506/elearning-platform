@@ -1,7 +1,9 @@
 package dev.edu.ngochandev.authservice.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -11,6 +13,8 @@ import org.hibernate.annotations.SQLRestriction;
 @Getter
 @Setter
 @SQLRestriction("is_deleted = false")
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserRoleEntity extends BaseEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
