@@ -3,6 +3,7 @@ package dev.edu.ngochandev.authservice.configs;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.edu.ngochandev.authservice.commons.Translator;
 import dev.edu.ngochandev.authservice.dtos.res.ErrorResponseDto;
+import dev.edu.ngochandev.authservice.exceptions.CustomAccessDeniedHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,51 +13,53 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.intercept.AuthorizationFilter;
+import org.springframework.util.AntPathMatcher;
 
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final CustomJwtDecoder jwtDecoder;
+    private final PermissionFilter permissionFilter;
+    private final String[] publicEndpoints;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
-    private final String[] PUBLIC_ENDPOINTS = {
-            "/api/auth/register",
-            "/api/auth/authenticate",
-            "/api/auth/change-password",
-            "/api/auth/refresh-token",
-            "/api/auth/logout",
-            "/api/auth/reset-password",
-            "/api/auth/forgot-password",
-            "/api/auth/verify-email",
-
-            "/api/v1/permissions/list",
-            "/api/v1/roles",
-            "/api/v1/roles/**",
-            "/api/v1/users",
-            "/api/v1/users/**",
-    };
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth ->{
-                    auth.requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                    auth.requestMatchers(publicEndpoints).permitAll()
                             .anyRequest().authenticated();
+                })
+                .exceptionHandling(ex ->{
+                    ex.authenticationEntryPoint(authenticationEntryPoint());
+                    ex.accessDeniedHandler(customAccessDeniedHandler);
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .oauth2ResourceServer(oauth2 ->{
-                    oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder))
-                            .authenticationEntryPoint(authenticationEntryPoint());
-                })
+                    oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder)
+                                    .jwtAuthenticationConverter(this.jwtAuthenticationConverter())
+                            );
+                }).addFilterAfter(permissionFilter, AuthorizationFilter.class)
         ;
         return http.build();
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(10);
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
+
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+
+        return jwtAuthenticationConverter;
     }
 
     @Bean

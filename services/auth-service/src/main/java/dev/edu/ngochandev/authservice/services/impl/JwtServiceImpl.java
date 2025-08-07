@@ -7,6 +7,7 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import dev.edu.ngochandev.authservice.entities.InvalidatedTokenEntity;
+import dev.edu.ngochandev.authservice.entities.RoleEntity;
 import dev.edu.ngochandev.authservice.entities.UserEntity;
 import dev.edu.ngochandev.authservice.commons.enums.TokenType;
 import dev.edu.ngochandev.authservice.repositories.InvalidatedTokenRepository;
@@ -21,6 +22,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 import java.util.Date;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -67,13 +69,13 @@ public class JwtServiceImpl implements JwtService {
 
     private String generateToken(UserEntity user, String secretKey, Long expirationTime) throws JOSEException {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS256);
-        System.out.println(secretKey);
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .issueTime(new Date())
                 .expirationTime(new Date(Instant.now().plus(expirationTime, ChronoUnit.MINUTES).toEpochMilli()))
                 .subject(user.getUsername())
                 .issuer(issuer)
                 .jwtID(UUID.randomUUID().toString())
+                .claim("scope", this.buildScope(user))
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
@@ -81,6 +83,15 @@ public class JwtServiceImpl implements JwtService {
         JWSObject jwsObject = new JWSObject(header, payload);
         jwsObject.sign(new MACSigner(secretKey));
         return jwsObject.serialize();
+    }
+
+    private String buildScope(UserEntity user) {
+        Set<RoleEntity> roles = user.getRoles();
+        StringBuilder scopeBuilder = new StringBuilder();
+        for (RoleEntity role : roles) {
+            scopeBuilder.append(role.getName()).append(" ");
+        }
+        return scopeBuilder.toString().trim();
     }
 
     @Override

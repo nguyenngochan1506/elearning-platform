@@ -322,3 +322,5 @@ public class OrderService {
 - **DELETE** `/api/v1/users/{userId}` - Xoá một người dùng.
 - **DELETE** `/api/v1/users/batch` - Xoá nhiều người dùng cùng lúc.
 note: cần update lại api `/register` để nó gán 1 role mặc định cho user mới đăng ký, ví dụ: `default_user`
+
+### 4. Bắt đầu phân quyền (Authorization)
