@@ -38,7 +38,7 @@ public class UserEntity extends BaseEntity {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime lastLoginAt;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
     private Set<UserRoleEntity> userRoles;
 
     public Set<RoleEntity> getRoles() {
