@@ -1,326 +1,217 @@
-## 1 vài điểm cần lưu ý
+# 1. Vài điểm cần lưu ý
+##   1.1 Nguyên tắc chung
+  - Tầng `service` chỉ gọi `repository` của chính nó, cấm gọi repo của thằng khác (hoặc là cùng domain).
+  - Mật khẩu thì tất nhiên là phải hash, không được lưu raw text trong DB.
+##  1.2 Đặt tên cho nó chuẩn
+- **Class**, **Entity**, **Service** các kiểu: Dùng `PascalCase`, nhớ là Số Ít. Ví dụ: `UserEntity`, `RoleRepository`. Đừng có `UsersEntity` nhé, một object là một thằng user thôi.
+- **Table** trong DB: Dùng **snake_case**, và là Số **Nhiều**. Ví dụ: `tbl_users`, `tbl_roles_permissions`.
+## 2. Cái trò phân quyền mới (RBAC Động)
+  - Cái hệ thống phân quyền cũ hard-code trong code tù lắm, mỗi lần sửa lại phải build lại mệt người. Giờ tôi đổi rồi, nó sẽ tự động hết, ngon hơn nhiều.
+<p align="center">
+<img src="img_3.png" alt="Sơ đồ ERD" title="Sơ đồ ERD">
+</p>
 
-### 1.1 Nguyên tắc chung
-
-- Tầng service chỉ nên gọi tầng repository của chính nó và cùng domain, không nên gọi tầng repository của domain khác.
-
-- password không nên được lưu trữ trong database, thay vào đó nên sử dụng hash để mã hóa password.
-  
-  ### 1.2 Tiêu chuẩn đặt tên cho Class / Entity
-
-- **Quy tắc 1:** Tên các class/entity nên sử dụng PascalCase(UpperCamelCase).
-  
-  - Ví dụ: `UserEntity`, `UserRepository`, `UserService`.
-
-- **Quy tắc 2:** Dùng danh từ SỐ ÍT (Singular): Điều này cực kỳ quan trọng. Một đối tượng (instance) của lớp Entity đại diện cho một thực thể, một hàng duy nhất trong bảng. 
-  
-  - ĐÚNG: `UserEntity`, `Order`, `Product`
-  - SAI: `UsersEntity`, `Orders`, `Products`
-
-### 1.2 Tiêu chuẩn đặt tên cho Table (Bảng trong Database)
-
-- **Quy tắc 1**: Dùng snake_case cho các table.
-  
-  - Ví dụ: `roles_permissions`, `orders_items`, `products_categorys`.
-
-- **Quy tắc 2**: Dùng danh từ SỐ NHIỀU (Plural)
-  
-  - ĐÚNG: `users`, `orders`, `products`
-  - SAI: `user`, `order`, `product`
-
-- **Quy tắc 3:** (Tùy chọn nhưng phổ biến): Thêm tiền tố (Prefix):
-  
-  - Ví dụ: tbl_users, auth_users
-
-## Các chức năng của auth-service
-
-- Quản lý người dùng
-  
-  - Tạo người dùng mới.
-  - Cập nhật thông tin người dùng.
-  - Xóa người dùng.
-  - Lấy danh sách người dùng.
-
-- Xác thực và phân quyền người dùng.
-  
-  - Thực hiện đăng ký người dùng mới(đang ký).
-  - Xác thực người dùng (đăng nhập).
-  - Làm mới token.
-  - Thay đổi mật khẩu.
-  - Xác thực email người dùng sau khi đăng ký.
-  - Khôi phục mật khẩu người dùng.
-  - Phân quyền người dùng dựa trên vai trò (role) và quyền (permission). (Phần phức tạp nhât)
-
-## mẫu data response
-
+### Đây là cách nó chạy:
+#### Khi app khởi động:
+1. Thằng `DataInitializer` sẽ vào việc. Đầu tiên nó đọc `file src/main/resources/migrations/permissions.json`.
+2. Nó sẽ so sánh file này với CSDL (bảng `tbl_permissions`) rồi tự động thêm, sửa, hoặc xóa mềm các quyền cho khớp. Giờ file permissions.json là "sếp", CSDL phải nghe theo. 
+3. Tiếp theo, nó tạo/cập nhật 2 role cứng:
+   1. `super_admin`: Được bem cho TẤT CẢ các quyền có trong hệ thống. Full mẹ nó quyền.
+   2. `default_user`: Chỉ được cấp mấy quyền cơ bản cho người dùng mới đăng ký (là mấy quyền có "isDefault": true trong file json ấy).
+   3. Cuối cùng, nó check xem đã có thằng `super_admin` nào chưa. Nếu chưa, nó sẽ tạo một tài khoản (info lấy từ file `application.yml`) và gán cho vai trò `super_admin`.
+#### Khi gọi API:
+   1. Thằng `PermissionFilter` nó sẽ chặn lại.
+   2. Nó xem mình là ai, có những role gì. 
+   3. Nó vào DB lôi hết permission của đống role đó ra.
+   4. Nó so sánh cái API mình đang gọi (path + method) với đống permission mình có.
+      1. Khớp: Ok mời vào.
+      2. Không khớp: 403 Forbidden, `đi về nhà với góc vườn nhiều chó nhều gà`. 
+#### Ngon ở chỗ nào?
+   1. Muốn đổi quyền cho role? Vào API mà sửa, không cần đụng code.
+   2. Muốn thêm/bớt một quyền của hệ thống? Cứ sửa file `permissions.json` rồi khởi động lại app là xong.
+## Danh sách API
+### Đám Public API (Công khai)
+#### Mấy cái này thì không cần đăng nhập cũng gọi được.
+#### 1. Đăng ký
+- **Endpoint**: **POST** `/api/auth/register`
+- **Để làm gì?:** Đăng ký user mới. Tự gán role `default_user` rồi `gửi mail bắt xác thực`.
+- **Request**:
 ```json
 {
-  "status": 200,
-  "message": "user created successfully",
-  "data": {
-    "id": 123,
-    "username": "john_doe",
-    "email": "admin@gmail.com"
-  }
+  "username: "newuser",
+  "fullName": "New User Name",
+  "email": "newuser@example.com",
+  "password": "password123"
+}
+```
+- **Response** (OK thì nó ra vầy):
+```json
+{
+  "status": 201,
+  "message": "Đăng ký người dùng thành công, vui lòng xác minh email",
+  "data": 15
 }
 ```
 
-## kiến trúc của spring security
-
-![img.png](img.png)
-
-## Các API của auth-service
-
-### 1. Đăng ký người dùng mới ☑️
-
-**POST** `/api/auth/register`
-
-### 2. Xác thực người dùng ☑️
-
-**POST** `/api/auth/login`
-
-### 3. Làm mới token
-
-**POST** `/api/auth/refresh-token` ☑️
-
-### 4. Thay đổi mật khẩu
-
-**POST** `/api/auth/change-password` ☑️
-
-### 5. Verify email
-
-**POST** `/api/auth/verify-email` -> xác thực email người dùng sau khi đăng ký
-
-- Cập nhật lại api `/regiter` để gửi email xác thực sau khi đăng ký thành công.
-- Ta sẽ gửi một email chứa link xác thực đến địa chỉ email của người dùng. Link này sẽ chứa một token duy nhất để xác thực.
-- Sau khi người dùng nhấp vào link, hệ thống sẽ xác thực token và cập nhật trạng thái email của người dùng thành đã xác thực.
-
-### 6. Trả về danh sách người dùng
-
-**POST** `/api/v1/users/list` ☑️
-
-#### Request body
-
+#### 2. Đăng nhập
+- **Endpoint**: **POST** `/api/auth/authenticate`
+- **Để làm gì?**: Lấy token để đi gọi các API khác.
+- **Request:**
+```json
+{
+  "identifier": "superadmin",
+  "password": "superadminpassword"
+}
+```
+- **Response** (OK thì nó ra vầy):
+```json
+{
+    "status": 200,
+    "message": "Xác thực người dùng thành công",
+    "data": {
+        "accessToken": "ey...",
+        "refreshToken": "ey..."
+    }
+}
+```
+#### 3. Làm mới Token
+- **Endpoint**: **POST** `/api/auth/refresh-token`
+- **Để làm gì?**: Dùng `refreshToken` cũ lấy `accessToken` mới.
+- **Request**:
+```json
+{
+  "token": "cái_refreshToken_cũ_dán_vào_đây"
+}
+```
+#### 4. Đổi mật khẩu
+- **Endpoint**: **PATCH** `/api/auth/change-password`
+- **Lưu ý:** Cái này cần đăng nhập rồi mới gọi được (này cũng tuỳ business).
+- **Request**:
+```json
+{
+  "userId": 1,
+  "oldPassword": "mật_khẩu_hiện_tại",
+  "newPassword": "mật_khẩu_mới",
+  "confirmPassword": "nhập_lại_mật_khẩu_mới"
+}
+```
+#### (Các API quên mật khẩu, reset, xác thực email tương tự, không có gì đặc biệt)
+### Đám API Quản lý User (Chỉ Admin mới được nghịch)
+#### Mấy cái này phải có Bearer Token (_là cái accessToken đó_) với quyền ngon mới gọi được.
+#### 1. Lấy danh sách user (có filter, search, xoắn não)
+- **Endpoint**: **POST** `/api/v1/users/list`
+- **Request**:
 ```json
 {
   "filters": [
-    {
-      "field": "username",
-      "operator": "eq",
-      "value": "123"
-    },
-    {
-      "field": "age",
-      "operator": "between",
-      "value": [18, 65]
-    },
-    {
-      "field": "status",
-      "operator": "in",
-      "value": ["ACTIVE", "PENDING"]
-    }
+    { "field": "username", "operator": "contains", "value": "admin" },
+    { "field": "status", "operator": "in", "value": ["ACTIVE", "INACTIVE"] }
   ],
-  "sort": "id:DESC",
-  "search": "ad",
+  "sort": "createdAt:DESC",
   "page": 1,
   "size": 10
 }
 ```
+- **Response** (OK thì nó ra vầy):
+```json
+{
+    "status": 200,
+    "message": "Lấy thông tin người dùng thành công",
+    "data": {
+        "currentPage": 1,
+        "totalElements": 1,
+        "totalPages": 1,
+        "items": [
+            {
+                "id": 1,
+                "username": "superadmin",
+                "fullName": "Super Administrator",
+                "email": "super.admin@example.com",
+                "status": "ACTIVE",
+                "roles": [ { "id": 1, "name": "super_admin" } ]
+            }
+        ]
+    }
+}
+```
+#### 2. Tạo user (do Admin tạo)
+- **Endpoint**: **POST** `/api/v1/users`
+- **Request**:
+```json
+{
+  "username": "staffuser",
+  "fullName": "Staff User",
+  "email": "staff@example.com",
+  "password": "password123",
+  "status": "ACTIVE",
+  "roleIds": [2] 
+}
+```
+#### 3. Sửa user
+- **Endpoint**: **PUT** `/api/v1/users/update`
+- **Request**:
+```json
+{
+  "id": 15,
+  "fullName": "Tên Mới Của User",
+  "status": "BLOCKED",
+  "roleIds": [2, 3] 
+}
+```
+#### 4. Xóa 1 user
+**Endpoint**: **DELETE** `/api/v1/users/{id}`
+#### 5. Xóa cả đống user
+- **Endpoint**: **DELETE** `/api/v1/users/batch`
+- **Request**:
+```json
+{
+  "ids": [15, 16, 17]
+}
+```
 
-#### Response body
-
+### Đám API Quản lý Role
+#### Cũng cần quyền mới được sờ vào.
+#### 1. Lấy danh sách role
+- **Endpoint**: **POST** `/api/v1/roles/list`
+2. Lấy chi tiết 1 role (xem nó có những quyền gì)
+- **Endpoint**: **GET** **/api/v1/roles/{id}**
+- **Response** (OK thì nó ra vầy):
 ```json
 {
   "status": 200,
-  "message": "success",
+  "message": "Lấy thông tin vai trò thành công",
   "data": {
-    "items": [
-      {
-        "id": 1,
-        "username": "john_doe",
-        "email": "123@gmail.com",
-        "status": "ACTIVE",
-        "createdAt": "2023-01-01T00:00:00Z",
-        "updatedAt": "2023-01-01T00:00:00Z"
-      }
-    ],
-    "currentPage": 1,
-    "totalElements": 100,
-    "totalPages": 10
+    "id": 1,
+    "name": "super_admin",
+    "description": "Full system access",
+    "permissions": [
+      { "id": 1, "name": "Đổi mật khẩu người dùng", ... },
+      { "id": 2, "name": "Làm mới token người dùng", ... }
+    ]
   }
 }
 ```
-
-### 7. Khôi phục password
-
-<p align="center">
-  <img src="img_1.png" alt="Sơ đồ luồng tổng quan" height="303" width="321" title="Sơ đồ luồng tổng quan">
-</p>
-
-#### bước 1: Gửi email chứa link reset password
-
-**POST** `/api/auth/forgot-password`
-
-#### Request body
-
+#### 3. Tạo role mới
+- **Endpoint**: **POST** `/api/v1/roles`
+- **Request:**
 ```json
 {
-  "email": "123@example.com"
+  "name": "Content Manager",
+  "description": "Chỉ được sửa bài viết thôi",
+  "permissionIds": [1, 5, 8, 12]
 }
 ```
 
-#### bước 2: Reset password
-
-**POST** `/api/auth/reset-password`
-
-#### Request
-
-body
-
+#### (Xóa 1 role, xóa nhiều role tương tự như User)
+### API Quản lý Quyền
+#### 1. Lấy danh sách quyền
+- **Endpoint**: **POST** `/api/v1/permissions/list`
+- **Để làm gì?**: Chỉ để xem hệ thống có những quyền gì thôi (lấy từ file `permissions.json` ra). API này chỉ để `READ-ONLY`. Không có tạo, sửa, xóa gì ở đây hết.
+- Request:
 ```json
 {
-  "token": "reset_token",
-  "newPassword": "new_password"
-  "confirmPassword": "new_password"
+  "page": 1,
+  "size": 10,
+  "search": "user"
 }
 ```
-
-## Final: Phân quyền (~~Ác mộng đôi mươi~~)
-
-### 1. Phân quyền dựa trên URL (URL-Based Authorization)
-
-- Đơn giản, phổ biến và dễ hiểu.
-
-- Cách làm: Cấu hình trong `SecurityFilterChain` bean.
-  
-  ```java
-  @Configuration
-  public class SecurityConfig {
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(auth -> auth
-                // Ai cũng có thể gọi các API này
-                .requestMatchers("/api/auth/**", "/public/**").permitAll()
-  
-                // Chỉ những người có quyền (authority) 'read:users' mới được gọi API GET user
-                .requestMatchers(HttpMethod.GET, "/api/v1/users/list").hasAuthority("read:users")
-  
-                // Chỉ những người có vai trò (role) 'ADMIN' mới được gọi các API dưới /api/admin/
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-  
-                // Chỉ những người có vai trò 'ADMIN' hoặc 'TEACHER' mới được gọi API này
-                .requestMatchers("/api/courses/create").hasAnyRole("ADMIN", "TEACHER")
-  
-                // Tất cả các request còn lại đều yêu cầu phải xác thực
-                .anyRequest().authenticated()
-        );
-        // ... các cấu hình khác
-        return http.build();
-    }
-  }
-  ```
-
-### 2. Phân quyền ở cấp độ Method (Method-Level Security)
-
-- Mạnh mẽ hơn, linh hoạt hơn, có thể xử lý logic phức tạp hơn.
-- Cách làm:
-  - Bật tính năng này bằng cách thêm annotation `@EnableMethodSecurity` vào lớp `SecurityConfig`.
-  - Sử dụng các annotation `@PreAuthorize`, `@PostAuthorize`, `@PreFilter`, `@PostFilter`.
-    
-```java
-    // Trong một lớp Service nào đó
-
-@Service
-
-public class OrderService {
-
-    // Đơn giản: Chỉ user có vai trò 'CUSTOMER' mới được tạo đơn hàng.
-    @PreAuthorize("hasRole('CUSTOMER')")
-    public Order createOrder(OrderData data) {
-        // ... logic tạo đơn hàng
-    }
-    
-    // Nâng cao: Chỉ user có username trùng với username trong tham số 'username'
-    // hoặc user có vai trò 'ADMIN' mới được xem lịch sử đơn hàng.
-    @PreAuthorize("#username == authentication.name or hasRole('ADMIN')")
-    public List<Order> getOrdersForUser(String username) {
-        // ... logic lấy đơn hàng
-    }
-}
-```
-### 3. Danh sách kiểm soát truy cập (Access Control Lists - ACL) - Thôi bỏ thằng này đi, ắc quy lắm
-
-- Chi tiết và linh hoạt nhất, cho phép kiểm soát quyền truy cập dựa trên từng đối tượng cụ thể.
-- Đồng thời phức tạp và khó quản lý nhất.
-- Nếu muốn hình dung, nhìn vào GG docs:
-  - Anh **A** cho chị **B** quyền `READ` & `WRITE` trên tài liệu của ảnh, ghét anh **C** nên chỉ cho `READ` và chỉ ngồi xem **A**&**B** thủ thỉ với nhau.
-    
-    #### **Kết luận**: Overkill, cho dự án của mình...
-
-### 4. Kết hợp 1&2 ta sẽ có được RBAC (Role-Based Access Control)
-
-- Tuyệt vời không có nhưng, 99% trên mạng đều chỉ các này.
-- Lên mạng kiếm đi, không cần giải thích nữa.
-  
-  #### **Kết luận: ** đã nhưng chưa đủ...
-- À mà ngoài ra thì còn có ABAC (Attribute-Based Access Control), kết hợp giữa `RBAC`+ `ACL`, cũng hay nhưng phức tạp hơn, không cần thiết cho dự án của mình.
-
-### 5. Chưa biết tên gì, tạm gọi là `RBAC+`
-
-- Ý tưởng: 
-  - Giữ các table giữa nguyên `users`, `roles`' và chỉnh sửa 1 tý ở `permissions`.
-  - Phần `permissions` sẽ lưu trữ thông tin về các `api` của mình: api_path, method...
-- Cách làm:
-  - Tạo 1 `custom filter` để lấy thông tin api từ request.
-  - Lấy thông tin user từ `SecurityContext` -> lôi hết `permission` dựa vào `roles` của nó ra.
-  - Hỏi anh Database:
-    
-    > Khứa user này có `permission` nào khớp với cái api mà nó đang gọi không fen...
-  - **Có**: vô tiếp vòng trong...
-  - **Không**: đi về nhà, với góc vườn nhiều chó nhiều gà...
-    
-    #### Thế khác biệt giữa `RBAC` và `RBAC+` là gì ?
-- Với `RBAC` ta sẽ gán quyền qua anotation, vấn đề đặt ra là:
-  - Nếu ta muốn thay đổi, thêm, xoá role của 1 api, ta phải mò nó nằm ở đâu để sửa code, build lại, deploy lại.
-- Thế thì `RBAC+` khác choá gì.
-- Khác chớ, để kể nghe:
-  - Nếu muốn thêm, sửa, xoá 1 role nào đó, đơn giản là chỉ cần vào giao diện sửa thông qua các API mà ta đã xây dựng.
-  - Không cần phải sửa code, build lại, deploy lại.
-  - Vấn đề duy nhất của nó là performance, vì mỗi lần gọi api ta phải query database để kiểm tra quyền, nhưng với các hệ thống nhỏ thì không vấn đề gì.
-  - Nếu sau này có lớn thì mình sẽ cache lại....
-    
-    #### Kết luận: Quá đã, thứ mà anh tìm kiếm bấy lâu nay...
-    
-    ## Bắt tay vào làm...
-    
-    <p align="center">
-    <img src="img_3.png" alt="Sơ đồ luồng tổng quan" title="Sơ đồ erd">
-    </p>
-
-### Những api sẽ có mặt trong cuộc chơi phân quyền này...
-
-### 1. Nhóm quyền (Roles)
-
-- **POST** `/api/v1/roles/list` - Lấy danh sách tất cả các roles.
-- **POST** `/api/v1/roles` - Tạo mới một role.
-- **PUT** `/api/v1/roles/{roleId}` - Cập nhật thông tin của một role.
-- **DELETE** `/api/v1/roles/{roleId}` - Xoá một role.
-- **DELETE** `/api/v1/roles/batch` - Xoá nhiều role cùng lúc.
-
-### 2. Nhóm quản lý quyền (Permissions)
-
-- **POST** `/api/v1/permissions/list` - Lấy danh sách tất cả các permissions.
-- sẽ không có api tạo mới, vì permissions sẽ được lấy từ các api của mình.
-- Dối với api có dạng `/api/v1/users/{userId}` ta sẽ chuyển nó về `/api/v1/users/*` 
-- Sau đó sẽ dùng `AntPathMatcher` để so pattern
-
-### 3. Nhóm người dùng (Users)
-
-- **POST** `/api/v1/users` - Lấy danh sách tất cả người dùng. (cần cập nhật lại để nó lôi tất cả các role, permission của user ra)
-- **POST** `/api/v1/users` - Tạo mới một người dùng. (khác với api `/api/auth/register`, nó sẽ không gửi email xác thực, mà sẽ tạo luôn user với quyền do admin chỉ định)
-- **PUT** `/api/v1/users/update` - Cập nhật thông tin của một người dùng.
-- **DELETE** `/api/v1/users/{userId}` - Xoá một người dùng.
-- **DELETE** `/api/v1/users/batch` - Xoá nhiều người dùng cùng lúc.
-note: cần update lại api `/register` để nó gán 1 role mặc định cho user mới đăng ký, ví dụ: `default_user`
-
-### 4. Bắt đầu phân quyền (Authorization)
