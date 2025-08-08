@@ -1,0 +1,100 @@
+[
+  {
+    "nameKey": "permission.user.change-password",
+    "apiPath": "/api/auth/change-password",
+    "method": "PATCH",
+    "module": "user",
+    "isDefault": true
+  },
+  {
+    "nameKey": "permission.user.refresh-token",
+    "apiPath": "/api/auth/refresh-token",
+    "method": "POST",
+    "module": "user",
+    "isDefault": true
+  },
+  {
+    "nameKey": "permission.user.logout",
+    "apiPath": "/api/auth/logout",
+    "method": "POST",
+    "module": "user",
+    "isDefault": true
+  },
+  {
+    "nameKey": "permission.user.list",
+    "apiPath": "/api/v1/users/list",
+    "method": "POST",
+    "module": "user",
+    "isDefault": false
+  },
+  {
+    "nameKey": "permission.user.create",
+    "apiPath": "/api/v1/users",
+    "method": "POST",
+    "module": "user",
+    "isDefault": false
+  },
+  {
+    "nameKey": "permission.user.update",
+    "apiPath": "/api/v1/users/update",
+    "method": "PUT",
+    "module": "user",
+    "isDefault": false
+  },
+  {
+    "nameKey": "permission.user.delete",
+    "apiPath": "/api/v1/users/*",
+    "method": "DELETE",
+    "module": "user",
+    "isDefault": false
+  },
+  {
+    "nameKey": "permission.user.delete-many",
+    "apiPath": "/api/v1/users/batch",
+    "method": "DELETE",
+    "module": "user",
+    "isDefault": false
+  },
+  {
+    "nameKey": "permission.role.list",
+    "apiPath": "/api/v1/roles/list",
+    "method": "POST",
+    "module": "role",
+    "isDefault": false
+  },
+  {
+    "nameKey": "permission.role.create",
+    "apiPath": "/api/v1/roles",
+    "method": "POST",
+    "module": "role",
+    "isDefault": false
+  },
+  {
+    "nameKey": "permission.role.get-detail",
+    "apiPath": "/api/v1/roles/*",
+    "method": "GET",
+    "module": "role",
+    "isDefault": false
+  },
+  {
+    "nameKey": "permission.role.delete",
+    "apiPath": "/api/v1/roles/*",
+    "method": "DELETE",
+    "module": "role",
+    "isDefault": false
+  },
+  {
+    "nameKey": "permission.role.delete-many",
+    "apiPath": "/api/v1/roles/batch",
+    "method": "DELETE",
+    "module": "role",
+    "isDefault": false
+  },
+  {
+    "nameKey": "permission.permission-list",
+    "apiPath": "/api/v1/permissions/list",
+    "method": "POST",
+    "module": "permission",
+    "isDefault": false
+  }
+]

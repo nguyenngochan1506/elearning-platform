@@ -47,9 +47,15 @@ jwt:
 app:
   frontend:
     main-url: http://localhost:3000
+  super-admin:
+    username: ${SUPER_ADMIN_USERNAME:superadmin}
+    password: ${SUPER_ADMIN_PASSWORD:superadmin}
+    email: ${SUPER_ADMIN_EMAIL:superadmin@gmail.com}
+    full-name: ${SUPER_ADMIN_FULLNAME:Super Administrator}
 logging:
   level:
     org.springframework.security: DEBUG
+    DATA-INITIALIZER: DEBUG
 
 springdoc:
   api-docs:
@@ -62,3 +68,4 @@ openapi:
     server: http://localhost:${server.port}
     title: Auth Service
     version: 1.0.0
+

@@ -19,4 +19,7 @@ public interface RoleRepository extends JpaRepository<RoleEntity, Long> {
     Page<RoleEntity> findBySearch(@Param("search") String search, Pageable pageable);
 
     Optional<RoleEntity> findByName(String name);
+
+    @Query("SELECT r FROM RoleEntity r LEFT JOIN FETCH r.rolePermissions WHERE r.name = :name")
+    Optional<RoleEntity> findByNameWithPermissions(@Param("name") String name);
 }

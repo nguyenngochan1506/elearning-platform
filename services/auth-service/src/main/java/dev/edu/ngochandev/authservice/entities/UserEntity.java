@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,7 +40,7 @@ public class UserEntity extends BaseEntity {
     private LocalDateTime lastLoginAt;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
-    private Set<UserRoleEntity> userRoles;
+    private Set<UserRoleEntity> userRoles= new HashSet<>();
 
     public Set<RoleEntity> getRoles() {
         return userRoles.stream()

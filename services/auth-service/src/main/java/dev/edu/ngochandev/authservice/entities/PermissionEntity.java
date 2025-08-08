@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -25,7 +26,7 @@ public class PermissionEntity extends BaseEntity {
     private String module;
 
     @OneToMany(mappedBy = "permission", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<RolePermissionEntity> rolePermissions;
+    private Set<RolePermissionEntity> rolePermissions = new HashSet<>();
 
     public PermissionEntity(Long id){
         this.setId(id);
