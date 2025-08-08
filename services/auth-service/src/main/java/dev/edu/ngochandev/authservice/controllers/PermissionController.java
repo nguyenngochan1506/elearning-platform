@@ -20,23 +20,24 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Tag(name = "PERMISSION-CONTROLLER", description = "Manages permissions for users and roles")
 public class PermissionController {
-	private final PermissionService permissionService;
+    private final PermissionService permissionService;
 
-	@PostMapping("/list")
-	@ResponseStatus(HttpStatus.OK)
-	@Operation(summary = "permission.permission-list",
-			description = "Lists all permissions based on the provided filter.",
-			extensions = {
-					@Extension(name = "x-module", properties = {
-							@ExtensionProperty(name = "value", value = "permission")
-					})
-			}
-	)
-	public SuccessResponseDto<PageResponseDto<PermissionResponseDto>> getAllPermissions(@RequestBody @Valid SimpleFilterRequestDto filter) {
-		return SuccessResponseDto.<PageResponseDto<PermissionResponseDto>>builder()
-				.status(HttpStatus.OK.value())
-				.data(permissionService.getAllPermissions(filter))
-				.message(Translator.translate("permission.list.success"))
-				.build();
-	}
+    @PostMapping("/list")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(
+            summary = "permission.permission-list",
+            description = "Lists all permissions based on the provided filter.",
+            extensions = {
+                @Extension(
+                        name = "x-module",
+                        properties = {@ExtensionProperty(name = "value", value = "permission")})
+            })
+    public SuccessResponseDto<PageResponseDto<PermissionResponseDto>> getAllPermissions(
+            @RequestBody @Valid SimpleFilterRequestDto filter) {
+        return SuccessResponseDto.<PageResponseDto<PermissionResponseDto>>builder()
+                .status(HttpStatus.OK.value())
+                .data(permissionService.getAllPermissions(filter))
+                .message(Translator.translate("permission.list.success"))
+                .build();
+    }
 }

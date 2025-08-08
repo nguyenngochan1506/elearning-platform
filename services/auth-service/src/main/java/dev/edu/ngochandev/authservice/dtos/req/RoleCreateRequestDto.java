@@ -7,8 +7,9 @@ import lombok.Setter;
 @Setter
 @Getter
 public class RoleCreateRequestDto {
-	@NotBlank(message = "error.role.name.not-blank")
-	private String name;
-	private String description;
-	private Long[] permissionIds;
+    @NotBlank(message = "error.role.name.not-blank")
+    private String name;
+
+    private String description;
+    private Long[] permissionIds;
 }

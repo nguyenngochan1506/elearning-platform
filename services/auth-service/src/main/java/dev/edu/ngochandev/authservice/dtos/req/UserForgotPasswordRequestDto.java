@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserForgotPasswordRequestDto {
-	@NotBlank(message = "error.email.not-blank")
-	@Email(message = "error.email.invalid")
-	private String email;
+    @NotBlank(message = "error.email.not-blank")
+    @Email(message = "error.email.invalid")
+    private String email;
 }

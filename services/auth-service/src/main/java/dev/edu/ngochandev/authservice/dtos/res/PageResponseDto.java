@@ -1,15 +1,14 @@
 package dev.edu.ngochandev.authservice.dtos.res;
 
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.util.List;
 
 @Builder
 @Getter
 public class PageResponseDto<T> {
-	private int currentPage;
-	private long totalElements;
-	private int totalPages;
-	private List<T> items;
+    private int currentPage;
+    private long totalElements;
+    private int totalPages;
+    private List<T> items;
 }

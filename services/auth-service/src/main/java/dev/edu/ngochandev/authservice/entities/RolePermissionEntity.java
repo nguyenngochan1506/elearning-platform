@@ -10,12 +10,12 @@ import org.hibernate.annotations.SQLRestriction;
 @Getter
 @Setter
 @SQLRestriction("is_deleted = false")
-public class RolePermissionEntity extends BaseEntity{
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "role_id", nullable = false)
-	private RoleEntity role;
+public class RolePermissionEntity extends BaseEntity {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id", nullable = false)
+    private RoleEntity role;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "permission_id", nullable = false)
-	private PermissionEntity permission;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "permission_id", nullable = false)
+    private PermissionEntity permission;
 }

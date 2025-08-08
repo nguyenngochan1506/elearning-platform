@@ -5,5 +5,5 @@ import dev.edu.ngochandev.authservice.dtos.res.PageResponseDto;
 import dev.edu.ngochandev.authservice.dtos.res.PermissionResponseDto;
 
 public interface PermissionService {
-	PageResponseDto<PermissionResponseDto> getAllPermissions(SimpleFilterRequestDto filter);
+    PageResponseDto<PermissionResponseDto> getAllPermissions(SimpleFilterRequestDto filter);
 }

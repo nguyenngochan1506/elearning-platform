@@ -9,17 +9,17 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserRegisterRequestDto {
-	@NotBlank(message = "error.username.not-blank")
-	private String username;
+    @NotBlank(message = "error.username.not-blank")
+    private String username;
 
-	@NotBlank(message = "error.fullname.not-blank")
-	private String fullName;
+    @NotBlank(message = "error.fullname.not-blank")
+    private String fullName;
 
-	@NotBlank(message = "error.email.not-blank")
-	@Email(message = "error.email.invalid")
-	private String email;
+    @NotBlank(message = "error.email.not-blank")
+    @Email(message = "error.email.invalid")
+    private String email;
 
-	@NotBlank(message = "error.password.not-blank")
-	@Size(min = 8, message = "error.password.too-short")
-	private String password;
+    @NotBlank(message = "error.password.not-blank")
+    @Size(min = 8, message = "error.password.too-short")
+    private String password;
 }
