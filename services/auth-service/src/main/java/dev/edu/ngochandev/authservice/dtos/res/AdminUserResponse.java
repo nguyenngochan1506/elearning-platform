@@ -10,9 +10,9 @@ import java.util.List;
 @Getter
 @Setter
 public class AdminUserResponse extends UserResponseDto {
-    private LocalDateTime lastLoginAt;
-    private LocalDateTime lastUpdatedAt;
-    private Long createdBy;
-    private Long updatedBy;
-    private List<RoleSummaryResponseDto> roles;
+	private LocalDateTime lastLoginAt;
+	private LocalDateTime lastUpdatedAt;
+	private Long createdBy;
+	private Long updatedBy;
+	private List<RoleSummaryResponseDto> roles;
 }

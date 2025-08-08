@@ -4,13 +4,13 @@ import lombok.Getter;
 
 @Getter
 public enum MailStatus {
-    PENDING("pending"),
-    SENT("sent"),
-    FAILED("failed");
+	PENDING("pending"),
+	SENT("sent"),
+	FAILED("failed");
 
-    private final String status;
+	private final String status;
 
-    MailStatus(String status) {
-        this.status = status;
-    }
+	MailStatus(String status) {
+		this.status = status;
+	}
 }

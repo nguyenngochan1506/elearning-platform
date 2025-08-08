@@ -8,5 +8,5 @@ import java.util.List;
 @Getter
 @Setter
 public class RoleDetailResponseDto extends RoleSummaryResponseDto{
-    List<PermissionResponseDto> permissions;
+	List<PermissionResponseDto> permissions;
 }

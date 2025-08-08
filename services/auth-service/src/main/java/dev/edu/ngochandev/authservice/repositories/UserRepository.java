@@ -15,14 +15,14 @@ import java.util.Set;
 
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long>, JpaSpecificationExecutor<UserEntity> {
-    boolean existsByUsername(String username);
+	boolean existsByUsername(String username);
 
-    boolean existsByEmail(String email);
+	boolean existsByEmail(String email);
 
-    @Query("SELECT u FROM UserEntity u WHERE u.username = :identifier OR u.email = :identifier")
-    Optional<UserEntity> findByUsernameOrEmail(String identifier);
+	@Query("SELECT u FROM UserEntity u WHERE u.username = :identifier OR u.email = :identifier")
+	Optional<UserEntity> findByUsernameOrEmail(String identifier);
 
-    @Modifying
-    @Query("UPDATE UserEntity u SET u.isDeleted = true, u.updatedAt = CURRENT_TIMESTAMP WHERE u.id IN :ids AND u.isDeleted = false")
-    void softDeleteAllByIds(@Param("ids") Set<Long> ids);
+	@Modifying
+	@Query("UPDATE UserEntity u SET u.isDeleted = true, u.updatedAt = CURRENT_TIMESTAMP WHERE u.id IN :ids AND u.isDeleted = false")
+	void softDeleteAllByIds(@Param("ids") Set<Long> ids);
 }

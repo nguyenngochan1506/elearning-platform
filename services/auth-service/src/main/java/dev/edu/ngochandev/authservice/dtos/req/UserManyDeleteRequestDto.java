@@ -7,5 +7,5 @@ import java.util.List;
 @Getter
 @Setter
 public class UserManyDeleteRequestDto{
-    private final List<Long> ids = List.of();
+	private final List<Long> ids = List.of();
 }

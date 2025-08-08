@@ -13,19 +13,19 @@ import java.util.Locale;
 
 @Configuration
 public class LocalResolver extends AcceptHeaderLocaleResolver implements WebMvcConfigurer {
-    @Override
-    public Locale resolveLocale(HttpServletRequest request) {
-        String language = request.getHeader("Accept-Language");
-         List<Locale> listLocale = List.of(new Locale("en", "US"), new Locale("vi", "VN"));
-        return StringUtils.hasLength(language) ? Locale.lookup(Locale.LanguageRange.parse(language), listLocale) : Locale.getDefault();
-    }
+	@Override
+	public Locale resolveLocale(HttpServletRequest request) {
+		String language = request.getHeader("Accept-Language");
+		List<Locale> listLocale = List.of(new Locale("en", "US"), new Locale("vi", "VN"));
+		return StringUtils.hasLength(language) ? Locale.lookup(Locale.LanguageRange.parse(language), listLocale) : Locale.getDefault();
+	}
 
-    @Bean
-    public ResourceBundleMessageSource messageSource() {
-        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasename("messages");
-        messageSource.setDefaultEncoding("UTF-8");
-        messageSource.setCacheSeconds(3600);
-        return messageSource;
-    }
+	@Bean
+	public ResourceBundleMessageSource messageSource() {
+		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+		messageSource.setBasename("messages");
+		messageSource.setDefaultEncoding("UTF-8");
+		messageSource.setCacheSeconds(3600);
+		return messageSource;
+	}
 }

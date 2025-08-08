@@ -14,7 +14,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InvalidatedTokenEntity {
-    @Id
-    private String id;
-    private Date expiredTime;
+	@Id
+	private String id;
+	private Date expiredTime;
 }

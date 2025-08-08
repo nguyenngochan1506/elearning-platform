@@ -26,44 +26,44 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 public class PermissionFilter extends OncePerRequestFilter {
-    private final PermissionRepository permissionRepository;
-    private final AntPathMatcher antPathMatcher;
-    private final String[] publicEndpoints;
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String requestURI = request.getRequestURI();
-        String requestMethod = request.getMethod();
-        if(isPublicEndpoint(requestURI)){
-            filterChain.doFilter(request, response);
-            return;
-        }
+	private final PermissionRepository permissionRepository;
+	private final AntPathMatcher antPathMatcher;
+	private final String[] publicEndpoints;
+	@Override
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+		String requestURI = request.getRequestURI();
+		String requestMethod = request.getMethod();
+		if(isPublicEndpoint(requestURI)){
+			filterChain.doFilter(request, response);
+			return;
+		}
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            doFilter(request, response, filterChain);
-            return;
-        }
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null || !authentication.isAuthenticated()) {
+			doFilter(request, response, filterChain);
+			return;
+		}
 
-        if (!hasPermission(authentication, requestURI, requestMethod)) {
-            throw new AccessDeniedException("");
-        }
-        filterChain.doFilter(request, response);
-    }
+		if (!hasPermission(authentication, requestURI, requestMethod)) {
+			throw new AccessDeniedException("");
+		}
+		filterChain.doFilter(request, response);
+	}
 
-    private boolean hasPermission(Authentication authentication, String requestURI, String requestMethod) {
-        Set<String> userRoles = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toSet());
-        List<PermissionEntity> permissions = permissionRepository.findAllByRoleNames(userRoles);
-        return permissions.stream()
-                .anyMatch(per -> antPathMatcher.match(per.getApiPath(), requestURI) && per.getMethod().name().equalsIgnoreCase(requestMethod));
-    }
+	private boolean hasPermission(Authentication authentication, String requestURI, String requestMethod) {
+		Set<String> userRoles = authentication.getAuthorities().stream()
+				.map(GrantedAuthority::getAuthority)
+				.collect(Collectors.toSet());
+		List<PermissionEntity> permissions = permissionRepository.findAllByRoleNames(userRoles);
+		return permissions.stream()
+				.anyMatch(per -> antPathMatcher.match(per.getApiPath(), requestURI) && per.getMethod().name().equalsIgnoreCase(requestMethod));
+	}
 
-    private boolean isPublicEndpoint(String requestURI) {
-        if (publicEndpoints == null || publicEndpoints.length == 0) {
-            return false;
-        }
-        return Arrays.stream(publicEndpoints)
-                .anyMatch(endpoint -> antPathMatcher.match(endpoint, requestURI));
-    }
+	private boolean isPublicEndpoint(String requestURI) {
+		if (publicEndpoints == null || publicEndpoints.length == 0) {
+			return false;
+		}
+		return Arrays.stream(publicEndpoints)
+				.anyMatch(endpoint -> antPathMatcher.match(endpoint, requestURI));
+	}
 }

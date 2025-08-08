@@ -7,6 +7,6 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface PermissionMapper {
-    @Mapping(source = "apiPath", target = "endpoint")
-    PermissionResponseDto toResponseDto(PermissionEntity entity);
+	@Mapping(source = "apiPath", target = "endpoint")
+	PermissionResponseDto toResponseDto(PermissionEntity entity);
 }

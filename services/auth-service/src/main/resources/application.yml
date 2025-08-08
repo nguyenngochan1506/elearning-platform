@@ -1,71 +1,70 @@
 spring:
-  application:
-    name: auth-service
-  datasource:
-    url: ${AUTH_DB_URL}${AUTH_DB_NAME}
-    username: ${AUTH_DB_USER}
-    password: ${AUTH_DB_PASSWORD}
-  jpa:
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-    show-sql: true
-    hibernate:
-      ddl-auto: update
-  mail:
-    port: 587
-    host: smtp.gmail.com
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
-    protocol: smtp
-    default-encoding: UTF-8
-    properties:
-      mail:
-        smtp:
-          auth: true
-          connection-timeout: 5000
-          write-timeout: 5000
-          timeout: 5000
-          starttls:
-            enable: true
+application:
+	name: auth-service
+datasource:
+	url: ${AUTH_DB_URL}${AUTH_DB_NAME}
+	username: ${AUTH_DB_USER}
+	password: ${AUTH_DB_PASSWORD}
+jpa:
+	properties:
+	hibernate:
+		dialect: org.hibernate.dialect.PostgreSQLDialect
+	show-sql: true
+	hibernate:
+	ddl-auto: update
+mail:
+	port: 587
+	host: smtp.gmail.com
+	username: ${MAIL_USERNAME}
+	password: ${MAIL_PASSWORD}
+	protocol: smtp
+	default-encoding: UTF-8
+	properties:
+	mail:
+		smtp:
+		auth: true
+		connection-timeout: 5000
+		write-timeout: 5000
+		timeout: 5000
+		starttls:
+			enable: true
 
 server:
-  port: 8080
+port: 8080
 
 
 jwt:
-  access-token-secret: ${ACCESS_TOKEN_SECRET}
-  forgot-password-token-secret: ${FORGOT_PASSWORD_TOKEN_SECRET}
-  refresh-token-secret: ${REFRESH_TOKEN_SECRET}
-  email-verification-token-secret: ${EMAIL_VERIFICATION_TOKEN_SECRET}
-  access-expiration: 180 # 3 hours
-  refresh-expiration: 4320 # 3 days
-  forgot-password-expiration: 30 # 30 minutes
-  email-verification-expiration: 1440 # 24 hours
-  issuer: ngochandev
+access-token-secret: ${ACCESS_TOKEN_SECRET}
+forgot-password-token-secret: ${FORGOT_PASSWORD_TOKEN_SECRET}
+refresh-token-secret: ${REFRESH_TOKEN_SECRET}
+email-verification-token-secret: ${EMAIL_VERIFICATION_TOKEN_SECRET}
+access-expiration: 180 # 3 hours
+refresh-expiration: 4320 # 3 days
+forgot-password-expiration: 30 # 30 minutes
+email-verification-expiration: 1440 # 24 hours
+issuer: ngochandev
 
 app:
-  frontend:
-    main-url: http://localhost:3000
-  super-admin:
-    username: ${SUPER_ADMIN_USERNAME:superadmin}
-    password: ${SUPER_ADMIN_PASSWORD:superadmin}
-    email: ${SUPER_ADMIN_EMAIL:superadmin@gmail.com}
-    full-name: ${SUPER_ADMIN_FULLNAME:Super Administrator}
+frontend:
+	main-url: http://localhost:3000
+super-admin:
+	username: ${SUPER_ADMIN_USERNAME:superadmin}
+	password: ${SUPER_ADMIN_PASSWORD:superadmin}
+	email: ${SUPER_ADMIN_EMAIL:superadmin@gmail.com}
+	full-name: ${SUPER_ADMIN_FULLNAME:Super Administrator}
 logging:
-  level:
-    org.springframework.security: DEBUG
-    DATA-INITIALIZER: DEBUG
+level:
+	org.springframework.security: DEBUG
+	DATA-INITIALIZER: DEBUG
 
 springdoc:
-  api-docs:
-    enabled: true
-  swagger-ui:
-    enabled: true
+api-docs:
+	enabled: true
+swagger-ui:
+	enabled: true
 openapi:
-  service:
-    api-docs: auth-service
-    server: http://localhost:${server.port}
-    title: Auth Service
-    version: 1.0.0
-
+service:
+	api-docs: auth-service
+	server: http://localhost:${server.port}
+	title: Auth Service
+	version: 1.0.0

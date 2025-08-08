@@ -29,107 +29,107 @@ import java.util.UUID;
 @Slf4j(topic = "JWT-SERVICE")
 @RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {
-    @Value("${jwt.access-token-secret}")
-    private String accessSecretKey;
+	@Value("${jwt.access-token-secret}")
+	private String accessSecretKey;
 
-    @Value("${jwt.forgot-password-token-secret}")
-    private String forgotPasswordSecretKey;
+	@Value("${jwt.forgot-password-token-secret}")
+	private String forgotPasswordSecretKey;
 
-    @Value("${jwt.email-verification-token-secret}")
-    private String emailSecretKey;
+	@Value("${jwt.email-verification-token-secret}")
+	private String emailSecretKey;
 
-    @Value("${jwt.access-expiration}")
-    private Long accessExpiration;
+	@Value("${jwt.access-expiration}")
+	private Long accessExpiration;
 
-    @Value("${jwt.forgot-password-expiration}")
-    private Long forgotPasswordExpiration;
+	@Value("${jwt.forgot-password-expiration}")
+	private Long forgotPasswordExpiration;
 
-    @Value("${jwt.refresh-token-secret}")
-    private String refreshSecretKey;
+	@Value("${jwt.refresh-token-secret}")
+	private String refreshSecretKey;
 
-    @Value("${jwt.email-verification-expiration}")
-    private Long emailVerificationExpiration;
+	@Value("${jwt.email-verification-expiration}")
+	private Long emailVerificationExpiration;
 
-    @Value("${jwt.refresh-expiration}")
-    private Long refreshExpiration;
+	@Value("${jwt.refresh-expiration}")
+	private Long refreshExpiration;
 
-    @Value("${jwt.issuer}")
-    private String issuer;
-    private final InvalidatedTokenRepository invalidatedTokenRepository;
+	@Value("${jwt.issuer}")
+	private String issuer;
+	private final InvalidatedTokenRepository invalidatedTokenRepository;
 
-    @Override
-    public String generateToken(UserEntity user, TokenType type) throws JOSEException {
-        return switch (type){
-            case ACCESS_TOKEN -> this.generateToken(user, accessSecretKey, accessExpiration);
-            case REFRESH_TOKEN -> this.generateToken(user, refreshSecretKey, refreshExpiration);
-            case FORGOT_PASSWORD_TOKEN -> this.generateToken(user, forgotPasswordSecretKey, forgotPasswordExpiration);
-            case EMAIL_VERIFICATION_TOKEN -> this.generateToken(user, emailSecretKey, emailVerificationExpiration);
-        };
-    }
+	@Override
+	public String generateToken(UserEntity user, TokenType type) throws JOSEException {
+		return switch (type){
+			case ACCESS_TOKEN -> this.generateToken(user, accessSecretKey, accessExpiration);
+			case REFRESH_TOKEN -> this.generateToken(user, refreshSecretKey, refreshExpiration);
+			case FORGOT_PASSWORD_TOKEN -> this.generateToken(user, forgotPasswordSecretKey, forgotPasswordExpiration);
+			case EMAIL_VERIFICATION_TOKEN -> this.generateToken(user, emailSecretKey, emailVerificationExpiration);
+		};
+	}
 
-    private String generateToken(UserEntity user, String secretKey, Long expirationTime) throws JOSEException {
-        JWSHeader header = new JWSHeader(JWSAlgorithm.HS256);
-        JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .issueTime(new Date())
-                .expirationTime(new Date(Instant.now().plus(expirationTime, ChronoUnit.MINUTES).toEpochMilli()))
-                .subject(user.getUsername())
-                .issuer(issuer)
-                .jwtID(UUID.randomUUID().toString())
-                .claim("scope", this.buildScope(user))
-                .build();
+	private String generateToken(UserEntity user, String secretKey, Long expirationTime) throws JOSEException {
+		JWSHeader header = new JWSHeader(JWSAlgorithm.HS256);
+		JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
+				.issueTime(new Date())
+				.expirationTime(new Date(Instant.now().plus(expirationTime, ChronoUnit.MINUTES).toEpochMilli()))
+				.subject(user.getUsername())
+				.issuer(issuer)
+				.jwtID(UUID.randomUUID().toString())
+				.claim("scope", this.buildScope(user))
+				.build();
 
-        Payload payload = new Payload(jwtClaimsSet.toJSONObject());
+		Payload payload = new Payload(jwtClaimsSet.toJSONObject());
 
-        JWSObject jwsObject = new JWSObject(header, payload);
-        jwsObject.sign(new MACSigner(secretKey));
-        return jwsObject.serialize();
-    }
+		JWSObject jwsObject = new JWSObject(header, payload);
+		jwsObject.sign(new MACSigner(secretKey));
+		return jwsObject.serialize();
+	}
 
-    private String buildScope(UserEntity user) {
-        Set<RoleEntity> roles = user.getRoles();
-        StringBuilder scopeBuilder = new StringBuilder();
-        for (RoleEntity role : roles) {
-            scopeBuilder.append(role.getName()).append(" ");
-        }
-        return scopeBuilder.toString().trim();
-    }
+	private String buildScope(UserEntity user) {
+		Set<RoleEntity> roles = user.getRoles();
+		StringBuilder scopeBuilder = new StringBuilder();
+		for (RoleEntity role : roles) {
+			scopeBuilder.append(role.getName()).append(" ");
+		}
+		return scopeBuilder.toString().trim();
+	}
 
-    @Override
-    public boolean validateToken(String token, TokenType type) throws JOSEException, ParseException {
-        byte[] secretKey = switch (type) {
-            case ACCESS_TOKEN -> accessSecretKey.getBytes();
-            case REFRESH_TOKEN -> refreshSecretKey.getBytes();
-            case FORGOT_PASSWORD_TOKEN -> forgotPasswordSecretKey.getBytes();
-            case EMAIL_VERIFICATION_TOKEN -> emailSecretKey.getBytes();
-        };
+	@Override
+	public boolean validateToken(String token, TokenType type) throws JOSEException, ParseException {
+		byte[] secretKey = switch (type) {
+			case ACCESS_TOKEN -> accessSecretKey.getBytes();
+			case REFRESH_TOKEN -> refreshSecretKey.getBytes();
+			case FORGOT_PASSWORD_TOKEN -> forgotPasswordSecretKey.getBytes();
+			case EMAIL_VERIFICATION_TOKEN -> emailSecretKey.getBytes();
+		};
 
-        JWSVerifier verifier = new MACVerifier(secretKey);
-        SignedJWT signedJWT = SignedJWT.parse(token);
-        Date expirationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
-        if(!signedJWT.verify(verifier) || expirationTime.before(new Date())){
-            return false;
-        }
-        return !invalidatedTokenRepository.existsById(this.extractJti(token));
-    }
+		JWSVerifier verifier = new MACVerifier(secretKey);
+		SignedJWT signedJWT = SignedJWT.parse(token);
+		Date expirationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+		if(!signedJWT.verify(verifier) || expirationTime.before(new Date())){
+			return false;
+		}
+		return !invalidatedTokenRepository.existsById(this.extractJti(token));
+	}
 
-    @Override
-    public String extractUsername(String token) throws ParseException {
-        return  SignedJWT.parse(token).getJWTClaimsSet().getSubject();
-    }
+	@Override
+	public String extractUsername(String token) throws ParseException {
+		return  SignedJWT.parse(token).getJWTClaimsSet().getSubject();
+	}
 
-    @Override
-    public String extractJti(String token) throws ParseException {
-        return SignedJWT.parse(token).getJWTClaimsSet().getJWTID();
-    }
+	@Override
+	public String extractJti(String token) throws ParseException {
+		return SignedJWT.parse(token).getJWTClaimsSet().getJWTID();
+	}
 
-    @Override
-    public Date extractExpiration(String token) throws ParseException {
-        return SignedJWT.parse(token).getJWTClaimsSet().getExpirationTime();
-    }
+	@Override
+	public Date extractExpiration(String token) throws ParseException {
+		return SignedJWT.parse(token).getJWTClaimsSet().getExpirationTime();
+	}
 
-    @Override
-    public String disableToken(InvalidatedTokenEntity invalidatedToken) {
-        return invalidatedTokenRepository.save(invalidatedToken).getId();
-    }
+	@Override
+	public String disableToken(InvalidatedTokenEntity invalidatedToken) {
+		return invalidatedTokenRepository.save(invalidatedToken).getId();
+	}
 
 }

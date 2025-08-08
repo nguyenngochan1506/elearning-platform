@@ -14,18 +14,18 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest
 @AutoConfigureMockMvc
 public class AbsIntegrationTest {
-    @Container
-    static final PostgreSQLContainer<?> POSTGRES_SQL_CONTAINER ;
+	@Container
+	static final PostgreSQLContainer<?> POSTGRES_SQL_CONTAINER ;
 
-    static {
-        POSTGRES_SQL_CONTAINER = new PostgreSQLContainer<>("postgres:16-alpine");
-        POSTGRES_SQL_CONTAINER.start();
-    }
-    @DynamicPropertySource
-    static void configureDataSource(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", POSTGRES_SQL_CONTAINER::getJdbcUrl);
-        registry.add("spring.datasource.username", POSTGRES_SQL_CONTAINER::getUsername);
-        registry.add("spring.datasource.password", POSTGRES_SQL_CONTAINER::getPassword);
-        registry.add("spring.jpa.hibernate.ddl-auto", () -> "update");
-    }
+	static {
+		POSTGRES_SQL_CONTAINER = new PostgreSQLContainer<>("postgres:16-alpine");
+		POSTGRES_SQL_CONTAINER.start();
+	}
+	@DynamicPropertySource
+	static void configureDataSource(DynamicPropertyRegistry registry) {
+		registry.add("spring.datasource.url", POSTGRES_SQL_CONTAINER::getJdbcUrl);
+		registry.add("spring.datasource.username", POSTGRES_SQL_CONTAINER::getUsername);
+		registry.add("spring.datasource.password", POSTGRES_SQL_CONTAINER::getPassword);
+		registry.add("spring.jpa.hibernate.ddl-auto", () -> "update");
+	}
 }

@@ -7,6 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserVerifyEmailRequestDto {
-    @NotBlank(message = "error.token.not-blank")
-    private String token;
+	@NotBlank(message = "error.token.not-blank")
+	private String token;
 }

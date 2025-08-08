@@ -18,20 +18,20 @@ import java.util.stream.Collectors;
 @Builder
 @SQLRestriction("is_deleted = false")
 public class RoleEntity extends BaseEntity{
-    @Column(name = "name", nullable = false)
-    private String name;
-    @Column(name = "description", nullable = true)
-    private String description;
+	@Column(name = "name", nullable = false)
+	private String name;
+	@Column(name = "description", nullable = true)
+	private String description;
 
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<UserRoleEntity> userRoles = new HashSet<>();
+	@OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<UserRoleEntity> userRoles = new HashSet<>();
 
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<RolePermissionEntity> rolePermissions= new HashSet<>();
+	@OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<RolePermissionEntity> rolePermissions= new HashSet<>();
 
-    public Set<PermissionEntity> getPermissions() {
-        return rolePermissions.stream()
-                .map(RolePermissionEntity::getPermission)
-                .collect(Collectors.toSet());
-    }
+	public Set<PermissionEntity> getPermissions() {
+		return rolePermissions.stream()
+				.map(RolePermissionEntity::getPermission)
+				.collect(Collectors.toSet());
+	}
 }

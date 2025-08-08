@@ -8,5 +8,5 @@ import java.util.List;
 @Getter
 @Setter
 public class RoleManyDeleteRequestDto {
-    private List<Long> ids = List.of();
+	private List<Long> ids = List.of();
 }

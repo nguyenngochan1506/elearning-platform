@@ -18,25 +18,25 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Schema(name = "ErrorResponseDto", description = "Represents an error response with details about the error that occurred.")
 public class ErrorResponseDto {
-    private int status;
-    private String error;
-    private String message;
-    private Date timestamp;
-    private String path;
-    private Map<String, String> errors;
+	private int status;
+	private String error;
+	private String message;
+	private Date timestamp;
+	private String path;
+	private Map<String, String> errors;
 
-    public ErrorResponseDto(HttpStatus status, String message, WebRequest webRequest) {
-        this.status = status.value();
-        this.error = status.getReasonPhrase();
-        this.message = message;
-        this.timestamp = new Date();
-        this.path = webRequest != null ? webRequest.getDescription(false).replace("uri=", "") : null;
-    }
+	public ErrorResponseDto(HttpStatus status, String message, WebRequest webRequest) {
+		this.status = status.value();
+		this.error = status.getReasonPhrase();
+		this.message = message;
+		this.timestamp = new Date();
+		this.path = webRequest != null ? webRequest.getDescription(false).replace("uri=", "") : null;
+	}
 
-    public void addValidationError(String field, String message) {
-        if (errors == null) {
-            errors = new HashMap<>();
-        }
-        errors.put(field, message);
-    }
+	public void addValidationError(String field, String message) {
+		if (errors == null) {
+			errors = new HashMap<>();
+		}
+		errors.put(field, message);
+	}
 }

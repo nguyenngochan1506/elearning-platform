@@ -21,48 +21,48 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j(topic = "MAIL-SERVICE")
 public class MailServiceImpl  implements MailService {
-    private final MailRepository mailRepository;
-    private final JavaMailSender mailSender;
-    private final SpringTemplateEngine templateEngine;
+	private final MailRepository mailRepository;
+	private final JavaMailSender mailSender;
+	private final SpringTemplateEngine templateEngine;
 
-    @Value("${spring.mail.username}")
-    private String from;
+	@Value("${spring.mail.username}")
+	private String from;
 
-    @Override
-    public boolean sendMail(MailEntity mail,String templateName, Map<String, Object> variables) {
-        mail.setFrom(from);
-        mail.setStatus(MailStatus.PENDING);
+	@Override
+	public boolean sendMail(MailEntity mail,String templateName, Map<String, Object> variables) {
+		mail.setFrom(from);
+		mail.setStatus(MailStatus.PENDING);
 
-        //create context
-        Context context = new Context();
-        context.setVariables(variables);
+		//create context
+		Context context = new Context();
+		context.setVariables(variables);
 
-        //render template
-        String htmlContent = templateEngine.process("/email/"+templateName, context);
-        mail.setContent(htmlContent);
+		//render template
+		String htmlContent = templateEngine.process("/email/"+templateName, context);
+		mail.setContent(htmlContent);
 
-        //send mail
-        MailEntity savedMail = mailRepository.save(mail);
-        log.info("Sending mail to: {}", savedMail.getTo());
+		//send mail
+		MailEntity savedMail = mailRepository.save(mail);
+		log.info("Sending mail to: {}", savedMail.getTo());
 
-        try {
-            MimeMessage mimeMailMessage = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMailMessage, "UTF-8");
-            helper.setText(mail.getContent(), true);
-            helper.setTo(savedMail.getTo());
-            helper.setFrom(savedMail.getFrom());
-            helper.setSubject(savedMail.getSubject());
-            mailSender.send(mimeMailMessage);
+		try {
+			MimeMessage mimeMailMessage = mailSender.createMimeMessage();
+			MimeMessageHelper helper = new MimeMessageHelper(mimeMailMessage, "UTF-8");
+			helper.setText(mail.getContent(), true);
+			helper.setTo(savedMail.getTo());
+			helper.setFrom(savedMail.getFrom());
+			helper.setSubject(savedMail.getSubject());
+			mailSender.send(mimeMailMessage);
 
-            savedMail.setStatus(MailStatus.SENT);
-            log.info("Email sent to: {}", savedMail.getTo());
-        }catch (Exception e) {
-            savedMail.setStatus(MailStatus.FAILED);
-            log.error("Failed to send email to: {}", savedMail.getTo());
-            mailRepository.save(savedMail);
-            return false;
-        }
-        mailRepository.save(savedMail);
-        return true;
-    }
+			savedMail.setStatus(MailStatus.SENT);
+			log.info("Email sent to: {}", savedMail.getTo());
+		}catch (Exception e) {
+			savedMail.setStatus(MailStatus.FAILED);
+			log.error("Failed to send email to: {}", savedMail.getTo());
+			mailRepository.save(savedMail);
+			return false;
+		}
+		mailRepository.save(savedMail);
+		return true;
+	}
 }

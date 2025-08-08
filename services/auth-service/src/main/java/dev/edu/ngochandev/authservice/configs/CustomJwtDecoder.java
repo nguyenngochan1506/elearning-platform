@@ -16,35 +16,35 @@ import java.text.ParseException;
 @Component
 @RequiredArgsConstructor
 public class CustomJwtDecoder implements JwtDecoder {
-    @Value("${jwt.access-token-secret}")
-    private String jwtSecretKey;
+	@Value("${jwt.access-token-secret}")
+	private String jwtSecretKey;
 
-    private final JwtService jwtService;
-    private final InvalidatedTokenRepository invalidatedTokenRepository;
-    private NimbusJwtDecoder nimbusJwtDecoder;
+	private final JwtService jwtService;
+	private final InvalidatedTokenRepository invalidatedTokenRepository;
+	private NimbusJwtDecoder nimbusJwtDecoder;
 
-    @Override
-    public Jwt decode(String token) {
-        Jwt jwtDecoder;
-        jwtDecoder = nimbusJwtDecoder.decode(token); // check (expired, malformed, bad signature)
+	@Override
+	public Jwt decode(String token) {
+		Jwt jwtDecoder;
+		jwtDecoder = nimbusJwtDecoder.decode(token); // check (expired, malformed, bad signature)
 
-        try {
-            boolean isExists = invalidatedTokenRepository.existsById(jwtService.extractJti(token));
-            if(isExists){
-                throw new BadJwtException("error.token.invalid"); //check token logout
-            }
-            return jwtDecoder;
-        }catch (ParseException e){
-            throw new BadJwtException("error.token.invalid");
-        }
-    }
+		try {
+			boolean isExists = invalidatedTokenRepository.existsById(jwtService.extractJti(token));
+			if(isExists){
+				throw new BadJwtException("error.token.invalid"); //check token logout
+			}
+			return jwtDecoder;
+		}catch (ParseException e){
+			throw new BadJwtException("error.token.invalid");
+		}
+	}
 
-    @PostConstruct
-    public void init() {
-        SecretKeySpec secretKeySpec = new SecretKeySpec(jwtSecretKey.getBytes(), JWSAlgorithm.HS256.getName());
-        nimbusJwtDecoder = NimbusJwtDecoder
-                .withSecretKey(secretKeySpec)
-                .macAlgorithm(MacAlgorithm.HS256)
-                .build();
-    }
+	@PostConstruct
+	public void init() {
+		SecretKeySpec secretKeySpec = new SecretKeySpec(jwtSecretKey.getBytes(), JWSAlgorithm.HS256.getName());
+		nimbusJwtDecoder = NimbusJwtDecoder
+				.withSecretKey(secretKeySpec)
+				.macAlgorithm(MacAlgorithm.HS256)
+				.build();
+	}
 }

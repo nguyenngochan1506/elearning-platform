@@ -16,22 +16,22 @@ import java.util.Optional;
 
 @Repository
 public interface PermissionRepository extends JpaRepository<PermissionEntity, Long> {
-    @Query("SELECT p " +
-            "FROM PermissionEntity p " +
-            "WHERE LOWER(p.name) LIKE LOWER(:search) OR" +
-            " LOWER(p.apiPath) LIKE LOWER(:search) OR" +
-            " LOWER(p.method) LIKE LOWER(:search) OR" +
-            " LOWER(p.module) LIKE LOWER(:search)"
-    )
-    Page<PermissionEntity> findBySearch(@Param("search") String search, Pageable pageable);
-    long countByIdIn(Collection<Long> id);
+	@Query("SELECT p " +
+			"FROM PermissionEntity p " +
+			"WHERE LOWER(p.name) LIKE LOWER(:search) OR" +
+			" LOWER(p.apiPath) LIKE LOWER(:search) OR" +
+			" LOWER(p.method) LIKE LOWER(:search) OR" +
+			" LOWER(p.module) LIKE LOWER(:search)"
+	)
+	Page<PermissionEntity> findBySearch(@Param("search") String search, Pageable pageable);
+	long countByIdIn(Collection<Long> id);
 
-    @Query("SELECT DISTINCT p " +
-            "FROM PermissionEntity p " +
-            "JOIN p.rolePermissions rp " +
-            "JOIN rp.role r " +
-            "WHERE r.name IN :roleNames")
-    List<PermissionEntity> findAllByRoleNames(@Param("roleNames") Collection<String> roleNames);
+	@Query("SELECT DISTINCT p " +
+			"FROM PermissionEntity p " +
+			"JOIN p.rolePermissions rp " +
+			"JOIN rp.role r " +
+			"WHERE r.name IN :roleNames")
+	List<PermissionEntity> findAllByRoleNames(@Param("roleNames") Collection<String> roleNames);
 
-    Optional<PermissionEntity> findByApiPathAndMethod(String apiPath, HttpMethod method);
+	Optional<PermissionEntity> findByApiPathAndMethod(String apiPath, HttpMethod method);
 }

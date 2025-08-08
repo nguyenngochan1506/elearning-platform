@@ -8,11 +8,11 @@ import dev.edu.ngochandev.authservice.dtos.res.RoleDetailResponseDto;
 import dev.edu.ngochandev.authservice.dtos.res.RoleSummaryResponseDto;
 
 public interface RoleService {
-    PageResponseDto<RoleSummaryResponseDto> getAllRoles(SimpleFilterRequestDto filter);
-    RoleDetailResponseDto getRoleById(Long id);
-    Long createRole(RoleCreateRequestDto req);
+	PageResponseDto<RoleSummaryResponseDto> getAllRoles(SimpleFilterRequestDto filter);
+	RoleDetailResponseDto getRoleById(Long id);
+	Long createRole(RoleCreateRequestDto req);
 
-    Long deleteRoleById(Long id);
+	Long deleteRoleById(Long id);
 
-    void deleteManyRoles(RoleManyDeleteRequestDto req);
+	void deleteManyRoles(RoleManyDeleteRequestDto req);
 }

@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class SuccessResponseDto<T>{
-    private int status;
-    private String message;
-    private T data;
+	private int status;
+	private String message;
+	private T data;
 }

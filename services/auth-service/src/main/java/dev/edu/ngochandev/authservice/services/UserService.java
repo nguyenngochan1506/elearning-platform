@@ -9,13 +9,13 @@ import dev.edu.ngochandev.authservice.dtos.res.PageResponseDto;
 import jakarta.validation.Valid;
 
 public interface UserService {
-    PageResponseDto<AdminUserResponse> listUsers(AdvancedFilterRequestDto filter);
+	PageResponseDto<AdminUserResponse> listUsers(AdvancedFilterRequestDto filter);
 
-    Long createUser( AdminUserCreateRequestDto req);
+	Long createUser( AdminUserCreateRequestDto req);
 
-    Long deleteUser(Long id);
+	Long deleteUser(Long id);
 
-    void deleteManyUsers(UserManyDeleteRequestDto req);
+	void deleteManyUsers(UserManyDeleteRequestDto req);
 
-    Long updateUser(UserUpdateRequestDto req);
+	Long updateUser(UserUpdateRequestDto req);
 }

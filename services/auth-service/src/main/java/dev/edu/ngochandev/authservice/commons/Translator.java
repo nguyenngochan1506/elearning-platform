@@ -9,14 +9,14 @@ import java.util.Locale;
 
 @Component
 public class Translator {
-    private static ResourceBundleMessageSource messageSource;
-    @Autowired
-    public Translator(ResourceBundleMessageSource messageSource) {
-        Translator.messageSource = messageSource;
-    }
+	private static ResourceBundleMessageSource messageSource;
+	@Autowired
+	public Translator(ResourceBundleMessageSource messageSource) {
+		Translator.messageSource = messageSource;
+	}
 
-    public static String translate(String code){
-        Locale locale = LocaleContextHolder.getLocale();
-        return messageSource.getMessage(code, null, locale);
-    }
+	public static String translate(String code){
+		Locale locale = LocaleContextHolder.getLocale();
+		return messageSource.getMessage(code, null, locale);
+	}
 }

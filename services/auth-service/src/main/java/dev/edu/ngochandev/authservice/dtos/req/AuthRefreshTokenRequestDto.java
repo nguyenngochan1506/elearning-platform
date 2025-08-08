@@ -7,6 +7,6 @@ import lombok.Setter;
 @Setter
 @Getter
 public class AuthRefreshTokenRequestDto {
-    @NotBlank(message = "error.token.not-blank")
-    private String token;
+	@NotBlank(message = "error.token.not-blank")
+	private String token;
 }

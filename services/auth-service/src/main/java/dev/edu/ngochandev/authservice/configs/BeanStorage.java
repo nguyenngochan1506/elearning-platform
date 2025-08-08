@@ -9,27 +9,27 @@ import org.springframework.util.AntPathMatcher;
 
 @Configuration
 public class BeanStorage {
-    @Bean
-    public String[] publicEndpoints(){
-        return new String[] {
-                "/api/auth/register",
-                "/api/auth/authenticate",
-                "/api/auth/reset-password",
-                "/api/auth/forgot-password",
-                "/api/auth/verify-email",
-                "/swagger-ui/**",
-                "/v3/api-docs/**",
-        };
-    }
+	@Bean
+	public String[] publicEndpoints(){
+		return new String[] {
+				"/api/auth/register",
+				"/api/auth/authenticate",
+				"/api/auth/reset-password",
+				"/api/auth/forgot-password",
+				"/api/auth/verify-email",
+				"/swagger-ui/**",
+				"/v3/api-docs/**",
+		};
+	}
 
-    @Bean
-    public AntPathMatcher antPathMatcher() {
-        return new AntPathMatcher();
-    }
+	@Bean
+	public AntPathMatcher antPathMatcher() {
+		return new AntPathMatcher();
+	}
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(10);
-    }
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder(10);
+	}
 
 }

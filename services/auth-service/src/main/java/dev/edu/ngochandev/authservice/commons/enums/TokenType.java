@@ -1,8 +1,8 @@
 package dev.edu.ngochandev.authservice.commons.enums;
 
 public enum TokenType {
-    ACCESS_TOKEN,
-    FORGOT_PASSWORD_TOKEN,
-    REFRESH_TOKEN,
-    EMAIL_VERIFICATION_TOKEN,
+	ACCESS_TOKEN,
+	FORGOT_PASSWORD_TOKEN,
+	REFRESH_TOKEN,
+	EMAIL_VERIFICATION_TOKEN,
 }

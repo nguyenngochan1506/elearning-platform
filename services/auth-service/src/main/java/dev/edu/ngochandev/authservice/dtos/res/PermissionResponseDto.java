@@ -4,9 +4,9 @@ import lombok.Builder;
 
 @Builder
 public record PermissionResponseDto (
-     Long id,
-     String name,
-     String method,
-     String endpoint,
-     String module
+	Long id,
+	String name,
+	String method,
+	String endpoint,
+	String module
 ){}

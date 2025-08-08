@@ -10,13 +10,13 @@ import java.util.List;
 @Getter
 public class AdvancedFilterRequestDto extends SimpleFilterRequestDto{
 
-    private List<FilterData> filters = List.of();
-    @Getter
-    @Setter
-    public static class FilterData {
-        private String field;
-        private OperatorFilter operator;
-        private Object value;
-    }
+	private List<FilterData> filters = List.of();
+	@Getter
+	@Setter
+	public static class FilterData {
+		private String field;
+		private OperatorFilter operator;
+		private Object value;
+	}
 
 }

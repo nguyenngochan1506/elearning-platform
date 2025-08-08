@@ -10,8 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Set;
 
 public interface UserRoleRepository extends JpaRepository<UserRoleEntity, Long> {
-    @Modifying
-    @Transactional
-    @Query("UPDATE UserRoleEntity ur SET ur.isDeleted = true WHERE ur.id IN :ids AND ur.isDeleted = false")
-    void softDeleteAllByIds(@Param("ids") Set<Long> ids);
+	@Modifying
+	@Transactional
+	@Query("UPDATE UserRoleEntity ur SET ur.isDeleted = true WHERE ur.id IN :ids AND ur.isDeleted = false")
+	void softDeleteAllByIds(@Param("ids") Set<Long> ids);
 }

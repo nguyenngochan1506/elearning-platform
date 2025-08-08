@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring", uses = {PermissionMapper.class})
 public interface RoleMapper {
-    RoleSummaryResponseDto mapToSummaryResponseDto(RoleEntity roleEntity);
+	RoleSummaryResponseDto mapToSummaryResponseDto(RoleEntity roleEntity);
 
-    RoleDetailResponseDto mapToDetailResponseDto(RoleEntity roleEntity);
+	RoleDetailResponseDto mapToDetailResponseDto(RoleEntity roleEntity);
 }
