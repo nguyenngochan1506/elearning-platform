@@ -24,7 +24,7 @@ public class RoleEntity extends BaseEntity{
     private String description;
 
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<UserRoleEntity> userRoles;
+    private Set<UserRoleEntity> userRoles = new HashSet<>();
 
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<RolePermissionEntity> rolePermissions= new HashSet<>();

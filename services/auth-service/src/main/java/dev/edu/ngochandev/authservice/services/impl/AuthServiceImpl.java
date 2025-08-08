@@ -31,6 +31,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 @Slf4j(topic = "USER-SERVICE")
@@ -69,6 +70,7 @@ public class AuthServiceImpl implements AuthService {
         UserRoleEntity userRole = new UserRoleEntity();
         userRole.setRole(role);
         userRole.setUser(savedUser);
+        savedUser.setUserRoles(Set.of(userRole));
         userRoleRepository.save(userRole);
 
         //generate email verification token
