@@ -1,14 +1,14 @@
 package dev.edu.ngochandev.authservice.controllers;
 
-import dev.edu.ngochandev.authservice.commons.Translator;
 import dev.edu.ngochandev.authservice.dtos.req.RoleCreateRequestDto;
 import dev.edu.ngochandev.authservice.dtos.req.RoleManyDeleteRequestDto;
-import dev.edu.ngochandev.authservice.dtos.req.SimpleFilterRequestDto;
-import dev.edu.ngochandev.authservice.dtos.res.PageResponseDto;
+import dev.edu.ngochandev.common.dtos.req.SimpleFilterRequestDto;
 import dev.edu.ngochandev.authservice.dtos.res.RoleDetailResponseDto;
 import dev.edu.ngochandev.authservice.dtos.res.RoleSummaryResponseDto;
-import dev.edu.ngochandev.authservice.dtos.res.SuccessResponseDto;
 import dev.edu.ngochandev.authservice.services.RoleService;
+import dev.edu.ngochandev.common.dtos.res.PageResponseDto;
+import dev.edu.ngochandev.common.dtos.res.SuccessResponseDto;
+import dev.edu.ngochandev.common.i18n.Translator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.extensions.Extension;
 import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "ROLE-CONTROLLER", description = "Manages roles and their permissions")
 public class RoleController {
     private final RoleService roleService;
+    private final Translator translator;
 
     @PostMapping("/list")
     @ResponseStatus(HttpStatus.OK)
@@ -39,7 +40,7 @@ public class RoleController {
             @RequestBody @Valid SimpleFilterRequestDto filter) {
         return SuccessResponseDto.<PageResponseDto<RoleSummaryResponseDto>>builder()
                 .status(HttpStatus.OK.value())
-                .message(Translator.translate("role.list.success"))
+                .message(translator.translate("role.list.success"))
                 .data(roleService.getAllRoles(filter))
                 .build();
     }
@@ -57,7 +58,7 @@ public class RoleController {
     public SuccessResponseDto<Long> createRole(@RequestBody @Valid RoleCreateRequestDto req) {
         return SuccessResponseDto.<Long>builder()
                 .status(HttpStatus.CREATED.value())
-                .message(Translator.translate("role.create.success"))
+                .message(translator.translate("role.create.success"))
                 .data(roleService.createRole(req))
                 .build();
     }
@@ -75,7 +76,7 @@ public class RoleController {
     public SuccessResponseDto<RoleDetailResponseDto> getRoleById(@PathVariable Long id) {
         return SuccessResponseDto.<RoleDetailResponseDto>builder()
                 .status(HttpStatus.OK.value())
-                .message(Translator.translate("role.get.success"))
+                .message(translator.translate("role.get.success"))
                 .data(roleService.getRoleById(id))
                 .build();
     }
@@ -93,7 +94,7 @@ public class RoleController {
     public SuccessResponseDto<Long> deleteRoleById(@PathVariable Long id) {
         return SuccessResponseDto.<Long>builder()
                 .status(HttpStatus.OK.value())
-                .message(Translator.translate("role.delete.success"))
+                .message(translator.translate("role.delete.success"))
                 .data(roleService.deleteRoleById(id))
                 .build();
     }
@@ -112,7 +113,7 @@ public class RoleController {
         roleService.deleteManyRoles(req);
         return SuccessResponseDto.<Void>builder()
                 .status(HttpStatus.OK.value())
-                .message(Translator.translate("role.delete.success"))
+                .message(translator.translate("role.delete.success"))
                 .build();
     }
 }

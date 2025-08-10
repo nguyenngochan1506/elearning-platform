@@ -1,11 +1,11 @@
 package dev.edu.ngochandev.authservice.controllers;
 
 import com.nimbusds.jose.JOSEException;
-import dev.edu.ngochandev.authservice.commons.Translator;
 import dev.edu.ngochandev.authservice.dtos.req.*;
-import dev.edu.ngochandev.authservice.dtos.res.SuccessResponseDto;
 import dev.edu.ngochandev.authservice.dtos.res.TokenResponseDto;
 import dev.edu.ngochandev.authservice.services.AuthService;
+import dev.edu.ngochandev.common.dtos.res.SuccessResponseDto;
+import dev.edu.ngochandev.common.i18n.Translator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.extensions.Extension;
 import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService userService;
+    private final Translator translator;
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
@@ -31,7 +32,7 @@ public class AuthController {
     public SuccessResponseDto<Long> register(@RequestBody @Valid UserRegisterRequestDto req) throws JOSEException {
         return SuccessResponseDto.<Long>builder()
                 .status(HttpStatus.CREATED.value())
-                .message(Translator.translate("user.register.success"))
+                .message(translator.translate("user.register.success"))
                 .data(userService.register(req))
                 .build();
     }
@@ -44,7 +45,7 @@ public class AuthController {
             throws JOSEException, ParseException {
         return SuccessResponseDto.<TokenResponseDto>builder()
                 .status(HttpStatus.OK.value())
-                .message(Translator.translate("user.authenticate.success"))
+                .message(translator.translate("user.authenticate.success"))
                 .data(userService.authenticate(req))
                 .build();
     }
@@ -62,7 +63,7 @@ public class AuthController {
     public SuccessResponseDto<Long> changePassword(@RequestBody @Valid UserChangePasswordRequestDto req) {
         return SuccessResponseDto.<Long>builder()
                 .status(HttpStatus.OK.value())
-                .message(Translator.translate("user.change-password.success"))
+                .message(translator.translate("user.change-password.success"))
                 .data(userService.changePassword(req))
                 .build();
     }
@@ -81,7 +82,7 @@ public class AuthController {
             throws JOSEException, ParseException {
         return SuccessResponseDto.<TokenResponseDto>builder()
                 .status(HttpStatus.OK.value())
-                .message(Translator.translate("user.refresh-token.success"))
+                .message(translator.translate("user.refresh-token.success"))
                 .data(userService.refreshToken(req))
                 .build();
     }
@@ -100,7 +101,7 @@ public class AuthController {
             throws ParseException, JOSEException {
         return SuccessResponseDto.<String>builder()
                 .status(HttpStatus.OK.value())
-                .message(Translator.translate("user.logout.success"))
+                .message(translator.translate("user.logout.success"))
                 .data(userService.logout(req))
                 .build();
     }
@@ -115,7 +116,7 @@ public class AuthController {
             throws ParseException, JOSEException {
         return SuccessResponseDto.<Boolean>builder()
                 .status(HttpStatus.OK.value())
-                .message(Translator.translate("user.forgot-password.success"))
+                .message(translator.translate("user.forgot-password.success"))
                 .data(userService.forgotPassword(req))
                 .build();
     }
@@ -128,7 +129,7 @@ public class AuthController {
             throws ParseException, JOSEException {
         return SuccessResponseDto.<Boolean>builder()
                 .status(HttpStatus.OK.value())
-                .message(Translator.translate("user.reset-password.success"))
+                .message(translator.translate("user.reset-password.success"))
                 .data(userService.resetPassword(req))
                 .build();
     }
@@ -141,7 +142,7 @@ public class AuthController {
             throws ParseException, JOSEException {
         return SuccessResponseDto.<Boolean>builder()
                 .status(HttpStatus.OK.value())
-                .message(Translator.translate("user.verify-email.success"))
+                .message(translator.translate("user.verify-email.success"))
                 .data(userService.verifyEmail(req))
                 .build();
     }

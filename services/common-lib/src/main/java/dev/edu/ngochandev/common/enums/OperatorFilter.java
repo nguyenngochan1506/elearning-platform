@@ -1,4 +1,4 @@
-package dev.edu.ngochandev.authservice.commons.enums;
+package dev.edu.ngochandev.common.enums;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;

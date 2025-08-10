@@ -11,6 +11,6 @@ public class UserProfileController {
     @PutMapping()
     @ResponseStatus(HttpStatus.OK)
     public SuccessResponseDto<String> updateProfile(@RequestBody UserProfileUpdateRequestDto req) {
-
+        return null;
     }
 }

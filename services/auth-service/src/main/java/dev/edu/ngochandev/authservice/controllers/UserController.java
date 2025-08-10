@@ -1,14 +1,14 @@
 package dev.edu.ngochandev.authservice.controllers;
 
-import dev.edu.ngochandev.authservice.commons.Translator;
 import dev.edu.ngochandev.authservice.dtos.req.AdminUserCreateRequestDto;
-import dev.edu.ngochandev.authservice.dtos.req.AdvancedFilterRequestDto;
+import dev.edu.ngochandev.common.dtos.req.AdvancedFilterRequestDto;
 import dev.edu.ngochandev.authservice.dtos.req.UserManyDeleteRequestDto;
 import dev.edu.ngochandev.authservice.dtos.req.UserUpdateRequestDto;
 import dev.edu.ngochandev.authservice.dtos.res.AdminUserResponse;
-import dev.edu.ngochandev.authservice.dtos.res.PageResponseDto;
-import dev.edu.ngochandev.authservice.dtos.res.SuccessResponseDto;
 import dev.edu.ngochandev.authservice.services.UserService;
+import dev.edu.ngochandev.common.dtos.res.PageResponseDto;
+import dev.edu.ngochandev.common.dtos.res.SuccessResponseDto;
+import dev.edu.ngochandev.common.i18n.Translator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.extensions.Extension;
 import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "USER-CONTROLLER", description = "User management operations")
 public class UserController {
     private final UserService userService;
+    private final Translator translator;
 
     @PostMapping("/list")
     @ResponseStatus(HttpStatus.OK)
@@ -39,7 +40,7 @@ public class UserController {
             @RequestBody @Valid AdvancedFilterRequestDto filter) {
         return SuccessResponseDto.<PageResponseDto<AdminUserResponse>>builder()
                 .status(HttpStatus.OK.value())
-                .message(Translator.translate("user.get.success"))
+                .message(translator.translate("user.get.success"))
                 .data(userService.listUsers(filter))
                 .build();
     }
@@ -57,7 +58,7 @@ public class UserController {
     public SuccessResponseDto<Long> createUser(@RequestBody @Valid AdminUserCreateRequestDto req) {
         return SuccessResponseDto.<Long>builder()
                 .status(HttpStatus.CREATED.value())
-                .message(Translator.translate("user.create.success"))
+                .message(translator.translate("user.create.success"))
                 .data(userService.createUser(req))
                 .build();
     }
@@ -75,7 +76,7 @@ public class UserController {
     public SuccessResponseDto<Long> deleteUser(@PathVariable Long id) {
         return SuccessResponseDto.<Long>builder()
                 .status(HttpStatus.OK.value())
-                .message(Translator.translate("user.delete.success"))
+                .message(translator.translate("user.delete.success"))
                 .data(userService.deleteUser(id))
                 .build();
     }
@@ -94,7 +95,7 @@ public class UserController {
         userService.deleteManyUsers(req);
         return SuccessResponseDto.<Void>builder()
                 .status(HttpStatus.OK.value())
-                .message(Translator.translate("user.delete.success"))
+                .message(translator.translate("user.delete.success"))
                 .build();
     }
 
@@ -111,7 +112,7 @@ public class UserController {
     public SuccessResponseDto<Long> updateUser(@RequestBody @Valid UserUpdateRequestDto req) {
         return SuccessResponseDto.<Long>builder()
                 .status(HttpStatus.OK.value())
-                .message(Translator.translate("user.update.success"))
+                .message(translator.translate("user.update.success"))
                 .data(userService.updateUser(req))
                 .build();
     }

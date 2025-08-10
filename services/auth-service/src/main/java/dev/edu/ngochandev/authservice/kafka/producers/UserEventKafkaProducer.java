@@ -1,6 +1,6 @@
 package dev.edu.ngochandev.authservice.kafka.producers;
 
-import dev.edu.ngochandev.authservice.kafka.events.UserRegisteredEvent;
+import dev.edu.ngochandev.common.events.UserRegisteredEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;

@@ -14,8 +14,8 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.trusted.packages: "*"
+        spring.json.trusted.packages: "dev.edu.ngochandev.events.*"
         spring.json.use.type.headers: false
-        spring.json.value.default.type: dev.edu.ngochandev.socialservice.kafka.events.UserRegisteredEvent
+        spring.json.value.default.type: dev.edu.ngochandev.events.UserRegisteredEvent
 server:
   port: 8081

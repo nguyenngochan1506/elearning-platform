@@ -1,7 +1,7 @@
 package dev.edu.ngochandev.authservice.specifications;
 
 import dev.edu.ngochandev.authservice.commons.MyUtils;
-import dev.edu.ngochandev.authservice.dtos.req.AdvancedFilterRequestDto;
+import dev.edu.ngochandev.common.dtos.req.AdvancedFilterRequestDto;
 import dev.edu.ngochandev.authservice.entities.UserEntity;
 import dev.edu.ngochandev.authservice.exceptions.FilterDataException;
 import jakarta.persistence.criteria.*;

@@ -1,9 +1,8 @@
-package dev.edu.ngochandev.authservice.dtos.req;
+package dev.edu.ngochandev.common.dtos.req;
 
-import dev.edu.ngochandev.authservice.commons.enums.OperatorFilter;
-
-import java.io.Serializable;
 import java.util.List;
+
+import dev.edu.ngochandev.common.enums.OperatorFilter;
 import lombok.Getter;
 import lombok.Setter;
 

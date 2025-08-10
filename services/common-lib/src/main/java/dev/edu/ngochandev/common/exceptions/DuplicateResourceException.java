@@ -1,4 +1,4 @@
-package dev.edu.ngochandev.authservice.exceptions;
+package dev.edu.ngochandev.common.exceptions;
 
 public class DuplicateResourceException extends RuntimeException {
     public DuplicateResourceException(String message) {

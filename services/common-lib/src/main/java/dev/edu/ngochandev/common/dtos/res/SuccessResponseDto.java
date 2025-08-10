@@ -1,4 +1,4 @@
-package dev.edu.ngochandev.authservice.dtos.res;
+package dev.edu.ngochandev.common.dtos.res;
 
 import lombok.Builder;
 import lombok.Getter;

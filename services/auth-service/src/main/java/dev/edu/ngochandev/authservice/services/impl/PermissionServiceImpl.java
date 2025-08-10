@@ -1,14 +1,15 @@
 package dev.edu.ngochandev.authservice.services.impl;
 
 import dev.edu.ngochandev.authservice.commons.MyUtils;
-import dev.edu.ngochandev.authservice.dtos.req.SimpleFilterRequestDto;
-import dev.edu.ngochandev.authservice.dtos.res.PageResponseDto;
+import dev.edu.ngochandev.common.dtos.req.SimpleFilterRequestDto;
 import dev.edu.ngochandev.authservice.dtos.res.PermissionResponseDto;
 import dev.edu.ngochandev.authservice.entities.PermissionEntity;
 import dev.edu.ngochandev.authservice.mappers.PermissionMapper;
 import dev.edu.ngochandev.authservice.repositories.PermissionRepository;
 import dev.edu.ngochandev.authservice.services.PermissionService;
 import java.util.List;
+
+import dev.edu.ngochandev.common.dtos.res.PageResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

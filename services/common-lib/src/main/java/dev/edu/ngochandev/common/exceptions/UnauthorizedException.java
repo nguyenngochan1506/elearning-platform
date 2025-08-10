@@ -1,4 +1,4 @@
-package dev.edu.ngochandev.authservice.exceptions;
+package dev.edu.ngochandev.common.exceptions;
 
 public class UnauthorizedException extends RuntimeException {
     public UnauthorizedException(String message) {

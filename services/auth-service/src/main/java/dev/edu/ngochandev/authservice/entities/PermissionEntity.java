@@ -1,6 +1,5 @@
 package dev.edu.ngochandev.authservice.entities;
 
-import dev.edu.ngochandev.authservice.commons.Translator;
 import dev.edu.ngochandev.authservice.commons.enums.HttpMethod;
 import jakarta.persistence.*;
 import java.util.HashSet;
@@ -35,7 +34,4 @@ public class PermissionEntity extends BaseEntity {
         this.setId(id);
     }
 
-    public String getName() {
-        return Translator.translate(this.name);
-    }
 }

@@ -16,6 +16,7 @@
     <modules>
         <module>services/auth-service</module>
         <module>services/social-service</module>
+        <module>services/common-lib</module>
     </modules>
 
     <properties>
@@ -50,12 +51,6 @@
         </dependencies>
     </dependencyManagement>
     <dependencies>
-        <!--        Maptruct-->
-        <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct</artifactId>
-            <version>${org.mapstruct.version}</version>
-        </dependency>
         <!--        Lombok-->
         <dependency>
             <groupId>org.projectlombok</groupId>

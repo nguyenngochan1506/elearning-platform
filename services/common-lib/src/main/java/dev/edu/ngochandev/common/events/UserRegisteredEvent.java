@@ -1,4 +1,4 @@
-package dev.edu.ngochandev.authservice.kafka.events;
+package dev.edu.ngochandev.common.events;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

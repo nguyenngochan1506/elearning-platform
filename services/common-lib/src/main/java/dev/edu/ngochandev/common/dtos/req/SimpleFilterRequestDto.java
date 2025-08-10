@@ -1,4 +1,4 @@
-package dev.edu.ngochandev.authservice.dtos.req;
+package dev.edu.ngochandev.common.dtos.req;
 
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;

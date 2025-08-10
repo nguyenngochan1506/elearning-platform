@@ -1,9 +1,9 @@
 package dev.edu.ngochandev.authservice.configs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.edu.ngochandev.authservice.commons.Translator;
-import dev.edu.ngochandev.authservice.dtos.res.ErrorResponseDto;
 import dev.edu.ngochandev.authservice.exceptions.CustomAccessDeniedHandler;
+import dev.edu.ngochandev.common.dtos.res.ErrorResponseDto;
+import dev.edu.ngochandev.common.i18n.Translator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +24,7 @@ public class SecurityConfig {
     private final PermissionFilter permissionFilter;
     private final String[] publicEndpoints;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final Translator translator;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -65,9 +66,9 @@ public class SecurityConfig {
         return (request, response, authException) -> {
             String message = authException.getMessage();
             if (message.contains("Jwt expired")) {
-                message = Translator.translate("error.token.expired");
+                message = translator.translate("error.token.expired");
             } else {
-                message = Translator.translate("error.token.invalid");
+                message = translator.translate("error.token.invalid");
             }
             ErrorResponseDto errorResponse = new ErrorResponseDto(HttpStatus.UNAUTHORIZED, message, null);
             response.setContentType("application/json");

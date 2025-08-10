@@ -1,8 +1,8 @@
 package dev.edu.ngochandev.socialservice.kafka.consumers;
 
 
+import dev.edu.ngochandev.common.events.UserRegisteredEvent;
 import dev.edu.ngochandev.socialservice.entities.UserProfileEntity;
-import dev.edu.ngochandev.socialservice.kafka.events.UserRegisteredEvent;
 import dev.edu.ngochandev.socialservice.mappers.UserProfileMapper;
 import dev.edu.ngochandev.socialservice.repositories.UserProfileRepository;
 import lombok.RequiredArgsConstructor;

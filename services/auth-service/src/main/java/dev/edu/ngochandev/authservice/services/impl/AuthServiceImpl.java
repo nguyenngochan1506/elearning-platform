@@ -8,10 +8,10 @@ import dev.edu.ngochandev.authservice.commons.enums.UserStatus;
 import dev.edu.ngochandev.authservice.dtos.req.*;
 import dev.edu.ngochandev.authservice.dtos.res.TokenResponseDto;
 import dev.edu.ngochandev.authservice.entities.*;
-import dev.edu.ngochandev.authservice.exceptions.DuplicateResourceException;
-import dev.edu.ngochandev.authservice.exceptions.ResourceNotFoundException;
-import dev.edu.ngochandev.authservice.exceptions.UnauthorizedException;
-import dev.edu.ngochandev.authservice.kafka.events.UserRegisteredEvent;
+import dev.edu.ngochandev.common.exceptions.DuplicateResourceException;
+import dev.edu.ngochandev.common.exceptions.ResourceNotFoundException;
+import dev.edu.ngochandev.common.exceptions.UnauthorizedException;
+import dev.edu.ngochandev.common.events.UserRegisteredEvent;
 import dev.edu.ngochandev.authservice.mappers.UserMapper;
 import dev.edu.ngochandev.authservice.repositories.InvalidatedTokenRepository;
 import dev.edu.ngochandev.authservice.repositories.RoleRepository;
@@ -26,6 +26,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import dev.edu.ngochandev.common.i18n.Translator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,7 +41,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final InvalidatedTokenRepository invalidatedTokenRepository;

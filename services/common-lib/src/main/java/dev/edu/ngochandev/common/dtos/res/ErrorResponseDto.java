@@ -1,7 +1,6 @@
-package dev.edu.ngochandev.authservice.dtos.res;
+package dev.edu.ngochandev.common.dtos.res;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,9 +14,6 @@ import org.springframework.web.context.request.WebRequest;
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Schema(
-        name = "ErrorResponseDto",
-        description = "Represents an error response with details about the error that occurred.")
 public class ErrorResponseDto {
     private int status;
     private String error;

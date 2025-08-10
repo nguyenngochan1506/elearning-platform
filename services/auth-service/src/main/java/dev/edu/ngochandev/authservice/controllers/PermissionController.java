@@ -1,11 +1,11 @@
 package dev.edu.ngochandev.authservice.controllers;
 
-import dev.edu.ngochandev.authservice.commons.Translator;
-import dev.edu.ngochandev.authservice.dtos.req.SimpleFilterRequestDto;
-import dev.edu.ngochandev.authservice.dtos.res.PageResponseDto;
+import dev.edu.ngochandev.common.dtos.req.SimpleFilterRequestDto;
 import dev.edu.ngochandev.authservice.dtos.res.PermissionResponseDto;
-import dev.edu.ngochandev.authservice.dtos.res.SuccessResponseDto;
 import dev.edu.ngochandev.authservice.services.PermissionService;
+import dev.edu.ngochandev.common.dtos.res.PageResponseDto;
+import dev.edu.ngochandev.common.dtos.res.SuccessResponseDto;
+import dev.edu.ngochandev.common.i18n.Translator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.extensions.Extension;
 import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "PERMISSION-CONTROLLER", description = "Manages permissions for users and roles")
 public class PermissionController {
     private final PermissionService permissionService;
+    private final Translator translator;
 
     @PostMapping("/list")
     @ResponseStatus(HttpStatus.OK)
@@ -37,7 +38,7 @@ public class PermissionController {
         return SuccessResponseDto.<PageResponseDto<PermissionResponseDto>>builder()
                 .status(HttpStatus.OK.value())
                 .data(permissionService.getAllPermissions(filter))
-                .message(Translator.translate("permission.list.success"))
+                .message(translator.translate("permission.list.success"))
                 .build();
     }
 }
