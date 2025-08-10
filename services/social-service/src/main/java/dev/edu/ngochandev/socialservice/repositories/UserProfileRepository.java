@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserProfileRepository extends Neo4jRepository<UserProfileEntity, String> {
+    boolean existsByUserId(Long userId);
 }

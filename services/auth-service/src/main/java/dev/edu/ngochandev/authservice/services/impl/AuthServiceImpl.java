@@ -11,6 +11,7 @@ import dev.edu.ngochandev.authservice.entities.*;
 import dev.edu.ngochandev.authservice.exceptions.DuplicateResourceException;
 import dev.edu.ngochandev.authservice.exceptions.ResourceNotFoundException;
 import dev.edu.ngochandev.authservice.exceptions.UnauthorizedException;
+import dev.edu.ngochandev.authservice.kafka.events.UserRegisteredEvent;
 import dev.edu.ngochandev.authservice.mappers.UserMapper;
 import dev.edu.ngochandev.authservice.repositories.InvalidatedTokenRepository;
 import dev.edu.ngochandev.authservice.repositories.RoleRepository;
@@ -28,6 +29,7 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +46,7 @@ public class AuthServiceImpl implements AuthService {
     private final MailService mailService;
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Value("${app.frontend.main-url}")
     private String frontendUrl;
@@ -87,6 +90,9 @@ public class AuthServiceImpl implements AuthService {
         mail.setType(MailType.EMAIL_VERIFICATION);
         mailService.sendMail(mail, "email-verification-mail", variables);
 
+        // publish user registered event
+        UserRegisteredEvent userRegisteredEvent = new UserRegisteredEvent(savedUser.getId(), savedUser.getFullName());
+        eventPublisher.publishEvent(userRegisteredEvent);
         return savedUser.getId();
     }
 
