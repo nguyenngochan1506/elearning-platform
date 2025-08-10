@@ -6,6 +6,7 @@ import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Property;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,7 @@ public class UserProfileEntity extends BaseNodeEntity{
     private String avatar;
 
     @Property("date_of_birth")
-    private String dateOfBirth;
+    private LocalDate dateOfBirth;
 
     @Property("phone_number")
     private String phoneNumber;

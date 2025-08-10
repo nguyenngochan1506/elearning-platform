@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 @Setter
 public class ConnectionRelation {
     @RelationshipId
-    @Property("id")
     private Long id;
 
     @Property("initiator_user_id")
