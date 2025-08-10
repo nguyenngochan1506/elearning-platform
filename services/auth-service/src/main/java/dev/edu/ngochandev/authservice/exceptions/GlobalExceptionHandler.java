@@ -16,7 +16,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponseDto handleGlobalException(Exception ex, WebRequest req) {
-        System.out.println(ex.getClass());
         String message = ex.getMessage() != null ? ex.getMessage() : "An unexpected error occurred";
         return new ErrorResponseDto(HttpStatus.INTERNAL_SERVER_ERROR, message, req);
     }

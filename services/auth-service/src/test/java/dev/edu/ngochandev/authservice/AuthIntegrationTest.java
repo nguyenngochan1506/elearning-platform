@@ -31,7 +31,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 @Slf4j(topic = "USER-INTEGRATION-TEST")
-public class AuthIntegrationTest extends AbsIntegrationTest {
+class AuthIntegrationTest extends AbsIntegrationTest {
     private final ObjectMapper objectMapper;
     private final MockMvc mockMvc;
     private final UserRepository userRepository;

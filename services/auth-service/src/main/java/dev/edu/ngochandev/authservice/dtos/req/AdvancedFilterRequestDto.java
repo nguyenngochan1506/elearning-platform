@@ -1,13 +1,15 @@
 package dev.edu.ngochandev.authservice.dtos.req;
 
 import dev.edu.ngochandev.authservice.commons.enums.OperatorFilter;
+
+import java.io.Serializable;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
 @Setter
 @Getter
-public class AdvancedFilterRequestDto extends SimpleFilterRequestDto {
+public class AdvancedFilterRequestDto extends SimpleFilterRequestDto  {
 
     private List<FilterData> filters = List.of();
 

@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.util.StringUtils;
 
 public class UserSpecification implements Specification<UserEntity> {
@@ -41,6 +42,10 @@ public class UserSpecification implements Specification<UserEntity> {
                 try {
                     field = filter.getField();
                     fieldType = root.get(field).getJavaType();
+                    if (fieldType == null) {
+                        throw new FilterDataException(String.format(
+                                "Invalid filter field: %s does not exist in UserEntity", field));
+                    }
 
                     if (filter.getValue().getClass().isAssignableFrom(fieldType)
                             || fieldType.isAssignableFrom(List.class)) {
@@ -82,7 +87,7 @@ public class UserSpecification implements Specification<UserEntity> {
                             }
                         }
                     }
-                } catch (org.springframework.orm.jpa.JpaSystemException e) {
+                } catch (JpaSystemException e) {
                     throw new FilterDataException(String.format(
                             "Invalid filter value for field: %s must be of type %s or List<%s>",
                             field, fieldType.getSimpleName(), fieldType.getSimpleName()));

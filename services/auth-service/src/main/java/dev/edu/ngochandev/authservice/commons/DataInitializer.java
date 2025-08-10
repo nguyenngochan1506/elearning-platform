@@ -58,7 +58,7 @@ public class DataInitializer implements CommandLineRunner {
         log.info("===== Data Initialization Finished =====");
     }
 
-    private void synchronizePermissionsFromFile() {
+    private void synchronizePermissionsFromFile() throws RuntimeException {
         log.info("Step 1: Synchronizing permissions from 'permissions.json'...");
         try (InputStream inputStream = new ClassPathResource("migrations/permissions.json").getInputStream()) {
             List<PermissionMigrationDto> permissionsFromFile =
@@ -157,7 +157,7 @@ public class DataInitializer implements CommandLineRunner {
 
             return permissionRepository.findAll().stream()
                     .filter(p -> defaultPermissionKeys.contains(p.getMethod().name() + ":" + p.getApiPath()))
-                    .collect(Collectors.toList());
+                    .toList();
         } catch (Exception e) {
             log.error("FATAL: Could not read 'permissions.json' to determine default permissions.", e);
             return List.of();
@@ -180,7 +180,7 @@ public class DataInitializer implements CommandLineRunner {
                     assignment.setPermission(p);
                     return assignment;
                 })
-                .collect(Collectors.toList());
+                .toList();
 
         if (!newAssignments.isEmpty()) {
             rolePermissionRepository.saveAll(newAssignments);

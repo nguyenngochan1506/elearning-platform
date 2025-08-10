@@ -141,7 +141,7 @@ public class UserServiceImpl implements UserService {
             }
             // get current user roles
             List<UserRoleEntity> currentUserRoles = userRoleRepository.findAllById(
-                    user.getUserRoles().stream().map(BaseEntity::getId).collect(Collectors.toList()));
+                    user.getUserRoles().stream().map(BaseEntity::getId).toList());
             Set<Long> currentRoleIds = currentUserRoles.stream()
                     .map(userRole -> userRole.getRole().getId())
                     .collect(Collectors.toSet());
