@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: social-service
+  neo4j:
+    uri: bolt://localhost:7687
+    authentication:
+      username: neo4j
+      password: ${NEO4J_PASSWORD}
+
+server:
+  port: 8081

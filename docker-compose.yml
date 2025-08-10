@@ -20,9 +20,9 @@ services:
     networks:
       - auth-network
 
-  profile-db:
+  social-db:
     image: neo4j:5.26.10-community-ubi9
-    container_name: profile-db
+    container_name: social-db
     environment:
       NEO4J_AUTH: ${NEO4J_AUTH}
     ports:
@@ -30,12 +30,12 @@ services:
       - "7687:7687"
     restart: always
     volumes:
-      - ./data/profile/data:/data
-      - ./data/profile/logs:/logs
-      - ./data/profile/plugins:/plugins
-      - ./data/profile/conf:/conf
+      - ./data/social/data:/data
+      - ./data/social/logs:/logs
+      - ./data/social/plugins:/plugins
+      - ./data/social/conf:/conf
     networks:
-      - profile-network
+      - social-network
     healthcheck:
       test: [ "CMD-SHELL", "cypher-shell -u neo4j -p ${NEO4J_AUTH} 'RETURN 1'" ]
       interval: 10s
@@ -45,5 +45,5 @@ services:
 networks:
   auth-network:
     driver: bridge
-  profile-network:
+  social-network:
     driver: bridge
