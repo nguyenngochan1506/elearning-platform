@@ -75,6 +75,7 @@ public class JwtServiceImpl implements JwtService {
                 .issuer(issuer)
                 .jwtID(UUID.randomUUID().toString())
                 .claim("scope", this.buildScope(user))
+                .claim("userId", user.getId())
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
