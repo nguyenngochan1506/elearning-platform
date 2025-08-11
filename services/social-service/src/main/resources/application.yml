@@ -14,8 +14,15 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.trusted.packages: "dev.edu.ngochandev.events.*"
+        spring.json.trusted.packages: "dev.edu.ngochandev.common.events.*"
         spring.json.use.type.headers: false
-        spring.json.value.default.type: dev.edu.ngochandev.events.UserRegisteredEvent
+        spring.json.value.default.type: dev.edu.ngochandev.common.events.UserRegisteredEvent
 server:
   port: 8081
+
+openapi:
+  service:
+    api-docs: social-service
+    server: http://localhost:${server.port}
+    title: Social Service
+    version: 1.0.0

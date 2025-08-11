@@ -1,5 +1,20 @@
 spring:
   application:
     name: gateway-service
+
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: auth-service
+              uri: http://localhost:8080
+              predicates:
+                - Path=/api/auth/**, /api/v1/users/**, /api/v1/roles/**, /api/v1/permissions/**, /swagger-ui/**, /v3/api-docs/auth-service/**
+            - id: social-service
+              uri: http://localhost:8081
+              predicates:
+                - Path=/api/v1/user-profiles/**
+
 server:
   port: 8888
