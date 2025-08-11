@@ -1,0 +1,15 @@
+package dev.edu.ngochandev.gatewayservice.repositories;
+
+import dev.edu.ngochandev.common.dtos.res.SuccessResponseDto;
+import dev.edu.ngochandev.gatewayservice.dtos.req.AuthVerifyTokenRequestDto;
+import jakarta.validation.Valid;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.service.annotation.PostExchange;
+import reactor.core.publisher.Mono;
+
+public interface AuthClient {
+
+    @PostExchange(value = "/api/auth/verify-token", contentType = MediaType.APPLICATION_JSON_VALUE)
+    Mono<SuccessResponseDto<Boolean>> verifyToken(@RequestBody @Valid AuthVerifyTokenRequestDto req);
+}

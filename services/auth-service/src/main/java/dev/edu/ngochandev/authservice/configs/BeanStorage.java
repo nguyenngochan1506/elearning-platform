@@ -18,6 +18,7 @@ public class BeanStorage {
             "/api/auth/verify-email",
             "/swagger-ui/**",
             "/v3/api-docs/**",
+                "/api/auth/verify-token"
         };
     }
 

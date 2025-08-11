@@ -237,6 +237,15 @@ public class AuthServiceImpl implements AuthService {
         return true;
     }
 
+    @Override
+    public Boolean verifyToken(AuthVerifyTokenRequestDto req)  {
+        try{
+            return jwtService.validateToken(req.getToken(), TokenType.ACCESS_TOKEN);
+        }catch (Exception e){
+            return false;
+        }
+    }
+
     private UserEntity getUserById(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("error.user.not-found"));
     }

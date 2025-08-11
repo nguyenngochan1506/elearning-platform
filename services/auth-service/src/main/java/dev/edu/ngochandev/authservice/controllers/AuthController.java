@@ -1,6 +1,7 @@
 package dev.edu.ngochandev.authservice.controllers;
 
 import com.nimbusds.jose.JOSEException;
+import dev.edu.ngochandev.authservice.dtos.req.AuthVerifyTokenRequestDto;
 import dev.edu.ngochandev.authservice.dtos.req.*;
 import dev.edu.ngochandev.authservice.dtos.res.TokenResponseDto;
 import dev.edu.ngochandev.authservice.services.AuthService;
@@ -24,6 +25,21 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final AuthService userService;
     private final Translator translator;
+
+    @PostMapping("/verify-token")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(
+            summary = "Verify Token",
+            description = "Verifies the provided authentication token, note: this endpoint must be called by the gateway service to verify the token before allowing access to protected resources."
+    )
+    @SecurityRequirements
+    public SuccessResponseDto<Boolean> verifyToken(@RequestBody @Valid AuthVerifyTokenRequestDto req)  {
+        return SuccessResponseDto.<Boolean>builder()
+                .status(HttpStatus.OK.value())
+                .message(translator.translate("user.verify-token.success"))
+                .data(userService.verifyToken(req))
+                .build();
+    }
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
