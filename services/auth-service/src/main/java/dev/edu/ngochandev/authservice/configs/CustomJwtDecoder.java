@@ -1,12 +1,15 @@
 package dev.edu.ngochandev.authservice.configs;
 
 import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.SignedJWT;
 import dev.edu.ngochandev.authservice.repositories.InvalidatedTokenRepository;
 import dev.edu.ngochandev.authservice.services.JwtService;
 import jakarta.annotation.PostConstruct;
 import java.text.ParseException;
 import javax.crypto.spec.SecretKeySpec;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.*;
@@ -14,35 +17,17 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class CustomJwtDecoder implements JwtDecoder {
-    @Value("${jwt.access-token-secret}")
-    private String jwtSecretKey;
-
-    private final JwtService jwtService;
-    private final InvalidatedTokenRepository invalidatedTokenRepository;
-    private NimbusJwtDecoder nimbusJwtDecoder;
-
     @Override
     public Jwt decode(String token) {
-        Jwt jwtDecoder;
-        jwtDecoder = nimbusJwtDecoder.decode(token); // check (expired, malformed, bad signature)
-
         try {
-            boolean isExists = invalidatedTokenRepository.existsById(jwtService.extractJti(token));
-            if (isExists) {
-                throw new BadJwtException("error.token.invalid"); // check token logout
-            }
-            return jwtDecoder;
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            return new Jwt(token, signedJWT.getJWTClaimsSet().getIssueTime().toInstant(),
+                    signedJWT.getJWTClaimsSet().getExpirationTime().toInstant(),
+                    signedJWT.getHeader().toJSONObject(), signedJWT.getJWTClaimsSet().getClaims());
         } catch (ParseException e) {
             throw new BadJwtException("error.token.invalid");
         }
-    }
-
-    @PostConstruct
-    public void init() {
-        SecretKeySpec secretKeySpec = new SecretKeySpec(jwtSecretKey.getBytes(), JWSAlgorithm.HS256.getName());
-        nimbusJwtDecoder = NimbusJwtDecoder.withSecretKey(secretKeySpec)
-                .macAlgorithm(MacAlgorithm.HS256)
-                .build();
     }
 }

@@ -18,8 +18,8 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 @Component
 @Slf4j
@@ -28,8 +28,23 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     private final AuthService authService;
     private final ObjectMapper mapper;
 
+    private static final String[] publicEndpoints = {
+            "/api/auth/register",
+            "/api/auth/authenticate",
+            "/api/auth/reset-password",
+            "/api/auth/forgot-password",
+            "/api/auth/verify-email",
+            "/swagger-ui/.*",
+            "/v3/api-docs/.*",
+            "/api/auth/verify-token"
+    };
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        if(isPublicEndpoint(exchange.getRequest())){
+            return chain.filter(exchange);
+        }
+
         //get token from the request header
         List<String> bearerToken = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION);
         if(CollectionUtils.isEmpty(bearerToken)) {
@@ -71,5 +86,10 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             log.error("Error serializing error response", e);
         }
         return res.writeWith(Mono.just(res.bufferFactory().wrap("Unauthorized".getBytes())));
+    }
+
+    public boolean isPublicEndpoint(ServerHttpRequest req){
+        return Arrays.stream(publicEndpoints)
+                .anyMatch(endpoint -> req.getURI().getPath().matches(endpoint));
     }
 }
