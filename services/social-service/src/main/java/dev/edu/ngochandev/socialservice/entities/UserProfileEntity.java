@@ -8,7 +8,6 @@ import org.springframework.data.neo4j.core.schema.Relationship;
 
 import java.time.LocalDate;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 @Node("UserProfile")
@@ -34,7 +33,7 @@ public class UserProfileEntity extends BaseNodeEntity{
     private String school;
 
     @Property("social_media_links")
-    private Map<String, String> socialMediaLinks;
+    private String socialMediaLinks;
 
     @Relationship(type = "CONNECTION", direction = Relationship.Direction.OUTGOING)
     private Set<ConnectionRelation> connections = new HashSet<>();

@@ -5,7 +5,7 @@ import dev.edu.ngochandev.socialservice.dtos.res.UserProfileResponseDto;
 
 public interface UserProfileService
 {
-    String updateProfile(UserProfileUpdateRequestDto req);
+    UserProfileResponseDto updateProfile(UserProfileUpdateRequestDto req, Long userId);
 
     UserProfileResponseDto getMe(Long userId);
 }

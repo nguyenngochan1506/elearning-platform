@@ -103,5 +103,12 @@
 		"method": "GET",
 		"module": "user",
 		"isDefault": true
+	},
+	{
+		"nameKey": "user.profile.update",
+		"apiPath": "/api/v1/user-profile",
+		"method": "PATCH",
+		"module": "user",
+		"isDefault": true
 	}
 ]
