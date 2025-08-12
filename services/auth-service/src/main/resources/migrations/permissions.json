@@ -96,5 +96,12 @@
 	"method": "POST",
 	"module": "permission",
 	"isDefault": false
-}
+},
+	{
+		"nameKey": "user.profile.get-me",
+		"apiPath": "/api/v1/user-profile/me",
+		"method": "GET",
+		"module": "user",
+		"isDefault": true
+	}
 ]

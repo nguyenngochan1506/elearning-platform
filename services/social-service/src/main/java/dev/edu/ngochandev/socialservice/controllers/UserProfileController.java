@@ -6,6 +6,7 @@ import dev.edu.ngochandev.socialservice.dtos.res.UserProfileResponseDto;
 import dev.edu.ngochandev.socialservice.services.UserProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,12 +22,11 @@ public class UserProfileController {
 
     @GetMapping("/me")
     @ResponseStatus(HttpStatus.OK)
-    public SuccessResponseDto<UserProfileResponseDto> getMyProfile() {
-        System.out.println("getMyProfile called");
+    public SuccessResponseDto<UserProfileResponseDto> getMyProfile(@AuthenticationPrincipal Long userId) {
         return SuccessResponseDto.<UserProfileResponseDto>builder()
                 .status(HttpStatus.OK.value())
                 .message("user.profile.get-me.success")
-                .data(userProfileService.getMe())
+                .data(userProfileService.getMe(userId))
                 .build();
     }
 }

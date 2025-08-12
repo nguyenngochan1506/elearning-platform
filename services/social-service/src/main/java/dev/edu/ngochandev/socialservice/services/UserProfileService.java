@@ -7,5 +7,5 @@ public interface UserProfileService
 {
     String updateProfile(UserProfileUpdateRequestDto req);
 
-    UserProfileResponseDto getMe();
+    UserProfileResponseDto getMe(Long userId);
 }

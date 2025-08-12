@@ -11,7 +11,7 @@ import java.util.Map;
 @Setter
 @Builder
 public class UserProfileResponseDto {
-    private Long id;
+    private Long userId;
     private String fullName;
     private String avatar;
     private LocalDate dateOfBirth;

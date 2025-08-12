@@ -8,6 +8,7 @@ import dev.edu.ngochandev.gatewayservice.commons.Translator;
 import dev.edu.ngochandev.gatewayservice.services.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -31,6 +32,8 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     private final ObjectMapper mapper;
     private final SecurityProperties securityProperties;
     private final Translator translator;
+    @Value("${app.security.internal-secret-key}")
+    private String internalSecretKey;
 
 
     @Override
@@ -56,6 +59,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
                                 .mutate()
                                 .header("X-User-Id", String.valueOf(introspectToken.getUserId()))
                                 .header("X-User-Roles", String.join(",", introspectToken.getRoles()))
+                                .header("X-Internal-Secret", internalSecretKey)
                                 .build();
 
                         ServerWebExchange modifiedExchange = exchange.mutate().request(modifiReq).build();

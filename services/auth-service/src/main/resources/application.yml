@@ -52,7 +52,7 @@ jwt:
 
 app:
   security:
-    internal-secret-key: 863b43dd30db83efe4329c604fc38b23517ce57f2225d0988b780907d4a42ddc
+    internal-secret-key: ${INTERNAL_SECRET_KEY}
   frontend:
     main-url: http://localhost:3000
   super-admin:
