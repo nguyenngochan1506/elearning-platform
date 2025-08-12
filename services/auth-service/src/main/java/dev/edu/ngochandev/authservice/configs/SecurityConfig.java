@@ -21,7 +21,6 @@ import org.springframework.security.web.access.intercept.AuthorizationFilter;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final CustomJwtDecoder jwtDecoder;
-    private final PermissionFilter permissionFilter;
     private final String[] publicEndpoints;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final Translator translator;
@@ -45,8 +44,7 @@ public class SecurityConfig {
                     oauth2.jwt(jwtConfigurer -> jwtConfigurer
                             .decoder(jwtDecoder)
                             .jwtAuthenticationConverter(this.jwtAuthenticationConverter()))
-                )
-                .addFilterAfter(permissionFilter, AuthorizationFilter.class);
+                );
         return http.build();
     }
 

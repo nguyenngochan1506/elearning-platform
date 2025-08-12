@@ -8,15 +8,13 @@ import dev.edu.ngochandev.authservice.commons.enums.UserStatus;
 import dev.edu.ngochandev.authservice.dtos.req.*;
 import dev.edu.ngochandev.authservice.dtos.res.TokenResponseDto;
 import dev.edu.ngochandev.authservice.entities.*;
+import dev.edu.ngochandev.authservice.repositories.*;
+import dev.edu.ngochandev.common.dtos.res.IntrospectTokenResponseDto;
 import dev.edu.ngochandev.common.exceptions.DuplicateResourceException;
 import dev.edu.ngochandev.common.exceptions.ResourceNotFoundException;
 import dev.edu.ngochandev.common.exceptions.UnauthorizedException;
 import dev.edu.ngochandev.common.events.UserRegisteredEvent;
 import dev.edu.ngochandev.authservice.mappers.UserMapper;
-import dev.edu.ngochandev.authservice.repositories.InvalidatedTokenRepository;
-import dev.edu.ngochandev.authservice.repositories.RoleRepository;
-import dev.edu.ngochandev.authservice.repositories.UserRepository;
-import dev.edu.ngochandev.authservice.repositories.UserRoleRepository;
 import dev.edu.ngochandev.authservice.services.AuthService;
 import dev.edu.ngochandev.authservice.services.JwtService;
 import dev.edu.ngochandev.authservice.services.MailService;
@@ -26,6 +24,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import dev.edu.ngochandev.common.i18n.Translator;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +47,7 @@ public class AuthServiceImpl implements AuthService {
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final PermissionRepository permissionRepository;
 
     @Value("${app.frontend.main-url}")
     private String frontendUrl;
@@ -102,9 +102,18 @@ public class AuthServiceImpl implements AuthService {
         UserEntity user = userRepository
                 .findByUsernameOrEmail(req.getIdentifier())
                 .orElseThrow(() -> new ResourceNotFoundException("error.user.not-found"));
+        //check password
         if (!passwordEncoder.matches(req.getPassword(), user.getPassword())) {
             throw new UnauthorizedException("error.invalid.username-or-email");
         }
+        //check user status
+        if( user.getStatus() == UserStatus.INACTIVE) {
+            throw new UnauthorizedException("error.user.inactive");
+        }
+        if(user.getStatus() == UserStatus.BLOCKED) {
+            throw new UnauthorizedException("error.user.blocked");
+        }
+
         user.setLastLoginAt(LocalDateTime.now());
         userRepository.save(user);
         String accessToken = jwtService.generateToken(user, TokenType.ACCESS_TOKEN);
@@ -238,11 +247,33 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public Boolean verifyToken(AuthVerifyTokenRequestDto req)  {
+    public IntrospectTokenResponseDto verifyToken(AuthVerifyTokenRequestDto req)  {
+        var introspectToken = IntrospectTokenResponseDto.builder();
         try{
-            return jwtService.validateToken(req.getToken(), TokenType.ACCESS_TOKEN);
+            String username = jwtService.extractUsername(req.getToken());
+            UserEntity user = userRepository.findByUsernameOrEmail(username).orElseThrow(()-> new ResourceNotFoundException("error.user.not-found"));
+            if(user.getStatus() != UserStatus.ACTIVE) return introspectToken.active(false).build();
+
+            boolean isValid = jwtService.validateToken(req.getToken(), TokenType.ACCESS_TOKEN);
+            if (!isValid) {
+                return introspectToken.active(false).build();
+            }
+
+            Set<String> roles = user.getRoles().stream().map(RoleEntity::getName).collect(Collectors.toSet());
+            Set<String> permissions = permissionRepository.findAllByRoleNames(roles)
+                    .stream().map(entity -> String.format("%s:%s", entity.getMethod(), entity.getApiPath()))
+                    .collect(Collectors.toSet());
+
+            return introspectToken
+                    .active(true)
+                    .userId(user.getId())
+                    .username(user.getUsername())
+                    .roles(roles)
+                    .permissions(permissions)
+                    .exp(jwtService.extractExpiration(req.getToken()).getTime())
+                    .build();
         }catch (Exception e){
-            return false;
+            return introspectToken.active(false).build();
         }
     }
 

@@ -1,5 +1,6 @@
 package dev.edu.ngochandev.gatewayservice.services.impl;
 
+import dev.edu.ngochandev.common.dtos.res.IntrospectTokenResponseDto;
 import dev.edu.ngochandev.common.dtos.res.SuccessResponseDto;
 import dev.edu.ngochandev.gatewayservice.dtos.req.AuthVerifyTokenRequestDto;
 import dev.edu.ngochandev.gatewayservice.repositories.AuthClient;
@@ -16,7 +17,7 @@ import reactor.core.publisher.Mono;
 public class AuthServiceImpl implements AuthService {
     private final AuthClient authClient;
     @Override
-    public Mono<SuccessResponseDto<Boolean>> verifyToken(String token) {
+    public Mono<SuccessResponseDto<IntrospectTokenResponseDto>> verifyToken(String token) {
         AuthVerifyTokenRequestDto req = new AuthVerifyTokenRequestDto();
         req.setToken(token);
         return authClient.verifyToken(req);

@@ -5,6 +5,7 @@ import dev.edu.ngochandev.authservice.dtos.req.AuthVerifyTokenRequestDto;
 import dev.edu.ngochandev.authservice.dtos.req.*;
 import dev.edu.ngochandev.authservice.dtos.res.TokenResponseDto;
 import dev.edu.ngochandev.authservice.services.AuthService;
+import dev.edu.ngochandev.common.dtos.res.IntrospectTokenResponseDto;
 import dev.edu.ngochandev.common.dtos.res.SuccessResponseDto;
 import dev.edu.ngochandev.common.i18n.Translator;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,8 +34,8 @@ public class AuthController {
             description = "Verifies the provided authentication token, note: this endpoint must be called by the gateway service to verify the token before allowing access to protected resources."
     )
     @SecurityRequirements
-    public SuccessResponseDto<Boolean> verifyToken(@RequestBody @Valid AuthVerifyTokenRequestDto req)  {
-        return SuccessResponseDto.<Boolean>builder()
+    public SuccessResponseDto<IntrospectTokenResponseDto> verifyToken(@RequestBody @Valid AuthVerifyTokenRequestDto req)  {
+        return SuccessResponseDto.<IntrospectTokenResponseDto>builder()
                 .status(HttpStatus.OK.value())
                 .message(translator.translate("user.verify-token.success"))
                 .data(userService.verifyToken(req))

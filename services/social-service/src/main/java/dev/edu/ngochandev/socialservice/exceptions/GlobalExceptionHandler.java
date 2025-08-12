@@ -1,6 +1,6 @@
 package dev.edu.ngochandev.socialservice.exceptions;
 
-import dev.edu.ngochandev.socialservice.dtos.res.ErrorResponseDto;
+import dev.edu.ngochandev.common.dtos.res.ErrorResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;

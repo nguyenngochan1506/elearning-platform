@@ -3,6 +3,7 @@ package dev.edu.ngochandev.authservice.services;
 import com.nimbusds.jose.JOSEException;
 import dev.edu.ngochandev.authservice.dtos.req.*;
 import dev.edu.ngochandev.authservice.dtos.res.TokenResponseDto;
+import dev.edu.ngochandev.common.dtos.res.IntrospectTokenResponseDto;
 import jakarta.validation.Valid;
 
 import java.text.ParseException;
@@ -24,5 +25,5 @@ public interface AuthService {
 
     Boolean verifyEmail(UserVerifyEmailRequestDto req) throws ParseException, JOSEException;
 
-    Boolean verifyToken( AuthVerifyTokenRequestDto req) ;
+    IntrospectTokenResponseDto verifyToken(AuthVerifyTokenRequestDto req) ;
 }

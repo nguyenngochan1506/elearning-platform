@@ -2,6 +2,8 @@ package dev.edu.ngochandev.gatewayservice.configs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.edu.ngochandev.common.dtos.res.ErrorResponseDto;
+import dev.edu.ngochandev.common.dtos.res.IntrospectTokenResponseDto;
+import dev.edu.ngochandev.gatewayservice.commons.GatewayConstants;
 import dev.edu.ngochandev.gatewayservice.services.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +20,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -27,17 +28,7 @@ import java.util.List;
 public class AuthenticationFilter implements GlobalFilter, Ordered {
     private final AuthService authService;
     private final ObjectMapper mapper;
-
-    private static final String[] publicEndpoints = {
-            "/api/auth/register",
-            "/api/auth/authenticate",
-            "/api/auth/reset-password",
-            "/api/auth/forgot-password",
-            "/api/auth/verify-email",
-            "/swagger-ui/.*",
-            "/v3/api-docs/.*",
-            "/api/auth/verify-token"
-    };
+    private final SecurityProperties securityProperties;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -47,18 +38,27 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
         //get token from the request header
         List<String> bearerToken = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION);
-        if(CollectionUtils.isEmpty(bearerToken)) {
+        if(CollectionUtils.isEmpty(bearerToken) || !bearerToken.get(0).startsWith("Bearer ")) {
             return handleUnauthorized(exchange);
         }
-
         //verify token
         String token = bearerToken.get(0).replace("Bearer ", "");
         return authService.verifyToken(token)
                 .flatMap(res->{
-                    if(Boolean.TRUE.equals(res.getData())){
-                        return chain.filter(exchange);
-                    }else {
+                    if(!res.getData().isActive()){
                         return handleUnauthorized(exchange);
+                    }else {
+                        IntrospectTokenResponseDto introspectToken = res.getData();
+                        ServerHttpRequest modifiReq = exchange.getRequest()
+                                .mutate()
+                                .header("X-User-Id", String.valueOf(introspectToken.getUserId()))
+                                .header("X-User-Roles", String.join(",", introspectToken.getRoles()))
+                                .build();
+
+                        ServerWebExchange modifiedExchange = exchange.mutate().request(modifiReq).build();
+                        modifiedExchange.getAttributes().put(GatewayConstants.INTROSPECTION_RESULT_ATTRIBUTE, introspectToken);
+
+                        return chain.filter(modifiedExchange);
                     }
                 })
                 .onErrorResume(throwable -> handleUnauthorized(exchange));
@@ -66,7 +66,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
     @Override
     public int getOrder() {
-        return -1; // Set the order of this filter to be executed first
+        return -2;
     }
 
     Mono<Void> handleUnauthorized(ServerWebExchange exchange) {
@@ -76,8 +76,6 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
         ErrorResponseDto error = new ErrorResponseDto(HttpStatus.UNAUTHORIZED, "Unauthorized", null);
         error.setPath(path);
-        res.setStatusCode(HttpStatus.UNAUTHORIZED);
-
         try {
             String errorResponse = mapper.writeValueAsString(error);
             res.getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
@@ -89,7 +87,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     }
 
     public boolean isPublicEndpoint(ServerHttpRequest req){
-        return Arrays.stream(publicEndpoints)
+        return securityProperties.getPublicEndpoints().stream()
                 .anyMatch(endpoint -> req.getURI().getPath().matches(endpoint));
     }
 }
