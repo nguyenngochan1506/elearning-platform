@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.edu.ngochandev.common.dtos.res.ErrorResponseDto;
 import dev.edu.ngochandev.common.dtos.res.IntrospectTokenResponseDto;
 import dev.edu.ngochandev.gatewayservice.commons.GatewayConstants;
+import dev.edu.ngochandev.gatewayservice.commons.Translator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -18,7 +19,6 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.util.Arrays;
 import java.util.Set;
 
 @Component
@@ -28,6 +28,7 @@ public class AuthorizationFilter implements GlobalFilter, Ordered {
     private final ObjectMapper objMapper;
     private final AntPathMatcher antPathMatcher;
     private final SecurityProperties securityProperties;
+    private final Translator translator;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -37,12 +38,12 @@ public class AuthorizationFilter implements GlobalFilter, Ordered {
 
         IntrospectTokenResponseDto introspectToken = exchange.getAttribute(GatewayConstants.INTROSPECTION_RESULT_ATTRIBUTE);
         if(introspectToken == null || !introspectToken.isActive()) {
-            return handleAccessDenied(exchange);
+            return handleAccessDenied(exchange, "error.access.denied");
         }
         String requestURI = exchange.getRequest().getURI().getPath();
         String requestMethod = exchange.getRequest().getMethod().name();
         if(!hasPermission(introspectToken, requestURI, requestMethod)) {
-            return handleAccessDenied(exchange);
+            return handleAccessDenied(exchange, "error.access.denied");
         }
         return chain.filter(exchange);
     }
@@ -64,12 +65,12 @@ public class AuthorizationFilter implements GlobalFilter, Ordered {
                 });
     }
 
-    private Mono<Void> handleAccessDenied(ServerWebExchange exchange) {
+    private Mono<Void> handleAccessDenied(ServerWebExchange exchange, String messageCode) {
         ServerHttpResponse res = exchange.getResponse();
         ServerHttpRequest req = exchange.getRequest();
         String path = req.getURI().getPath();
 
-        ErrorResponseDto error = new ErrorResponseDto(HttpStatus.FORBIDDEN, "Acess Denied", null);
+        ErrorResponseDto error = new ErrorResponseDto(HttpStatus.FORBIDDEN, translator.translate(exchange, messageCode), null);
         error.setPath(path);
 
         try{
