@@ -30,6 +30,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     private final ObjectMapper mapper;
     private final SecurityProperties securityProperties;
 
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         if(isPublicEndpoint(exchange.getRequest())){

@@ -27,7 +27,7 @@ public class AuthController {
     private final AuthService userService;
     private final Translator translator;
 
-    @PostMapping("/verify-token")
+    @PostMapping("/internal/verify-token")
     @ResponseStatus(HttpStatus.OK)
     @Operation(
             summary = "Verify Token",
