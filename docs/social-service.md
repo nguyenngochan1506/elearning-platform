@@ -26,6 +26,10 @@
 - Giải pháp là ta sẽ đảm bảo message chỉ được gửi đi khi và chỉ khi transaction ghi vào cơ sở dữ liệu đã thành công (commit).
 - sử dụng `TransactionalEventListener` để đảm bảo rằng sự kiện chỉ được phát hành sau khi giao dịch đã được cam kết thành công.
 
+### get profile người dùng
+- `GET` `/api/v1/profile/me`
+- Lấy thông tin profile của người dùng đã đăng nhập.
+
 ### Cập nhật profile người dùng
 - `PATCH` `/api/v1/profile/me`  
 - Cập nhật thông tin cá nhân của người dùng đã đăng nhập.

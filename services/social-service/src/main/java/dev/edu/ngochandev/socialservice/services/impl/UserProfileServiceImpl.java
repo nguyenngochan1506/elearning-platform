@@ -23,7 +23,7 @@ public class UserProfileServiceImpl implements UserProfileService {
     private final UserProfileMapper userProfileMapper;
     private final ObjectMapper objectMapper;
     @Override
-    public UserProfileResponseDto updateProfile(UserProfileUpdgit ateRequestDto req, Long userId) {
+    public UserProfileResponseDto updateProfile(UserProfileUpdateRequestDto req, Long userId) {
         UserProfileEntity userProfile = userProfileRepository.findByUserId(userId);
         userProfile.setAvatar(req.getAvatar() != null ? req.getAvatar() : userProfile.getAvatar());
         userProfile.setDateOfBirth(req.getDateOfBirth() != null ? req.getDateOfBirth() : userProfile.getDateOfBirth());
