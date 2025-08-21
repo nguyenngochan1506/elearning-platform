@@ -11,6 +11,5 @@ public interface UserProfileMapper {
      UserProfileEntity toEntity(UserRegisteredEvent event);
 
      @Mapping(source = "id", target = "profileId")
-     @Mapping(target = "socialMediaLinks", ignore = true)
      UserProfileResponseDto toDto(UserProfileEntity entity);
 }

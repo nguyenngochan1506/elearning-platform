@@ -2,39 +2,37 @@ package dev.edu.ngochandev.socialservice.entities;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.neo4j.core.schema.Node;
-import org.springframework.data.neo4j.core.schema.Property;
-import org.springframework.data.neo4j.core.schema.Relationship;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
 
-@Node("UserProfile")
 @Getter
 @Setter
+@Document(collection = "user_profiles")
 public class UserProfileEntity extends BaseNodeEntity{
-    @Property("user_id")
+
+    @Field("user_id")
+    @Indexed(unique = true)
     private Long userId;
 
-    @Property("full_name")
+    @Field("full_name")
     private String fullName;
 
-    @Property("avatar")
+    @Field("avatar")
     private String avatar;
 
-    @Property("date_of_birth")
+    @Field("date_of_birth")
     private LocalDate dateOfBirth;
 
-    @Property("phone_number")
+    @Field("phone_number")
     private String phoneNumber;
 
-    @Property("school")
+    @Field("school")
     private String school;
 
-    @Property("social_media_links")
-    private String socialMediaLinks;
-
-    @Relationship(type = "CONNECTION", direction = Relationship.Direction.OUTGOING)
-    private Set<ConnectionRelation> connections = new HashSet<>();
+    @Field("social_media_links")
+    private Map<String, String> socialMediaLinks;
 }

@@ -22,26 +22,18 @@ services:
       - auth-network
 
   social-db:
-    image: neo4j:5.26.10-community-ubi9
+    image: mongo:7.0.23-jammy
     container_name: social-db
     environment:
-      NEO4J_AUTH: ${NEO4J_AUTH}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
     ports:
-      - "7474:7474"
-      - "7687:7687"
-    restart: always
+      - "27017:27017"
     volumes:
-      - ./data/social/data:/data
-      - ./data/social/logs:/logs
-      - ./data/social/plugins:/plugins
-      - ./data/social/conf:/conf
+      - ./data/social/mongodb:/data/db
     networks:
       - social-network
-    healthcheck:
-      test: [ "CMD-SHELL", "cypher-shell -u neo4j -p ${NEO4J_AUTH} 'RETURN 1'" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    restart: unless-stopped
 
   kafka-service:
     image: bitnami/kafka:4.0.0

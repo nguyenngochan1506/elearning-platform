@@ -4,36 +4,35 @@ import dev.edu.ngochandev.socialservice.commons.enums.ConnectionStatus;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.neo4j.core.schema.Property;
-import org.springframework.data.neo4j.core.schema.RelationshipId;
-import org.springframework.data.neo4j.core.schema.RelationshipProperties;
-import org.springframework.data.neo4j.core.schema.TargetNode;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
 
-@RelationshipProperties
 @Getter
 @Setter
+@Document(collection = "connections")
 public class ConnectionRelation {
-    @RelationshipId
-    private Long id;
+    @Id
+    private String id;
 
-    @Property("initiator_user_id")
-    private Long initiatorUserId;
+    @Field("requester_id")
+    private Long requesterId;
 
-    @TargetNode
-    private UserProfileEntity targetUser;
+    @Field("recipient_id")
+    private Long recipientId;
 
-    @Property("status")
+    @Field("status")
     private ConnectionStatus status;
 
     @CreatedDate
-    @Property("created_at")
+    @Field("created_at")
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Property("updated_at")
+    @Field("updated_at")
     private LocalDateTime updatedAt;
 
 }
