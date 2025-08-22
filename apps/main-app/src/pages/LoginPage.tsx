@@ -5,8 +5,11 @@ import { Link } from "@heroui/link";
 import { Link as RouterLink } from "react-router-dom";
 
 import { Logo } from "@/components/icons";
+import { useGlobal } from "@/contexts/GlobalContext";
 
 export default function LoginPage() {
+  const { translate } = useGlobal();
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-default-50">
       <Card className="w-full max-w-md p-6">
@@ -14,9 +17,11 @@ export default function LoginPage() {
           <RouterLink to="/">
             <Logo size={40} />
           </RouterLink>
-          <h1 className="text-2xl font-bold mt-4">Chào mừng trở lại!</h1>
+          <h1 className="text-2xl font-bold mt-4">
+            {translate("LOGIN_WELCOME")}
+          </h1>
           <p className="text-default-500 text-sm mt-1">
-            Đăng nhập để tiếp tục khóa học của bạn.
+            {translate("LOGIN_PROMPT")}
           </p>
         </CardHeader>
         <CardBody>
@@ -24,18 +29,18 @@ export default function LoginPage() {
             <Input
               isRequired
               label="Email"
-              placeholder="Nhập địa chỉ email của bạn"
+              placeholder={translate("LOGIN_EMAIL_PLACEHOLDER")}
               type="email"
             />
             <Input
               isRequired
-              label="Mật khẩu"
-              placeholder="Nhập mật khẩu của bạn"
+              label={translate("COMMON_PASSWORD")}
+              placeholder={translate("LOGIN_PASSWORD_PLACEHOLDER")}
               type="password"
             />
             <div className="flex justify-end">
               <Link as={RouterLink} size="sm" to="/forgot-password">
-                Quên mật khẩu?
+                {translate("LOGIN_FORGOT_PASSWORD")}
               </Link>
             </div>
             <Button
@@ -44,13 +49,17 @@ export default function LoginPage() {
               size="lg"
               type="submit"
             >
-              Đăng nhập
+              {translate("LOGIN_SUBMIT")}
             </Button>
           </form>
         </CardBody>
         <CardFooter className="flex justify-center">
           <Link as={RouterLink} size="sm" to="/register">
-            Chưa có tài khoản? Đăng ký ngay
+            {translate("LOGIN_REGISTER_PROMPT")}
+          </Link>
+          <span className="mx-2">|</span>
+          <Link as={RouterLink} size="sm" to="/">
+            {translate("LOGIN_BACK_TO_HOME")}
           </Link>
         </CardFooter>
       </Card>

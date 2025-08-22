@@ -28,8 +28,11 @@ import {
   Logo,
   ChevronDownIcon,
 } from "@/components/icons";
+import { useGlobal } from "@/contexts/GlobalContext";
+import { LanguageCode } from "@/common/translation";
 
 export const Navbar = () => {
+  const { translate, language, setLanguage } = useGlobal();
   const searchInput = (
     <Input
       aria-label="Search"
@@ -43,7 +46,7 @@ export const Navbar = () => {
         </Kbd>
       }
       labelPlacement="outside"
-      placeholder="Tìm kiếm khóa học..."
+      placeholder={translate("NAVBAR_SEARCH_PLACEHOLDER")}
       startContent={
         <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
       }
@@ -59,9 +62,13 @@ export const Navbar = () => {
           <ChevronDownIcon className="text-default-500" />
         </Button>
       </DropdownTrigger>
-      <DropdownMenu aria-label="Language Actions">
-        <DropdownItem key="vietnamese">Tiếng Việt (VN)</DropdownItem>
-        <DropdownItem key="english">English (EN)</DropdownItem>
+      <DropdownMenu
+        aria-label="Language Actions"
+        selectedKeys={[language]}
+        onAction={(key) => setLanguage(key as LanguageCode)}
+      >
+        <DropdownItem key="VN">Tiếng Việt (VN)</DropdownItem>
+        <DropdownItem key="EN">English (EN)</DropdownItem>
       </DropdownMenu>
     </Dropdown>
   );
@@ -113,12 +120,12 @@ export const Navbar = () => {
         </NavbarItem>
         <NavbarItem className="hidden sm:flex">
           <Button as={Link} href="/login" variant="light">
-            Đăng nhập
+            {translate("NAVBAR_LOGIN")}
           </Button>
         </NavbarItem>
         <NavbarItem className="hidden sm:flex">
           <Button as={Link} color="primary" href="/register" variant="flat">
-            Đăng ký
+            {translate("NAVBAR_REGISTER")}
           </Button>
         </NavbarItem>
 
@@ -139,7 +146,7 @@ export const Navbar = () => {
           ))}
           <NavbarMenuItem>
             <Link color="foreground" href="#" size="lg">
-              Đăng nhập
+              {translate("NAVBAR_LOGIN")}
             </Link>
           </NavbarMenuItem>
           <NavbarMenuItem>
@@ -150,7 +157,7 @@ export const Navbar = () => {
               href="#"
               variant="flat"
             >
-              Đăng ký
+              {translate("NAVBAR_REGISTER")}
             </Button>
           </NavbarMenuItem>
         </div>

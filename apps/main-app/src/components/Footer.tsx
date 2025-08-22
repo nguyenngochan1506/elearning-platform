@@ -3,8 +3,11 @@ import { Link } from "@heroui/link";
 import { GithubIcon, TwitterIcon, DiscordIcon, Logo } from "./icons";
 
 import { siteConfig } from "@/config/site";
+import { useGlobal } from "@/contexts/GlobalContext";
 
 export const Footer = () => {
+  const { translate } = useGlobal();
+
   return (
     <footer className="w-full bg-default-100 py-12">
       <div className="container mx-auto max-w-7xl px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -14,7 +17,7 @@ export const Footer = () => {
             <span className="font-bold text-lg">NgochanDev</span>
           </div>
           <p className="text-sm text-default-600">
-            Nền tảng học trực tuyến giúp bạn mở khóa tiềm năng.
+            {translate("FOOTER_DESCRIPTION")}
           </p>
           <div className="flex gap-4">
             <Link
@@ -38,34 +41,16 @@ export const Footer = () => {
         </div>
 
         <div>
-          <h4 className="font-bold mb-4">Khóa học</h4>
-          <div className="flex flex-col gap-2">
-            <Link color="foreground" href="#" size="sm">
-              Lập trình Web
-            </Link>
-            <Link color="foreground" href="#" size="sm">
-              Khoa học Dữ liệu
-            </Link>
-            <Link color="foreground" href="#" size="sm">
-              Thiết kế UI/UX
-            </Link>
-            <Link color="foreground" href="#" size="sm">
-              Marketing
-            </Link>
-          </div>
-        </div>
-
-        <div>
-          <h4 className="font-bold mb-4">Công ty</h4>
+          <h4 className="font-bold mb-4">{translate("FOOTER_COMPANY")}</h4>
           <div className="flex flex-col gap-2">
             <Link color="foreground" href="/about" size="sm">
-              Về chúng tôi
+              {translate("FOOTER_ABOUT")}
             </Link>
             <Link color="foreground" href="/blog" size="sm">
               Blog
             </Link>
             <Link color="foreground" href="#" size="sm">
-              Tuyển dụng
+              {translate("FOOTER_HR")}
             </Link>
           </div>
         </div>
@@ -74,13 +59,13 @@ export const Footer = () => {
           <h4 className="font-bold mb-4">Hỗ trợ</h4>
           <div className="flex flex-col gap-2">
             <Link color="foreground" href="#" size="sm">
-              Câu hỏi thường gặp
+              {translate("FOOTER_QUESTION")}
             </Link>
             <Link color="foreground" href="#" size="sm">
-              Liên hệ
+              {translate("FOOTER_CONTACT")}
             </Link>
             <Link color="foreground" href="#" size="sm">
-              Chính sách
+              {translate("FOOTER_PRIVACY")}
             </Link>
           </div>
         </div>

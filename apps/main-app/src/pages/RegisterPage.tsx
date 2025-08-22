@@ -5,8 +5,11 @@ import { Link } from "@heroui/link";
 import { Link as RouterLink } from "react-router-dom";
 
 import { Logo } from "@/components/icons";
+import { useGlobal } from "@/contexts/GlobalContext";
 
 export default function RegisterPage() {
+  const { translate } = useGlobal();
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-default-50">
       <Card className="w-full max-w-md p-6">
@@ -14,35 +17,37 @@ export default function RegisterPage() {
           <RouterLink to="/">
             <Logo size={40} />
           </RouterLink>
-          <h1 className="text-2xl font-bold mt-4">Tạo tài khoản</h1>
+          <h1 className="text-2xl font-bold mt-4">
+            {translate("REGISTER_TITLE")}
+          </h1>
           <p className="text-default-500 text-sm mt-1">
-            Bắt đầu hành trình học tập của bạn ngay hôm nay.
+            {translate("REGISTER_PROMPT")}
           </p>
         </CardHeader>
         <CardBody>
           <form className="flex flex-col gap-4">
             <Input
               isRequired
-              label="Họ và tên"
-              placeholder="Nhập họ và tên của bạn"
+              label={translate("COMMON_FULL_NAME")}
+              placeholder={translate("COMMON_FULL_NAME_PLACEHOLDER")}
               type="text"
             />
             <Input
               isRequired
-              label="Email"
-              placeholder="Nhập địa chỉ email"
+              label={translate("COMMON_EMAIL")}
+              placeholder={translate("COMMON_EMAIL_PLACEHOLDER")}
               type="email"
             />
             <Input
               isRequired
-              label="Mật khẩu"
-              placeholder="Tạo mật khẩu của bạn"
+              label={translate("COMMON_PASSWORD")}
+              placeholder={translate("COMMON_PASSWORD_PLACEHOLDER")}
               type="password"
             />
             <Input
               isRequired
-              label="Xác nhận mật khẩu"
-              placeholder="Nhập lại mật khẩu"
+              label={translate("COMMON_CONFIRM_PASSWORD")}
+              placeholder={translate("COMMON_CONFIRM_PASSWORD_PLACEHOLDER")}
               type="password"
             />
             <Button
@@ -51,13 +56,17 @@ export default function RegisterPage() {
               size="lg"
               type="submit"
             >
-              Đăng ký
+              {translate("REGISTER_SUBMIT")}
             </Button>
           </form>
         </CardBody>
         <CardFooter className="flex justify-center">
           <Link as={RouterLink} size="sm" to="/login">
-            Đã có tài khoản? Đăng nhập
+            {translate("REGISTER_LOGIN_PROMPT")}
+          </Link>
+          <span className="mx-2">|</span>
+          <Link as={RouterLink} size="sm" to="/">
+            {translate("LOGIN_BACK_TO_HOME")}
           </Link>
         </CardFooter>
       </Card>

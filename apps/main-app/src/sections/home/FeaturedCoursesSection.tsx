@@ -1,7 +1,7 @@
 import { title } from "@/components/primitives";
 import { CourseCard } from "@/components/CourseCard";
+import { useGlobal } from "@/contexts/GlobalContext";
 
-// Dữ liệu giả - Trong thực tế, bạn sẽ fetch từ API
 const featuredCourses = [
   {
     title: "Khóa học ReactJS Toàn diện từ Cơ bản đến Nâng cao",
@@ -27,12 +27,16 @@ const featuredCourses = [
 ];
 
 export const FeaturedCoursesSection = () => {
+  const { translate } = useGlobal();
+
   return (
     <section className="py-8 md:py-20" id="featured-courses">
       <div className="text-center mb-12">
-        <h2 className={title({ size: "md" })}>Khóa học Nổi bật</h2>
+        <h2 className={title({ size: "md" })}>
+          {translate("FEATURED_COURSES_TITLE")}
+        </h2>
         <p className="text-default-600 mt-2">
-          Bắt đầu hành trình của bạn với những khóa học được yêu thích nhất.
+          {translate("FEATURED_COURSES_SUBTITLE")}
         </p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
