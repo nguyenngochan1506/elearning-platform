@@ -5,4 +5,7 @@ export const NAVBAR_TRANSLATIONS = {
     VN: "Tìm kiếm khóa học...",
     EN: "Search for courses...",
   },
+  NAVBAR_HOME: { VN: "Trang chủ", EN: "Home" },
+  NAVBAR_BLOG: { VN: "Blog", EN: "Blog" },
+  NAVBAR_ABOUT: { VN: "Giới thiệu", EN: "About" },
 };

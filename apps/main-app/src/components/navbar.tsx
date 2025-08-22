@@ -29,7 +29,7 @@ import {
   ChevronDownIcon,
 } from "@/components/icons";
 import { useGlobal } from "@/contexts/GlobalContext";
-import { LanguageCode } from "@/common/translation";
+import { LanguageCode, TranslationKey } from "@/common/translation";
 
 export const Navbar = () => {
   const { translate, language, setLanguage } = useGlobal();
@@ -97,7 +97,7 @@ export const Navbar = () => {
                 color="foreground"
                 href={item.href}
               >
-                {item.label}
+                {translate(item.label as TranslationKey)}
               </Link>
             </NavbarItem>
           ))}
@@ -140,7 +140,7 @@ export const Navbar = () => {
           {siteConfig.navItems.map((item, index) => (
             <NavbarMenuItem key={`${item}-${index}`}>
               <Link color="foreground" href={item.href} size="lg">
-                {item.label}
+                {translate(item.label as TranslationKey)}
               </Link>
             </NavbarMenuItem>
           ))}

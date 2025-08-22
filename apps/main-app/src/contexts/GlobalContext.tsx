@@ -27,7 +27,7 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
     (key: TranslationKey): string => {
       const translationSet = translations[key];
 
-      return translationSet?.[language] || key;
+      return translationSet?.[language as keyof typeof translationSet] || key;
     },
     [language],
   );
