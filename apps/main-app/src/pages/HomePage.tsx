@@ -1,14 +1,12 @@
 import DefaultLayout from "@/layouts/default";
-import { HeroSection } from "@/sections/home/HeroSection";
 import { FeaturedCoursesSection } from "@/sections/home/FeaturedCoursesSection";
-import { TestimonialsSection } from "@/sections/home/TestimonialsSection";
+import { HeroSlideshow } from "@/sections/home/HeroSlideShow";
 
 export default function HomePage() {
   return (
     <DefaultLayout>
-      <HeroSection />
+      <HeroSlideshow />
       <FeaturedCoursesSection />
-      <TestimonialsSection />
     </DefaultLayout>
   );
 }

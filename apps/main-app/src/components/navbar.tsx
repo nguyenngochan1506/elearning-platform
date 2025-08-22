@@ -30,7 +30,6 @@ import {
 } from "@/components/icons";
 
 export const Navbar = () => {
-  // Component tìm kiếm
   const searchInput = (
     <Input
       aria-label="Search"
@@ -52,7 +51,6 @@ export const Navbar = () => {
     />
   );
 
-  // Component chuyển đổi ngôn ngữ
   const languageSwitcher = (
     <Dropdown>
       <DropdownTrigger>
@@ -70,7 +68,6 @@ export const Navbar = () => {
 
   return (
     <HeroUINavbar maxWidth="xl" position="sticky">
-      {/* ===== PHẦN BÊN TRÁI ===== */}
       <NavbarContent justify="start">
         <NavbarBrand className="gap-3 max-w-fit">
           <Link
@@ -100,14 +97,12 @@ export const Navbar = () => {
         </div>
       </NavbarContent>
 
-      {/* ===== PHẦN Ở GIỮA (Tìm kiếm) ===== */}
       <NavbarContent className="hidden md:flex" justify="center">
         <NavbarItem className="w-[300px] lg:w-[400px]">
           {searchInput}
         </NavbarItem>
       </NavbarContent>
 
-      {/* ===== PHẦN BÊN PHẢI ===== */}
       <NavbarContent justify="end">
         <NavbarItem className="hidden sm:flex items-center gap-2">
           <Link isExternal aria-label="GitHub" href={siteConfig.links.github}>
@@ -117,23 +112,21 @@ export const Navbar = () => {
           {languageSwitcher}
         </NavbarItem>
         <NavbarItem className="hidden sm:flex">
-          <Button as={Link} href="#" variant="light">
+          <Button as={Link} href="/login" variant="light">
             Đăng nhập
           </Button>
         </NavbarItem>
         <NavbarItem className="hidden sm:flex">
-          <Button as={Link} color="primary" href="#" variant="flat">
+          <Button as={Link} color="primary" href="/register" variant="flat">
             Đăng ký
           </Button>
         </NavbarItem>
 
-        {/* Nút Menu cho màn hình nhỏ */}
         <NavbarItem className="sm:hidden">
           <NavbarMenuToggle />
         </NavbarItem>
       </NavbarContent>
 
-      {/* ===== MENU CHO MÀN HÌNH NHỎ (MOBILE) ===== */}
       <NavbarMenu>
         {searchInput}
         <div className="mx-4 mt-2 flex flex-col gap-2">
