@@ -1,6 +1,5 @@
 package dev.edu.ngochandev.authservice.repositories;
 
-import dev.edu.ngochandev.authservice.entities.UserRoleEntity;
 import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

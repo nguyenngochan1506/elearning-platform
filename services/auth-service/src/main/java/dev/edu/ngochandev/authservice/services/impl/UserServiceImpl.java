@@ -9,7 +9,6 @@ import dev.edu.ngochandev.authservice.dtos.res.AdminUserResponse;
 import dev.edu.ngochandev.authservice.entities.BaseEntity;
 import dev.edu.ngochandev.authservice.entities.RoleEntity;
 import dev.edu.ngochandev.authservice.entities.UserEntity;
-import dev.edu.ngochandev.authservice.entities.UserRoleEntity;
 import dev.edu.ngochandev.common.events.UserRegisteredEvent;
 import dev.edu.ngochandev.common.exceptions.DuplicateResourceException;
 import dev.edu.ngochandev.common.exceptions.ResourceNotFoundException;

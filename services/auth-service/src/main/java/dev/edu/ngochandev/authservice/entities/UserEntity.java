@@ -39,9 +39,6 @@ public class UserEntity extends BaseEntity {
     private LocalDateTime lastLoginAt;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
-    private Set<UserRoleEntity> userRoles = new HashSet<>();
+    private Set<UserOrganizationRoleEntity> userOrganizationRoles = new HashSet<>();
 
-    public Set<RoleEntity> getRoles() {
-        return userRoles.stream().map(UserRoleEntity::getRole).collect(Collectors.toSet());
-    }
 }

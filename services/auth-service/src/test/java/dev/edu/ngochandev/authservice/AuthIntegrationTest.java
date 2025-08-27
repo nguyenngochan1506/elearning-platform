@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.edu.ngochandev.authservice.commons.DataInitializer;
 import dev.edu.ngochandev.authservice.dtos.req.*;
 import dev.edu.ngochandev.authservice.entities.UserEntity;
-import dev.edu.ngochandev.authservice.entities.UserRoleEntity;
 import dev.edu.ngochandev.authservice.repositories.InvalidatedTokenRepository;
 import dev.edu.ngochandev.authservice.repositories.RoleRepository;
 import dev.edu.ngochandev.authservice.repositories.UserRepository;
