@@ -3,6 +3,7 @@ package dev.edu.ngochandev.gatewayservice.configs;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.edu.ngochandev.common.dtos.res.ErrorResponseDto;
 import dev.edu.ngochandev.common.dtos.res.IntrospectTokenResponseDto;
+import dev.edu.ngochandev.common.dtos.res.SuccessResponseDto;
 import dev.edu.ngochandev.gatewayservice.commons.GatewayConstants;
 import dev.edu.ngochandev.gatewayservice.commons.Translator;
 import dev.edu.ngochandev.gatewayservice.services.AuthService;
@@ -38,37 +39,67 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        if(isPublicEndpoint(exchange.getRequest())){
+        ServerHttpRequest request = exchange.getRequest();
+        if (isPublicEndpoint(request)) {
             return chain.filter(exchange);
         }
 
-        //get token from the request header
-        List<String> bearerToken = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION);
-        if(CollectionUtils.isEmpty(bearerToken) || !bearerToken.get(0).startsWith("Bearer ")) {
+        String host = request.getHeaders().getFirst(HttpHeaders.HOST);
+        String orgSlug = getSlugFromHost(host);
+        if (orgSlug == null) {
+            return handleUnauthorized(exchange, "error.organization.invalid-host");
+        }
+
+        List<String> bearerToken = request.getHeaders().get(HttpHeaders.AUTHORIZATION);
+        if (CollectionUtils.isEmpty(bearerToken) || !bearerToken.get(0).startsWith("Bearer ")) {
             return handleUnauthorized(exchange, "error.token.invalid");
         }
-        //verify token
         String token = bearerToken.get(0).replace("Bearer ", "");
-        return authService.verifyToken(token)
-                .flatMap(res->{
-                    if(!res.getData().isActive()){
+
+        Mono<Long> orgIdMono = authService.getOrganizationIdBySlug(orgSlug);
+        Mono<IntrospectTokenResponseDto> tokenMono = authService.verifyToken(token).map(SuccessResponseDto::getData);
+
+        return Mono.zip(orgIdMono, tokenMono)
+                .flatMap(tuple -> {
+                    Long organizationId = tuple.getT1();
+                    IntrospectTokenResponseDto introspectToken = tuple.getT2();
+
+                    if (!introspectToken.isActive()) {
                         return handleUnauthorized(exchange, "error.unauthorized");
-                    }else {
-                        IntrospectTokenResponseDto introspectToken = res.getData();
-                        ServerHttpRequest modifiReq = exchange.getRequest()
-                                .mutate()
-                                .header("X-User-Id", String.valueOf(introspectToken.getUserId()))
-                                .header("X-User-Roles", String.join(",", introspectToken.getRoles()))
-                                .header("X-Internal-Secret", internalSecretKey)
-                                .build();
-
-                        ServerWebExchange modifiedExchange = exchange.mutate().request(modifiReq).build();
-                        modifiedExchange.getAttributes().put(GatewayConstants.INTROSPECTION_RESULT_ATTRIBUTE, introspectToken);
-
-                        return chain.filter(modifiedExchange);
                     }
+
+                    ServerHttpRequest modifiedReq = request.mutate()
+                            .header("X-User-Id", String.valueOf(introspectToken.getUserId()))
+                            .header("X-Organization-Id", String.valueOf(organizationId))
+                            .header("X-User-Roles", String.join(",", introspectToken.getRoles()))
+                            .header("X-Internal-Secret", internalSecretKey)
+                            .build();
+
+                    ServerWebExchange modifiedExchange = exchange.mutate().request(modifiedReq).build();
+                    modifiedExchange.getAttributes().put(GatewayConstants.INTROSPECTION_RESULT_ATTRIBUTE, introspectToken);
+
+                    return chain.filter(modifiedExchange);
                 })
-                .onErrorResume(throwable -> handleUnauthorized(exchange, "error.unauthorized"));
+                .onErrorResume(throwable -> {
+                    log.error("Error during authentication/organization check: {}", throwable.getMessage());
+                    return handleUnauthorized(exchange, "error.unauthorized");
+                });
+    }
+
+    private String getSlugFromHost(String host) {
+        if (host == null || host.isEmpty()) {
+            return null;
+        }
+        if (host.contains(":")) {
+            host = host.substring(0, host.indexOf(":"));
+        }
+        if (host.equals("localhost")) {
+            return "system";
+        }
+        if (host.contains(".")) {
+            return host.split("\\.")[0];
+        }
+        return null;
     }
 
     @Override

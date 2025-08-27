@@ -42,7 +42,7 @@ public class RoleServiceImpl implements RoleService {
         // search
         Page<RoleEntity> pageItems = null;
         if (StringUtils.hasLength(filter.getSearch())) {
-            pageItems = roleRepository.findBySearch("%" + filter.getSearch() + "%", pageable);
+            pageItems = roleRepository.findGlobalRolesBySearch("%" + filter.getSearch() + "%", pageable);
         } else {
             pageItems = roleRepository.findAll(pageable);
         }

@@ -17,6 +17,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -75,6 +77,7 @@ public class JwtServiceImpl implements JwtService {
                 .issuer(issuer)
                 .jwtID(UUID.randomUUID().toString())
                 .claim("scope", this.buildScope(user))
+                .claim("orgIds", this.buildOrgIds(user))
                 .claim("userId", user.getId())
                 .build();
 
@@ -85,13 +88,18 @@ public class JwtServiceImpl implements JwtService {
         return jwsObject.serialize();
     }
 
+    private Long[] buildOrgIds(UserEntity user) {
+        return user.getUserOrganizationRoles().stream()
+                .filter(uor -> !uor.getIsDeleted())
+                .map(uor -> uor.getOrganization().getId()).distinct().toArray(Long[]::new);
+    }
+
     private String buildScope(UserEntity user) {
-        Set<RoleEntity> roles = user.getRoles();
-        StringBuilder scopeBuilder = new StringBuilder();
-        for (RoleEntity role : roles) {
-            scopeBuilder.append(role.getName()).append(" ");
-        }
-        return scopeBuilder.toString().trim();
+        return user.getUserOrganizationRoles().stream()
+                .filter(uor -> !uor.getIsDeleted())
+                .map(uor -> uor.getRole().getName())
+                .distinct()
+                .collect(Collectors.joining(" "));
     }
 
     @Override

@@ -6,4 +6,5 @@ import reactor.core.publisher.Mono;
 
 public interface AuthService {
     Mono<SuccessResponseDto<IntrospectTokenResponseDto>> verifyToken(String token);
+    Mono<Long> getOrganizationIdBySlug(String slug);
 }

@@ -11,14 +11,13 @@ public class BeanStorage {
     @Bean
     public String[] publicEndpoints() {
         return new String[] {
-            "/api/auth/register",
+            "/api/auth/register/**",
             "/api/auth/authenticate",
             "/api/auth/reset-password",
             "/api/auth/forgot-password",
             "/api/auth/verify-email",
             "/swagger-ui/**",
-            "/v3/api-docs/**",
-                "/api/auth/internal/verify-token"
+            "/v3/api-docs/**", "/api/auth/internal/verify-token", "/api/internal/organizations/slug/**"
         };
     }
 

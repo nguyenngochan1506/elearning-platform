@@ -37,11 +37,11 @@ public class UserController {
                         properties = {@ExtensionProperty(name = "value", value = "user")})
             })
     public SuccessResponseDto<PageResponseDto<AdminUserResponse>> listUsers(
-            @RequestBody @Valid AdvancedFilterRequestDto filter) {
+            @RequestBody @Valid AdvancedFilterRequestDto filter, @RequestHeader("X-Organization-Id") Long organizationId) {
         return SuccessResponseDto.<PageResponseDto<AdminUserResponse>>builder()
                 .status(HttpStatus.OK.value())
                 .message(translator.translate("user.get.success"))
-                .data(userService.listUsers(filter))
+                .data(userService.listUsers(filter, organizationId))
                 .build();
     }
 
@@ -55,11 +55,11 @@ public class UserController {
                         name = "x-module",
                         properties = {@ExtensionProperty(name = "value", value = "user")})
             })
-    public SuccessResponseDto<Long> createUser(@RequestBody @Valid AdminUserCreateRequestDto req) {
+    public SuccessResponseDto<Long> createUser(@RequestBody @Valid AdminUserCreateRequestDto req, @RequestHeader("X-Organization-Id") Long organizationId) {
         return SuccessResponseDto.<Long>builder()
                 .status(HttpStatus.CREATED.value())
                 .message(translator.translate("user.create.success"))
-                .data(userService.createUser(req))
+                .data(userService.createUser(req, organizationId))
                 .build();
     }
 
@@ -109,11 +109,11 @@ public class UserController {
                         name = "x-module",
                         properties = {@ExtensionProperty(name = "value", value = "user")})
             })
-    public SuccessResponseDto<Long> updateUser(@RequestBody @Valid UserUpdateRequestDto req) {
+    public SuccessResponseDto<Long> updateUser(@RequestBody @Valid UserUpdateRequestDto req, @RequestHeader("X-Organization-Id") Long organizationId) {
         return SuccessResponseDto.<Long>builder()
                 .status(HttpStatus.OK.value())
                 .message(translator.translate("user.update.success"))
-                .data(userService.updateUser(req))
+                .data(userService.updateUser(req, organizationId))
                 .build();
     }
 }

@@ -2,13 +2,13 @@ package dev.edu.ngochandev.authservice.services.impl;
 
 import dev.edu.ngochandev.authservice.commons.MyUtils;
 import dev.edu.ngochandev.authservice.dtos.req.AdminUserCreateRequestDto;
+import dev.edu.ngochandev.authservice.entities.*;
+import dev.edu.ngochandev.authservice.repositories.OrganizationRepository;
+import dev.edu.ngochandev.authservice.repositories.UserOrganizationRoleRepository;
 import dev.edu.ngochandev.common.dtos.req.AdvancedFilterRequestDto;
 import dev.edu.ngochandev.authservice.dtos.req.UserManyDeleteRequestDto;
 import dev.edu.ngochandev.authservice.dtos.req.UserUpdateRequestDto;
 import dev.edu.ngochandev.authservice.dtos.res.AdminUserResponse;
-import dev.edu.ngochandev.authservice.entities.BaseEntity;
-import dev.edu.ngochandev.authservice.entities.RoleEntity;
-import dev.edu.ngochandev.authservice.entities.UserEntity;
 import dev.edu.ngochandev.common.events.UserRegisteredEvent;
 import dev.edu.ngochandev.common.exceptions.DuplicateResourceException;
 import dev.edu.ngochandev.common.exceptions.ResourceNotFoundException;
@@ -40,39 +40,47 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final RoleRepository roleRepository;
-    private final UserRoleRepository userRoleRepository;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher eventPublisher;
+    private final OrganizationRepository organizationRepository;
+    private final UserOrganizationRoleRepository userOrganizationRoleRepository;
 
     @Override
-    public PageResponseDto<AdminUserResponse> listUsers(AdvancedFilterRequestDto filter) {
+    public PageResponseDto<AdminUserResponse> listUsers(AdvancedFilterRequestDto filter, Long organizationId) {
         Pageable pageable = MyUtils.createPageable(filter);
-        Specification<UserEntity> spec = new UserSpecification(filter.getFilters(), filter.getSearch());
+        Specification<UserEntity> spec = new UserSpecification(filter.getFilters(), filter.getSearch(), organizationId);
         Page<UserEntity> pageOfUsers = userRepository.findAll(spec, pageable);
+
+        List<AdminUserResponse> responseItems = pageOfUsers.getContent().stream()
+                .map(user -> userMapper.toAdminResponseDto(user, organizationId))
+                .collect(Collectors.toList());
 
         return PageResponseDto.<AdminUserResponse>builder()
                 .currentPage(filter.getPage())
                 .totalElements(pageOfUsers.getTotalElements())
                 .totalPages(pageOfUsers.getTotalPages())
-                .items(pageOfUsers.map(userMapper::toAdminResponseDto).getContent())
+                .items(responseItems)
                 .build();
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Long createUser(AdminUserCreateRequestDto req) {
-        if (userRepository.existsByUsername((req.getUsername()))) {
+    public Long createUser(AdminUserCreateRequestDto req, Long organizationId) {
+        OrganizationEntity organization = organizationRepository.findById(organizationId)
+                .orElseThrow(() -> new ResourceNotFoundException("error.organization.not-found"));
+
+        if (userRepository.existsByUsername(req.getUsername())) {
             throw new DuplicateResourceException("error.duplicate.username");
         }
-        if (userRepository.existsByEmail((req.getEmail()))) {
+        if (userRepository.existsByEmail(req.getEmail())) {
             throw new DuplicateResourceException("error.duplicate.email");
         }
-        // check role ids
-        List<RoleEntity> rolesToAssign = roleRepository.findAllById(req.getRoleIds());
+
+        List<RoleEntity> rolesToAssign = roleRepository.findByIdsInOrganizationOrGlobal(req.getRoleIds(), organizationId);
         if (rolesToAssign.size() != req.getRoleIds().size()) {
-            throw new ResourceNotFoundException("error.role.not-found");
+            throw new ResourceNotFoundException("error.role.not-found-in-organization");
         }
-        // save user
+
         UserEntity newUser = UserEntity.builder()
                 .fullName(req.getFullName())
                 .username(req.getUsername())
@@ -81,12 +89,16 @@ public class UserServiceImpl implements UserService {
                 .status(req.getStatus())
                 .build();
         UserEntity savedUser = userRepository.save(newUser);
-        // save users-roles
-        List<UserRoleEntity> userRoles = rolesToAssign.stream()
-                .map(role -> new UserRoleEntity(newUser, role))
+
+        List<UserOrganizationRoleEntity> userOrgRoles = rolesToAssign.stream()
+                .map(role -> UserOrganizationRoleEntity.builder()
+                        .user(savedUser)
+                        .organization(organization)
+                        .role(role)
+                        .build())
                 .toList();
-        userRoleRepository.saveAll(userRoles);
-        // publish user registered event
+        userOrganizationRoleRepository.saveAll(userOrgRoles);
+
         UserRegisteredEvent userRegisteredEvent = new UserRegisteredEvent(savedUser.getId(), savedUser.getFullName());
         eventPublisher.publishEvent(userRegisteredEvent);
 
@@ -96,15 +108,13 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public Long deleteUser(Long id) {
-        UserEntity user =
-                userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("error.user.not-found"));
+        UserEntity user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("error.user.not-found"));
 
-        // soft delete user roles
-        Set<Long> userRoleIds =
-                user.getUserRoles().stream().map(BaseEntity::getId).collect(Collectors.toSet());
-        userRoleRepository.softDeleteAllByIds(userRoleIds);
-        // soft delete user
-        userRepository.softDeleteAllByIds(Set.of(id));
+        user.getUserOrganizationRoles().forEach(uor -> uor.setIsDeleted(true));
+        userOrganizationRoleRepository.saveAll(user.getUserOrganizationRoles());
+
+        user.setIsDeleted(true);
+        userRepository.save(user);
         return id;
     }
 
@@ -119,74 +129,92 @@ public class UserServiceImpl implements UserService {
         if (users.size() != userIds.size()) {
             throw new ResourceNotFoundException("error.user.not-found");
         }
-        Set<Long> userRoleIds = users.stream()
-                .flatMap(user -> user.getUserRoles().stream())
-                .map(BaseEntity::getId)
+
+        Set<UserOrganizationRoleEntity> rolesToDelete = users.stream()
+                .flatMap(user -> user.getUserOrganizationRoles().stream())
                 .collect(Collectors.toSet());
-        userRoleRepository.softDeleteAllByIds(userRoleIds);
-        userRepository.softDeleteAllByIds(new HashSet<>(req.getIds()));
+
+        if (!rolesToDelete.isEmpty()) {
+            rolesToDelete.forEach(uor -> uor.setIsDeleted(true));
+            userOrganizationRoleRepository.saveAll(rolesToDelete);
+        }
+
+        users.forEach(user -> user.setIsDeleted(true));
+        userRepository.saveAll(users);
     }
 
     @Override
     @Transactional
-    public Long updateUser(UserUpdateRequestDto req) {
-        // check user
-        UserEntity user = userRepository
-                .findById(req.getId())
+    public Long updateUser(UserUpdateRequestDto req, Long organizationId) { // Thêm organizationId
+        // get user and organization
+        UserEntity user = userRepository.findById(req.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("error.user.not-found"));
+
+        OrganizationEntity organization = organizationRepository.findById(organizationId)
+                .orElseThrow(() -> new ResourceNotFoundException("error.organization.not-found"));
+
+        // update basic info
         user.setStatus(req.getStatus());
         user.setFullName(req.getFullName());
 
-        // check role ids
-        if (!req.getRoleIds().isEmpty()) {
-            // update user roles
-            List<RoleEntity> roles = roleRepository.findAllById(req.getRoleIds());
-            // valid role ids
-            if (roles.size() != req.getRoleIds().size()) {
-                throw new ResourceNotFoundException("error.role.not-found");
-            }
-            // get current user roles
-            List<UserRoleEntity> currentUserRoles = userRoleRepository.findAllById(
-                    user.getUserRoles().stream().map(BaseEntity::getId).toList());
-            Set<Long> currentRoleIds = currentUserRoles.stream()
-                    .map(userRole -> userRole.getRole().getId())
+        // update roles in this organization
+        if (req.getRoleIds() != null) {
+            // get current assignments in this organization
+            Set<UserOrganizationRoleEntity> currentAssignmentsInOrg = user.getUserOrganizationRoles().stream()
+                    .filter(uor -> uor.getOrganization().getId().equals(organizationId) && !uor.getIsDeleted())
                     .collect(Collectors.toSet());
-            // new role ids
-            Set<Long> newRoleIds = new HashSet<>(req.getRoleIds());
-            // remove roles that are not in new role ids
-            Set<Long> rolesToDelete = new HashSet<>(currentRoleIds);
-            rolesToDelete.removeAll(newRoleIds);
 
-            if (!rolesToDelete.isEmpty()) {
-                Set<Long> rolesToDeleteEntities = user.getUserRoles().stream()
-                        .filter(userRole ->
-                                rolesToDelete.contains(userRole.getRole().getId()))
-                        .map(UserRoleEntity::getId)
-                        .collect(Collectors.toSet());
-                userRoleRepository.softDeleteAllByIds(rolesToDeleteEntities);
-            }
-            // add new roles
-            List<Long> rolesToAdd = newRoleIds.stream()
-                    .filter(roleId -> !currentRoleIds.contains(roleId))
-                    .toList();
-            if (!rolesToAdd.isEmpty()) {
-                List<UserRoleEntity> newUserRoles = rolesToAdd.stream()
-                        .map(roleId -> {
-                            UserRoleEntity userRole = new UserRoleEntity();
-                            userRole.setUser(user);
-                            userRole.setRole(roleRepository
-                                    .findById(roleId)
-                                    .orElseThrow(() -> new ResourceNotFoundException("error.role.not-found")));
-                            return userRole;
-                        })
+            Set<Long> currentRoleIdsInOrg = currentAssignmentsInOrg.stream()
+                    .map(uor -> uor.getRole().getId())
+                    .collect(Collectors.toSet());
+
+            Set<Long> newRoleIds = new HashSet<>(req.getRoleIds());
+
+            // determining roles to REMOVE
+            // (those that are in current but not in new)
+            Set<Long> roleIdsToRemove = new HashSet<>(currentRoleIdsInOrg);
+            roleIdsToRemove.removeAll(newRoleIds);
+
+            if (!roleIdsToRemove.isEmpty()) {
+                List<UserOrganizationRoleEntity> assignmentsToRemove = currentAssignmentsInOrg.stream()
+                        .filter(assignment -> roleIdsToRemove.contains(assignment.getRole().getId()))
                         .toList();
-                userRoleRepository.saveAll(newUserRoles);
+                assignmentsToRemove.forEach(assignment -> assignment.setIsDeleted(true));
+                userOrganizationRoleRepository.saveAll(assignmentsToRemove);
+            }
+
+            // determining roles to ADD
+            // (those that are in new but not in current)
+            Set<Long> roleIdsToAdd = new HashSet<>(newRoleIds);
+            roleIdsToAdd.removeAll(currentRoleIdsInOrg);
+
+            if (!roleIdsToAdd.isEmpty()) {
+                // validate roles to add
+                List<RoleEntity> rolesToAdd = roleRepository.findByIdsInOrganizationOrGlobal(List.copyOf(roleIdsToAdd), organizationId);
+                if (rolesToAdd.size() != roleIdsToAdd.size()) {
+                    throw new ResourceNotFoundException("error.role.not-found-in-organization");
+                }
+
+                List<UserOrganizationRoleEntity> newAssignments = rolesToAdd.stream()
+                        .map(role -> UserOrganizationRoleEntity.builder()
+                                .user(user)
+                                .organization(organization)
+                                .role(role)
+                                .build())
+                        .toList();
+                userOrganizationRoleRepository.saveAll(newAssignments);
             }
         } else {
-            // if no role ids, remove all user-roles
-            userRoleRepository.softDeleteAllByIds(
-                    user.getUserRoles().stream().map(BaseEntity::getId).collect(Collectors.toSet()));
+            // if roles not provided, remove all current assignments in this organization
+            Set<UserOrganizationRoleEntity> currentAssignmentsInOrg = user.getUserOrganizationRoles().stream()
+                    .filter(uor -> uor.getOrganization().getId().equals(organizationId) && !uor.getIsDeleted())
+                    .collect(Collectors.toSet());
+            if (!currentAssignmentsInOrg.isEmpty()) {
+                currentAssignmentsInOrg.forEach(assignment -> assignment.setIsDeleted(true));
+                userOrganizationRoleRepository.saveAll(currentAssignmentsInOrg);
+            }
         }
+
         userRepository.save(user);
 
         return req.getId();

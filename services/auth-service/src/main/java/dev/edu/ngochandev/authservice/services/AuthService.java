@@ -4,14 +4,12 @@ import com.nimbusds.jose.JOSEException;
 import dev.edu.ngochandev.authservice.dtos.req.*;
 import dev.edu.ngochandev.authservice.dtos.res.TokenResponseDto;
 import dev.edu.ngochandev.common.dtos.res.IntrospectTokenResponseDto;
-import jakarta.validation.Valid;
-
 import java.text.ParseException;
 
 public interface AuthService {
-    Long register(UserRegisterRequestDto req) throws JOSEException;
+    Long register(UserRegisterRequestDto req, String orgSlug) throws JOSEException;
 
-    TokenResponseDto authenticate(AuthenticationRequestDto req) throws JOSEException, ParseException;
+    TokenResponseDto authenticate(AuthenticationRequestDto req) throws JOSEException;
 
     Long changePassword(UserChangePasswordRequestDto req);
 
@@ -19,7 +17,7 @@ public interface AuthService {
 
     String logout(AuthLogoutRequestDto req) throws ParseException, JOSEException;
 
-    Boolean forgotPassword(UserForgotPasswordRequestDto req) throws ParseException, JOSEException;
+    Boolean forgotPassword(UserForgotPasswordRequestDto req) throws JOSEException;
 
     Boolean resetPassword(UserResetPasswordRequestDto req) throws ParseException, JOSEException;
 

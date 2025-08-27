@@ -22,4 +22,10 @@ public class AuthServiceImpl implements AuthService {
         req.setToken(token);
         return authClient.verifyToken(req);
     }
+
+    @Override
+    public Mono<Long> getOrganizationIdBySlug(String slug) {
+        return authClient.getOrganizationIdBySlug(slug)
+                .map(SuccessResponseDto::getData);
+    }
 }

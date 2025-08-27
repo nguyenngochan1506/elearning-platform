@@ -3,27 +3,39 @@ package dev.edu.ngochandev.authservice.specifications;
 import dev.edu.ngochandev.authservice.commons.MyUtils;
 import dev.edu.ngochandev.common.dtos.req.AdvancedFilterRequestDto;
 import dev.edu.ngochandev.authservice.entities.UserEntity;
+import dev.edu.ngochandev.authservice.entities.UserOrganizationRoleEntity; // THÊM IMPORT
 import dev.edu.ngochandev.authservice.exceptions.FilterDataException;
 import jakarta.persistence.criteria.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.util.StringUtils;
 
 public class UserSpecification implements Specification<UserEntity> {
     private final List<AdvancedFilterRequestDto.FilterData> filterData;
     private final String search;
+    private final Long organizationId;
 
-    public UserSpecification(List<AdvancedFilterRequestDto.FilterData> filterData, String search) {
+    public UserSpecification(List<AdvancedFilterRequestDto.FilterData> filterData, String search, Long organizationId) {
         this.filterData = filterData;
         this.search = search;
+        this.organizationId = organizationId;
     }
 
     @Override
     public Predicate toPredicate(Root<UserEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
         List<Predicate> predicates = new ArrayList<>();
+
+        Join<UserEntity, UserOrganizationRoleEntity> userOrgJoin = root.join("userOrganizationRoles");
+
+        predicates.add(cb.equal(userOrgJoin.get("organization").get("id"), this.organizationId));
+
+        predicates.add(cb.isFalse(userOrgJoin.get("isDeleted")));
+
+        query.distinct(true);
+
+
 
         // search
         if (StringUtils.hasLength(search)) {
@@ -34,65 +46,47 @@ public class UserSpecification implements Specification<UserEntity> {
                     cb.like(cb.lower(root.get("fullName")), searchPattern));
             predicates.add(searchPredicate);
         }
+
         // filter
         if (filterData != null && !filterData.isEmpty()) {
             for (AdvancedFilterRequestDto.FilterData filter : filterData) {
-                String field = null;
-                Class<?> fieldType = null;
                 try {
-                    field = filter.getField();
-                    fieldType = root.get(field).getJavaType();
-                    if (fieldType == null) {
-                        throw new FilterDataException(String.format(
-                                "Invalid filter field: %s does not exist in UserEntity", field));
-                    }
-
-                    if (filter.getValue().getClass().isAssignableFrom(fieldType)
-                            || fieldType.isAssignableFrom(List.class)) {
-                        throw new FilterDataException(String.format(
-                                "Invalid filter value for field: %s must be of type %s or List<%s>",
-                                field, fieldType.getSimpleName(), fieldType.getSimpleName()));
-                    }
+                    String field = filter.getField();
+                    Path<?> path = root.get(field);
 
                     switch (filter.getOperator()) {
-                        case EQUALS -> predicates.add(cb.equal(root.get(field), filter.getValue()));
-                        case CONTAINS -> predicates.add(
-                                cb.like(root.get(field), "%" + ((String) filter.getValue()).toLowerCase() + "%"));
-                        case GREATER_THAN -> predicates.add(
-                                cb.greaterThan(root.get(field), (Comparable) filter.getValue()));
-                        case LESS_THAN -> predicates.add(cb.lessThan(root.get(field), (Comparable) filter.getValue()));
-                        case BETWEEN -> {
+                        case EQUALS:
+                            predicates.add(cb.equal(path, filter.getValue()));
+                            break;
+                        case CONTAINS:
+                            if (path.getJavaType() == String.class) {
+                                predicates.add(cb.like(cb.lower(path.as(String.class)), "%" + ((String) filter.getValue()).toLowerCase() + "%"));
+                            }
+                            break;
+                        case GREATER_THAN:
+                            predicates.add(cb.greaterThan(path.as(Comparable.class), (Comparable) filter.getValue()));
+                            break;
+                        case LESS_THAN:
+                            predicates.add(cb.lessThan(path.as(Comparable.class), (Comparable) filter.getValue()));
+                            break;
+                        case BETWEEN:
                             List<?> valueList = (List<?>) filter.getValue();
-                            if (fieldType == LocalDateTime.class) {
-                                LocalDateTime start = MyUtils.parseFlexibleDate(
-                                        valueList.get(0).toString());
-                                LocalDateTime end = MyUtils.parseFlexibleDate(
-                                        valueList.get(1).toString());
-                                predicates.add(cb.between(root.get(field), start, end));
-                            } else if ((fieldType == Integer.class)
-                                    || (fieldType == int.class)
-                                    || (fieldType == Long.class)
-                                    || (fieldType == long.class)) {
-                                Expression<Integer> expression = root.get(field);
-                                Integer lower =
-                                        Integer.parseInt(valueList.get(0).toString());
-                                Integer upper =
-                                        Integer.parseInt(valueList.get(1).toString());
-                                predicates.add(cb.between(expression, lower, upper));
+                            if (path.getJavaType() == LocalDateTime.class) {
+                                LocalDateTime start = MyUtils.parseFlexibleDate(valueList.get(0).toString());
+                                LocalDateTime end = MyUtils.parseFlexibleDate(valueList.get(1).toString());
+                                predicates.add(cb.between(path.as(LocalDateTime.class), start, end));
+                            } else if (valueList.get(0) instanceof Number && valueList.get(1) instanceof Number) {
+                                predicates.add(cb.between(path.as(Double.class), ((Number) valueList.get(0)).doubleValue(), ((Number) valueList.get(1)).doubleValue()));
                             }
-                        }
-                        case IN -> {
+                            break;
+                        case IN:
                             if (filter.getValue() instanceof List<?> list && !list.isEmpty()) {
-                                predicates.add(root.get(field).in(list));
+                                predicates.add(path.in(list));
                             }
-                        }
+                            break;
                     }
-                } catch (JpaSystemException e) {
-                    throw new FilterDataException(String.format(
-                            "Invalid filter value for field: %s must be of type %s or List<%s>",
-                            field, fieldType.getSimpleName(), fieldType.getSimpleName()));
-                } catch (FilterDataException e) {
-                    throw e;
+                } catch (IllegalArgumentException e) {
+                    throw new FilterDataException("Invalid filter field: " + filter.getField());
                 }
             }
         }

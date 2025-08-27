@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
-    private final AuthService userService;
+    private final AuthService authService;
     private final Translator translator;
 
     @PostMapping("/internal/verify-token")
@@ -38,19 +38,21 @@ public class AuthController {
         return SuccessResponseDto.<IntrospectTokenResponseDto>builder()
                 .status(HttpStatus.OK.value())
                 .message(translator.translate("user.verify-token.success"))
-                .data(userService.verifyToken(req))
+                .data(authService.verifyToken(req))
                 .build();
     }
 
-    @PostMapping("/register")
+    @PostMapping("/register/{orgSlug}")
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Register a new user", description = "Registers a new user with the provided details.")
+    @Operation(summary = "Register a new user for an organization", description = "Registers a new user with the provided details for a specific organization.")
     @SecurityRequirements
-    public SuccessResponseDto<Long> register(@RequestBody @Valid UserRegisterRequestDto req) throws JOSEException {
+    public SuccessResponseDto<Long> registerInOrganization(
+            @PathVariable String orgSlug,
+            @RequestBody @Valid UserRegisterRequestDto req) throws JOSEException {
         return SuccessResponseDto.<Long>builder()
                 .status(HttpStatus.CREATED.value())
                 .message(translator.translate("user.register.success"))
-                .data(userService.register(req))
+                .data(authService.register(req, orgSlug))
                 .build();
     }
 
@@ -63,7 +65,7 @@ public class AuthController {
         return SuccessResponseDto.<TokenResponseDto>builder()
                 .status(HttpStatus.OK.value())
                 .message(translator.translate("user.authenticate.success"))
-                .data(userService.authenticate(req))
+                .data(authService.authenticate(req))
                 .build();
     }
 
@@ -81,7 +83,7 @@ public class AuthController {
         return SuccessResponseDto.<Long>builder()
                 .status(HttpStatus.OK.value())
                 .message(translator.translate("user.change-password.success"))
-                .data(userService.changePassword(req))
+                .data(authService.changePassword(req))
                 .build();
     }
 
@@ -100,7 +102,7 @@ public class AuthController {
         return SuccessResponseDto.<TokenResponseDto>builder()
                 .status(HttpStatus.OK.value())
                 .message(translator.translate("user.refresh-token.success"))
-                .data(userService.refreshToken(req))
+                .data(authService.refreshToken(req))
                 .build();
     }
 
@@ -119,7 +121,7 @@ public class AuthController {
         return SuccessResponseDto.<String>builder()
                 .status(HttpStatus.OK.value())
                 .message(translator.translate("user.logout.success"))
-                .data(userService.logout(req))
+                .data(authService.logout(req))
                 .build();
     }
 
@@ -134,7 +136,7 @@ public class AuthController {
         return SuccessResponseDto.<Boolean>builder()
                 .status(HttpStatus.OK.value())
                 .message(translator.translate("user.forgot-password.success"))
-                .data(userService.forgotPassword(req))
+                .data(authService.forgotPassword(req))
                 .build();
     }
 
@@ -147,7 +149,7 @@ public class AuthController {
         return SuccessResponseDto.<Boolean>builder()
                 .status(HttpStatus.OK.value())
                 .message(translator.translate("user.reset-password.success"))
-                .data(userService.resetPassword(req))
+                .data(authService.resetPassword(req))
                 .build();
     }
 
@@ -160,7 +162,7 @@ public class AuthController {
         return SuccessResponseDto.<Boolean>builder()
                 .status(HttpStatus.OK.value())
                 .message(translator.translate("user.verify-email.success"))
-                .data(userService.verifyEmail(req))
+                .data(authService.verifyEmail(req))
                 .build();
     }
 }
