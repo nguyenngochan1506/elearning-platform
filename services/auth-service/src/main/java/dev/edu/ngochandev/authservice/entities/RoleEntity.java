@@ -22,15 +22,16 @@ public class RoleEntity extends BaseEntity {
     @Column(name = "description", nullable = true)
     private String description;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization_id")
+    private OrganizationEntity organization;
+
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<UserRoleEntity> userRoles = new HashSet<>();
+    private Set<UserOrganizationRoleEntity> userOrganizationRoles = new HashSet<>();
 
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<RolePermissionEntity> rolePermissions = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organization_id")
-    private OrganizationEntity organization;
 
     public Set<PermissionEntity> getPermissions() {
         return rolePermissions.stream().map(RolePermissionEntity::getPermission).collect(Collectors.toSet());

@@ -28,14 +28,16 @@ import org.springframework.stereotype.Component;
 public class DataInitializer implements CommandLineRunner {
     public static final String DEFAULT_ROLE = "default_user";
     public static final String SUPER_ADMIN_ROLE = "super_admin";
+    public static final String SYSTEM_ORGANIZATION_SLUG = "system";
 
     private final RoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
     private final RolePermissionRepository rolePermissionRepository;
     private final UserRepository userRepository;
-    private final UserRoleRepository userRoleRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final PasswordEncoder passwordEncoder;
+    private final OrganizationRepository organizationRepository;
+    private final UserOrganizationRoleRepository userOrganizationRoleRepository;
 
     @Value("${app.super-admin.username}")
     private String superAdminUsername;
@@ -115,27 +117,27 @@ public class DataInitializer implements CommandLineRunner {
     private void synchronizeCoreRoles() {
         log.info("Step 2: Synchronizing core roles (super_admin, default_user)...");
 
-        // 1. Check role existence, if not found then create new
-        roleRepository.findByName(SUPER_ADMIN_ROLE).orElseGet(() -> {
-            log.info("  -> Role '{}' not found. Creating it.", SUPER_ADMIN_ROLE);
+        // global roles has no organization (organization_id is null)
+        roleRepository.findByNameAndOrganizationIsNull(SUPER_ADMIN_ROLE).orElseGet(() -> {
+            log.info("  -> Global Role '{}' not found. Creating it.", SUPER_ADMIN_ROLE);
             return roleRepository.save(RoleEntity.builder()
-                    .name(SUPER_ADMIN_ROLE)
-                    .description("Full system access")
+                            .name(SUPER_ADMIN_ROLE)
+                            .description("Super Admin with full permissions")
+                            .organization(null)
                     .build());
         });
-        // 2. allways fetch role with permissions using JOIN FETCH
         RoleEntity superAdminRole = roleRepository
                 .findByNameWithPermissions(SUPER_ADMIN_ROLE)
                 .orElseThrow(() -> new RuntimeException("CRITICAL: Failed to create or find Super Admin Role!"));
-        // 3. get all permissions and assign to super admin role
         List<PermissionEntity> allPermissions = permissionRepository.findAll();
         assignPermissionsToRole(superAdminRole, allPermissions);
 
-        roleRepository.findByName(DEFAULT_ROLE).orElseGet(() -> {
-            log.info("  -> Role '{}' not found. Creating it.", DEFAULT_ROLE);
+        roleRepository.findByNameAndOrganizationIsNull(DEFAULT_ROLE).orElseGet(() -> {
+            log.info("  -> Global Role '{}' not found. Creating it.", DEFAULT_ROLE);
             return roleRepository.save(RoleEntity.builder()
                     .name(DEFAULT_ROLE)
                     .description("Default permissions for new users")
+                    .organization(null) // Explicitly null for global role
                     .build());
         });
         RoleEntity defaultUserRole = roleRepository
@@ -200,7 +202,15 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void createSuperAdminUser() {
-        log.info("Step 3: Creating Super Admin user if not exists...");
+        log.info("Step 3: Creating Super Admin user and system organization if not exists...");
+        // create system organization if not exists
+        OrganizationEntity systemOrg = organizationRepository.findBySlug(SYSTEM_ORGANIZATION_SLUG).orElseGet(() -> {
+            log.info(" -> System organization not found. Creating it...");
+            return organizationRepository.save(OrganizationEntity.builder()
+                    .slug(SYSTEM_ORGANIZATION_SLUG)
+                    .name("System Organization")
+                    .build());
+        });
         if (!userRepository.existsByUsername(superAdminUsername)) {
             RoleEntity superAdminRole = roleRepository
                     .findByNameWithPermissions(SUPER_ADMIN_ROLE)
@@ -215,12 +225,15 @@ public class DataInitializer implements CommandLineRunner {
                     .build();
             userRepository.save(adminUser);
 
-            UserRoleEntity userRole = new UserRoleEntity();
-            userRole.setUser(adminUser);
-            userRole.setRole(superAdminRole);
-            userRoleRepository.save(userRole);
+            // assign super admin role in system organization
+            UserOrganizationRoleEntity userOrgRole = UserOrganizationRoleEntity.builder()
+                    .user(adminUser)
+                    .organization(systemOrg)
+                    .role(superAdminRole)
+                    .build();
+            userOrganizationRoleRepository.save(userOrgRole);
 
-            log.info("  -> CREATED Super Admin user '{}'.", superAdminUsername);
+            log.info("  -> CREATED Super Admin user '{}' in '{}' organization.", superAdminUsername, systemOrg.getName());
         } else {
             log.info("  -> Super Admin user '{}' already exists. Skipping creation.", superAdminUsername);
         }

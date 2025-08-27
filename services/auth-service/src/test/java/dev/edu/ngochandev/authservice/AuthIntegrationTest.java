@@ -14,7 +14,6 @@ import dev.edu.ngochandev.authservice.entities.UserEntity;
 import dev.edu.ngochandev.authservice.repositories.InvalidatedTokenRepository;
 import dev.edu.ngochandev.authservice.repositories.RoleRepository;
 import dev.edu.ngochandev.authservice.repositories.UserRepository;
-import dev.edu.ngochandev.authservice.repositories.UserRoleRepository;
 import dev.edu.ngochandev.authservice.services.JwtService;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;

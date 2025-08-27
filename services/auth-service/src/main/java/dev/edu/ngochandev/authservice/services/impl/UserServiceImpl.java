@@ -15,7 +15,6 @@ import dev.edu.ngochandev.common.exceptions.ResourceNotFoundException;
 import dev.edu.ngochandev.authservice.mappers.UserMapper;
 import dev.edu.ngochandev.authservice.repositories.RoleRepository;
 import dev.edu.ngochandev.authservice.repositories.UserRepository;
-import dev.edu.ngochandev.authservice.repositories.UserRoleRepository;
 import dev.edu.ngochandev.authservice.services.UserService;
 import dev.edu.ngochandev.authservice.specifications.UserSpecification;
 import java.util.HashSet;

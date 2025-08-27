@@ -1,13 +1,15 @@
 package dev.edu.ngochandev.authservice.entities;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name = "tbl_organizations")
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class OrganizationEntity extends BaseEntity {
 
     @Column(name = "uuid", nullable = false, unique = true)
