@@ -18,6 +18,7 @@
         <module>services/social-service</module>
         <module>services/common-lib</module>
         <module>services/gateway-service</module>
+        <module>services/course-service</module>
     </modules>
 
     <properties>

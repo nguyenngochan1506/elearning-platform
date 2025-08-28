@@ -19,7 +19,27 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - auth-network
+      - elearning-network
+
+  course-db:
+    image: postgres:16
+    container_name: course-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - ./data/course/logs:/var/log/postgresql
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - elearning-network
 
   social-db:
     image: mongo:7.0.23-jammy
@@ -32,7 +52,7 @@ services:
     volumes:
       - ./data/social/mongodb:/data/db
     networks:
-      - social-network
+      - elearning-network
     restart: unless-stopped
 
   kafka-service:
@@ -57,11 +77,8 @@ services:
       retries: 3
     restart: always
     networks:
-    - social-network
-    - auth-network
+    - elearning-network
 
 networks:
-  auth-network:
-    driver: bridge
-  social-network:
+  elearning-network:
     driver: bridge

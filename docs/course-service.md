@@ -23,19 +23,19 @@
 #### Bảng `courses`
 Lưu thông tin chính của khóa học.
 
-| Tên Cột | Kiểu Dữ liệu | Chú thích |
-| :--- | :--- | :--- |
-| `id` | `BIGINT` (PK) | Khóa chính tự tăng, định danh nội bộ. |
-| `uuid` | `VARCHAR(36)` | UUID công khai, bất biến. Dùng cho giao tiếp liên service. |
-| `slug` | `VARCHAR(255)` | **Định danh công khai**, thân thiện với URL. **Unique trong phạm vi `organization_id`**. |
-| `organization_id` | `BIGINT` | ID của tổ chức sở hữu khóa học. |
-| `name` | `VARCHAR(255)` | Tên khóa học. |
-| `description` | `TEXT` | Mô tả ngắn gọn. |
-| `thumbnail_image_uuid` | `VARCHAR(36)` | UUID của file ảnh bìa (tham chiếu đến File Service). |
-| `is_public` | `BOOLEAN` | `true` nếu khóa học hiển thị công khai. |
-| `is_open_for_contributors` | `BOOLEAN` | `true` nếu cho phép đăng ký làm cộng tác viên. |
-| `created_at` | `TIMESTAMP` | Thời gian tạo. |
-| `updated_at` | `TIMESTAMP` | Thời gian cập nhật. |
+| Tên Cột           | Kiểu Dữ liệu | Chú thích                                                                                |
+|:------------------| :--- |:-----------------------------------------------------------------------------------------|
+| `id`              | `BIGINT` (PK) | Khóa chính tự tăng, định danh nội bộ.                                                    |
+| `uuid`            | `VARCHAR(36)` | UUID công khai, bất biến. Dùng cho giao tiếp liên service.                               |
+| `slug`            | `VARCHAR(255)` | **Định danh công khai**, thân thiện với URL. **Unique trong phạm vi `organization_id`**. |
+| `organization_id` | `BIGINT` | ID của tổ chức sở hữu khóa học.                                                          |
+| `name`            | `VARCHAR(255)` | Tên khóa học.                                                                            |
+| `description`     | `TEXT` | Mô tả ngắn gọn.                                                                          |
+| `thumbail`        | `TEXT` | UUID của file ảnh bìa (tham chiếu đến File Service).                                     |
+| `is_public`       | `BOOLEAN` | `true` nếu khóa học hiển thị công khai.                                                  |
+| `is_deleted`      | `BOOLEAN` | default false.                                                                           |
+| `created_at`      | `TIMESTAMP` | Thời gian tạo.                                                                           |
+| `updated_at`      | `TIMESTAMP` | Thời gian cập nhật.                                                                      |
 
 #### Bảng `chapters`
 Các chương học.
@@ -47,34 +47,17 @@ Các chương học.
 | `course_id` | `BIGINT` | Khóa ngoại đến `courses`. |
 | `name` | `VARCHAR(255)` | Tên chương. |
 
-#### Bảng `activities`
+#### Bảng `lessons`
 Các bài học/hoạt động.
 
-| Tên Cột | Kiểu Dữ liệu | Chú thích |
-| :--- | :--- | :--- |
-| `id` | `BIGINT` (PK) | Khóa chính. |
-| `uuid` | `VARCHAR(36)` | UUID công khai. |
-| `name` | `VARCHAR(255)` | Tên bài học. |
-| `activity_type` | `VARCHAR(50)` | ENUM: `VIDEO`, `DOCUMENT`, `ASSIGNMENT`, `DYNAMIC_CONTENT`. |
-| `content` | `JSONB` | Lưu trữ dữ liệu nội dung. |
+| Tên Cột       | Kiểu Dữ liệu | Chú thích |
+|:--------------| :--- | :--- |
+| `id`          | `BIGINT` (PK) | Khóa chính. |
+| `uuid`        | `VARCHAR(36)` | UUID công khai. |
+| `name`        | `VARCHAR(255)` | Tên bài học. |
+| `lesson_type` | `VARCHAR(50)` | ENUM: `VIDEO`, `DOCUMENT`, `ASSIGNMENT`, `DYNAMIC_CONTENT`. |
+| `content`     | `JSONB` | Lưu trữ dữ liệu nội dung. |
 
-#### Bảng `course_chapters` (Bảng liên kết)
-Quản lý thứ tự chương trong khóa học.
-
-| Tên Cột | Kiểu Dữ liệu | Chú thích |
-| :--- | :--- | :--- |
-| `course_id` | `BIGINT` (PK, FK) | Khóa ngoại đến `courses`. |
-| `chapter_id` | `BIGINT` (PK, FK) | Khóa ngoại đến `chapters`. |
-| `chapter_order` | `INT` | Thứ tự của chương, bắt đầu từ 0. |
-
-#### Bảng `chapter_activities` (Bảng liên kết)
-Quản lý thứ tự bài học trong chương.
-
-| Tên Cột | Kiểu Dữ liệu | Chú thích |
-| :--- | :--- | :--- |
-| `chapter_id` | `BIGINT` (PK, FK) | Khóa ngoại đến `chapters`. |
-| `activity_id` | `BIGINT` (PK, FK) | Khóa ngoại đến `activities`. |
-| `activity_order` | `INT` | Thứ tự của bài học, bắt đầu từ 0. |
 
 #### Bảng `resource_authors`
 Quản lý quyền sở hữu và cộng tác.
@@ -85,7 +68,6 @@ Quản lý quyền sở hữu và cộng tác.
 | `resource_uuid` | `VARCHAR(36)` | UUID của `courses`. |
 | `user_id` | `BIGINT` | ID của người dùng. |
 | `authorship_role` | `VARCHAR(50)` | ENUM: `CREATOR`, `MAINTAINER`, `CONTRIBUTOR`. |
-| `status` | `VARCHAR(50)` | ENUM: `ACTIVE`, `PENDING`. |
 
 ## 3. Luồng hoạt động chính
 
