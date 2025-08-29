@@ -26,6 +26,9 @@ public class CategoryEntity extends BaseEntity {
     @JoinColumn(name = "parent_id", nullable = true)
     private CategoryEntity parent;
 
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
+    private Set<CategoryEntity> children = new HashSet<>();
+
     @ManyToMany(mappedBy = "categories", fetch = FetchType.LAZY)
     private Set<CourseEntity> courses = new HashSet<>();
 }

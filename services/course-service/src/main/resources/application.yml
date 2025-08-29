@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: course-service
+  datasource:
+    url: ${COURSE_DB_URL}${COURSE_DB_NAME}
+    username: ${COURSE_DB_USER}
+    password: ${COURSE_DB_PASSWORD}
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+server:
+  port: 8082
