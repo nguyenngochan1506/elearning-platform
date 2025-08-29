@@ -2,6 +2,7 @@ package dev.edu.ngochandev.courseservice.features.course.services.impl;
 
 import dev.edu.ngochandev.common.exceptions.ResourceNotFoundException;
 import dev.edu.ngochandev.courseservice.features.course.dtos.req.CreateChapterRequestDto;
+import dev.edu.ngochandev.courseservice.features.course.dtos.req.UpdateChapterRequestDto;
 import dev.edu.ngochandev.courseservice.features.course.dtos.res.ChapterResponseDto;
 import dev.edu.ngochandev.courseservice.features.course.entities.ChapterEntity;
 import dev.edu.ngochandev.courseservice.features.course.entities.CourseEntity;
@@ -31,6 +32,16 @@ public class ChapterServiceImpl implements ChapterService {
         CourseEntity course = courseRepository.findByUuid(req.getCourseUuid()).orElseThrow(() -> new ResourceNotFoundException("error.course.not-found"));
         chapter.setCourse(course);
 
+        chapterRepository.save(chapter);
+        return chapterMapper.toResponseDto(chapter);
+    }
+
+    @Override
+    public ChapterResponseDto updateChapter(UpdateChapterRequestDto req) {
+        ChapterEntity chapter = chapterRepository.findByUuid(req.getUuid()).orElseThrow(() -> new ResourceNotFoundException("error.chapter.not-found"));
+        chapter.setName(req.getName() != null ? req.getName() : chapter.getName());
+        chapter.setDescription(req.getDescription() != null ? req.getDescription() : chapter.getDescription());
+        chapter.setOrder(req.getOrder() != null ? req.getOrder() : chapter.getOrder());
         chapterRepository.save(chapter);
         return chapterMapper.toResponseDto(chapter);
     }
