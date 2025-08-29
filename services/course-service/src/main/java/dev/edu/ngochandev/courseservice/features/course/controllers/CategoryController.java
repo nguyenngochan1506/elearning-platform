@@ -56,8 +56,8 @@ public class CategoryController {
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
-    public SuccessResponseDto<List<Long>> deleteCate(@RequestBody @Valid DeleteCategoryRequestDto req) throws BadRequestException {
-        return SuccessResponseDto.<List<Long>>builder()
+    public SuccessResponseDto<Integer> deleteCate(@RequestBody @Valid DeleteCategoryRequestDto req) throws BadRequestException {
+        return SuccessResponseDto.<Integer>builder()
                 .status(HttpStatus.OK.value())
                 .message(translator.translate("category.deleted.success"))
                 .data(categoryService.deleteCate(req))

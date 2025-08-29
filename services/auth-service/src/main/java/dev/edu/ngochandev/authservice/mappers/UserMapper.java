@@ -31,6 +31,6 @@ public interface UserMapper {
         return user.getUserOrganizationRoles().stream()
                 .filter(uor -> uor.getOrganization().getId().equals(organizationId) && !uor.getIsDeleted())
                 .map(uor -> roleMapper.mapToSummaryResponseDto(uor.getRole()))
-                .collect(Collectors.toList());
+                .toList();
     }
 }

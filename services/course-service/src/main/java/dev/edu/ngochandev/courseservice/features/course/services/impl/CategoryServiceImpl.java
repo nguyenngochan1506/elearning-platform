@@ -41,9 +41,9 @@ public class CategoryServiceImpl implements CategoryService {
         categoryEntity.setDescription(req.getDescription());
         categoryEntity.setSlug(req.getSlug());
 
-        if(req.getParentId() != null) {
-            CategoryEntity parent = categoryRepository.findById(req.getParentId())
-                    .orElseThrow(() -> new IllegalArgumentException("error.category.not_found"));
+        if(req.getParentUuid() != null) {
+            CategoryEntity parent = categoryRepository.findByUuid(req.getParentUuid())
+                    .orElseThrow(() -> new ResourceNotFoundException("error.category.not_found"));
             categoryEntity.setParent(parent);
         }
         categoryRepository.save(categoryEntity);
@@ -77,13 +77,13 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public CategoryResponseDto updateCate(UpdateCategoryRequestDto req) {
-        CategoryEntity cate = categoryRepository.findById(req.getId()).orElseThrow(() -> new ResourceNotFoundException("error.category.not_found"));
+        CategoryEntity cate = categoryRepository.findByUuid(req.getUuid()).orElseThrow(() -> new ResourceNotFoundException("error.category.not_found"));
         cate.setName(req.getName() != null ? req.getName() : cate.getName());
         cate.setDescription(req.getDescription() != null ? req.getDescription() : cate.getDescription());
         cate.setSlug(req.getSlug() != null ? req.getSlug() : cate.getSlug());
-        if(req.getParentId() != null) {
-            CategoryEntity parent = categoryRepository.findById(req.getParentId())
-                    .orElseThrow(() -> new IllegalArgumentException("error.category.not_found"));
+        if(req.getParentUuid() != null) {
+            CategoryEntity parent = categoryRepository.findByUuid(req.getParentUuid())
+                    .orElseThrow(() -> new ResourceNotFoundException("error.category.not_found"));
             cate.setParent(parent);
         }
         categoryRepository.save(cate);
@@ -92,8 +92,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public List<Long> deleteCate(DeleteCategoryRequestDto req) throws BadRequestException {
-        List<CategoryEntity> categories = categoryRepository.findAllById(req.getIds());
+    public Integer deleteCate(DeleteCategoryRequestDto req) throws BadRequestException {
+        List<CategoryEntity> categories = categoryRepository.findAllByUuid(req.getUuids());
         for(CategoryEntity category : categories) {
             boolean hasCourses = !category.getCourses().isEmpty();
             boolean hasSubCategories = !category.getChildren().isEmpty();
@@ -105,6 +105,6 @@ public class CategoryServiceImpl implements CategoryService {
                 throw new BadRequestException("error.category.has_courses_or_children");
             }
         }
-        return req.getIds();
+        return categories.size();
     }
 }

@@ -6,10 +6,7 @@ import dev.edu.ngochandev.courseservice.features.course.dtos.req.CreateCategoryR
 import dev.edu.ngochandev.courseservice.features.course.dtos.req.DeleteCategoryRequestDto;
 import dev.edu.ngochandev.courseservice.features.course.dtos.req.UpdateCategoryRequestDto;
 import dev.edu.ngochandev.courseservice.features.course.dtos.res.CategoryResponseDto;
-import jakarta.validation.Valid;
 import org.apache.coyote.BadRequestException;
-
-import java.util.List;
 
 public interface CategoryService {
     CategoryResponseDto createCategory(CreateCategoryRequestDto req);
@@ -18,5 +15,5 @@ public interface CategoryService {
 
     CategoryResponseDto updateCate( UpdateCategoryRequestDto req);
 
-    List<Long> deleteCate(DeleteCategoryRequestDto req) throws BadRequestException;
+    Integer deleteCate(DeleteCategoryRequestDto req) throws BadRequestException;
 }

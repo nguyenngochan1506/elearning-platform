@@ -70,6 +70,9 @@ Quản lý quyền sở hữu và cộng tác.
 | `authorship_role` | `VARCHAR(50)` | ENUM: `CREATOR`, `MAINTAINER`, `CONTRIBUTOR`. |
 
 ## 3. Luồng hoạt động chính
+### Tạo categories
+- api: POST /api/v1/courses/categories
+
 
 ### 3.1. Luồng tạo Khóa học
 

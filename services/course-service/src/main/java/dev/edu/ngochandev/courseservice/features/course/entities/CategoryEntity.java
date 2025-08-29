@@ -13,6 +13,9 @@ import java.util.Set;
 @Entity
 @Table(name = "tbl_categories")
 public class CategoryEntity extends BaseEntity {
+    @Column(name = "uuid", nullable = false, unique = true)
+    private String uuid;
+
     @Column(name = "name", nullable = false)
     private String name;
 
@@ -31,4 +34,12 @@ public class CategoryEntity extends BaseEntity {
 
     @ManyToMany(mappedBy = "categories", fetch = FetchType.LAZY)
     private Set<CourseEntity> courses = new HashSet<>();
+
+    @Override
+    public void prePersist() {
+        super.prePersist();
+        if(uuid == null) {
+            uuid = java.util.UUID.randomUUID().toString();
+        }
+    }
 }

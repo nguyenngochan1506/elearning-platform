@@ -9,5 +9,5 @@ import lombok.Setter;
 @Setter
 public class UpdateCategoryRequestDto extends CreateCategoryRequestDto {
     @NotNull(message = "error.id.not-null")
-    private Long id;
+    private String uuid;
 }

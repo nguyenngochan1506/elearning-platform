@@ -8,5 +8,5 @@ import java.util.List;
 @Getter
 @Setter
 public class DeleteCategoryRequestDto {
-    private List<Long> ids;
+    private List<String> uuids;
 }
