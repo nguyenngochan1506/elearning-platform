@@ -1,11 +1,12 @@
 package dev.edu.ngochandev.courseservice.features.course.entities;
 
 import dev.edu.ngochandev.courseservice.commons.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -20,4 +21,11 @@ public class CategoryEntity extends BaseEntity {
 
     @Column(name = "slug", nullable = false, unique = true)
     private String slug;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id", nullable = true)
+    private CategoryEntity parent;
+
+    @ManyToMany(mappedBy = "categories", fetch = FetchType.LAZY)
+    private Set<CourseEntity> courses = new HashSet<>();
 }
