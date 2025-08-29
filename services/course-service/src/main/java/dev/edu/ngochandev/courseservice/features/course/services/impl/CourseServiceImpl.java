@@ -1,7 +1,9 @@
 package dev.edu.ngochandev.courseservice.features.course.services.impl;
 
 import dev.edu.ngochandev.common.exceptions.DuplicateResourceException;
+import dev.edu.ngochandev.common.exceptions.ResourceNotFoundException;
 import dev.edu.ngochandev.courseservice.features.course.dtos.req.CreateCourseRequestDto;
+import dev.edu.ngochandev.courseservice.features.course.dtos.req.UpdateCourseRequestDto;
 import dev.edu.ngochandev.courseservice.features.course.dtos.res.CourseResponseDto;
 import dev.edu.ngochandev.courseservice.features.course.entities.CategoryEntity;
 import dev.edu.ngochandev.courseservice.features.course.entities.CourseEntity;
@@ -15,8 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j(topic = "COURSE-SERVICE")
@@ -44,5 +44,22 @@ public class CourseServiceImpl implements CourseService {
         }
         courseRepository.save(courseEntity);
         return courseMapper.toResponseDto(courseEntity);
+    }
+
+    @Override
+    public CourseResponseDto updateCourse(UpdateCourseRequestDto req) {
+        CourseEntity course = courseRepository.findByUuid(req.getUuid()).orElseThrow(() -> new ResourceNotFoundException("error.course.not-found"));
+        course.setName(req.getName() != null ? req.getName() : course.getName());
+        course.setDescription(req.getDescription() != null ? req.getDescription() : course.getDescription());
+        course.setThumbnail(req.getThumbnail() != null ? req.getThumbnail() : course.getThumbnail());
+        course.setIsPublic(req.getIsPublic() != null ? req.getIsPublic() : course.getIsPublic());
+        course.setSlug(req.getSlug() != null ? req.getSlug() : course.getSlug());
+
+        if(req.getCategoryUuids() != null && !req.getCategoryUuids().isEmpty()){
+            List<CategoryEntity> categoryEntities = categoryRepository.findAllByUuid(req.getCategoryUuids());
+            course.setCategories(new HashSet<>(categoryEntities));
+        }
+        courseRepository.save(course);
+        return courseMapper.toResponseDto(course);
     }
 }
