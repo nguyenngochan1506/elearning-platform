@@ -42,7 +42,8 @@ public class ChapterEntity extends BaseEntity {
             uuid = UUID.randomUUID().toString();
         }
         if(order == null) {
-            order = 0;
+            Integer maxOrder = this.course.getChapters().stream().map(ChapterEntity::getOrder).max(Integer::compareTo).orElse(0);
+            order = maxOrder + 1;
         }
     }
 }
