@@ -5,7 +5,9 @@ import dev.edu.ngochandev.courseservice.commons.enums.LessonType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.type.SqlTypes;
 
 @Getter
 @Setter
@@ -26,7 +28,7 @@ public class LessonEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private LessonType lessonType;
 
-    @Column(name = "content", columnDefinition = "JSON", nullable = true)
+    @Column(name = "content", columnDefinition = "TEXT", nullable = true)
     private String content;
 
     @Column(name = "lesson_order", nullable = false)
@@ -43,7 +45,11 @@ public class LessonEntity extends BaseEntity {
             uuid = java.util.UUID.randomUUID().toString();
         }
         if(order == null) {
-            order = 0;
+            Integer maxOrder = chapter.getLessons().stream()
+                    .map(LessonEntity::getOrder)
+                    .max(Integer::compareTo)
+                    .orElse(0);
+            order = maxOrder + 1;
         }
     }
 }
