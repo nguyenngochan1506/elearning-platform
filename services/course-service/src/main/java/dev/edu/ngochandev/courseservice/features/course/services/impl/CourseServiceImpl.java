@@ -7,6 +7,7 @@ import dev.edu.ngochandev.common.exceptions.ResourceNotFoundException;
 import dev.edu.ngochandev.courseservice.commons.MyUtils;
 import dev.edu.ngochandev.courseservice.features.course.dtos.req.CreateCourseRequestDto;
 import dev.edu.ngochandev.courseservice.features.course.dtos.req.UpdateCourseRequestDto;
+import dev.edu.ngochandev.courseservice.features.course.dtos.res.CourseDetailResponseDto;
 import dev.edu.ngochandev.courseservice.features.course.dtos.res.CourseResponseDto;
 import dev.edu.ngochandev.courseservice.features.course.entities.CategoryEntity;
 import dev.edu.ngochandev.courseservice.features.course.entities.CourseEntity;
@@ -91,5 +92,11 @@ public class CourseServiceImpl implements CourseService {
                 .totalPages(pageItems.getTotalPages())
                 .items(itemsResponse)
                 .build();
+    }
+
+    @Override
+    public CourseDetailResponseDto getCourseDetail(String uuid) {
+        CourseEntity course = courseRepository.findByUuid(uuid).orElseThrow(() -> new ResourceNotFoundException("error.course.not-found"));
+        return courseMapper.toDetailResponseDto(course);
     }
 }

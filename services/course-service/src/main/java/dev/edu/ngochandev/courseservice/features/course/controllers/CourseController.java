@@ -8,6 +8,7 @@ import dev.edu.ngochandev.courseservice.features.course.dtos.req.CreateCourseReq
 import dev.edu.ngochandev.courseservice.features.course.dtos.req.OnCreate;
 import dev.edu.ngochandev.courseservice.features.course.dtos.req.OnUpdate;
 import dev.edu.ngochandev.courseservice.features.course.dtos.req.UpdateCourseRequestDto;
+import dev.edu.ngochandev.courseservice.features.course.dtos.res.CourseDetailResponseDto;
 import dev.edu.ngochandev.courseservice.features.course.dtos.res.CourseResponseDto;
 import dev.edu.ngochandev.courseservice.features.course.services.CourseService;
 import jakarta.validation.Valid;
@@ -22,6 +23,17 @@ import org.springframework.web.bind.annotation.*;
 public class CourseController {
     private final CourseService courseService;
     private final Translator translator;
+
+
+    @GetMapping("/{uuid}")
+    @ResponseStatus(HttpStatus.OK)
+    public SuccessResponseDto<CourseDetailResponseDto> getCourseDetail(@PathVariable String uuid){
+        return SuccessResponseDto.<CourseDetailResponseDto>builder()
+                .status(HttpStatus.OK.value())
+                .message(translator.translate("course.get-detail.success"))
+                .data(courseService.getCourseDetail(uuid))
+                .build();
+    }
 
     @PostMapping("/list")
     @ResponseStatus(HttpStatus.OK)
