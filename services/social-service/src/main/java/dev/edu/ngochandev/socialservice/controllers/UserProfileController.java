@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,7 +20,8 @@ public class UserProfileController {
     private final Translator translator;
     @PatchMapping()
     @ResponseStatus(HttpStatus.OK)
-    public SuccessResponseDto<UserProfileResponseDto> updateProfile(@RequestBody @Valid UserProfileUpdateRequestDto req, @AuthenticationPrincipal Long userId) {
+    public SuccessResponseDto<UserProfileResponseDto> updateProfile(@RequestBody @Valid UserProfileUpdateRequestDto req, @AuthenticationPrincipal Jwt jwt) {
+        Long userId = jwt.getClaim("userId");
         return SuccessResponseDto.<UserProfileResponseDto>builder()
                 .status(HttpStatus.OK.value())
                 .message(translator.translate("user.profile.update.success"))
@@ -29,7 +31,8 @@ public class UserProfileController {
 
     @GetMapping("/me")
     @ResponseStatus(HttpStatus.OK)
-    public SuccessResponseDto<UserProfileResponseDto> getMyProfile(@AuthenticationPrincipal Long userId) {
+    public SuccessResponseDto<UserProfileResponseDto> getMyProfile(@AuthenticationPrincipal Jwt jwt) {
+        Long userId = jwt.getClaim("userId");
         return SuccessResponseDto.<UserProfileResponseDto>builder()
                 .status(HttpStatus.OK.value())
                 .message(translator.translate("user.profile.get-me.success"))

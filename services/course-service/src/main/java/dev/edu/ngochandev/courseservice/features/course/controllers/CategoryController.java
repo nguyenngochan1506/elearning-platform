@@ -15,7 +15,6 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/courses/categories")
@@ -34,7 +33,7 @@ public class CategoryController {
                 .build();
     }
 
-    @GetMapping
+    @PostMapping("/list")
     @ResponseStatus(HttpStatus.OK)
     public SuccessResponseDto<PageResponseDto<CategoryResponseDto>> getAllCategories(@RequestBody @Valid SimpleFilterRequestDto filter){
         return SuccessResponseDto.<PageResponseDto<CategoryResponseDto>>builder()

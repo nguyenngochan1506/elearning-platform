@@ -25,7 +25,5 @@ openapi:
     title: Social Service
     version: 1.0.0
 
-
-app:
-  security:
-    internal-secret-key: ${INTERNAL_SECRET_KEY}
+jwt:
+  access-token-secret: ${ACCESS_TOKEN_SECRET}

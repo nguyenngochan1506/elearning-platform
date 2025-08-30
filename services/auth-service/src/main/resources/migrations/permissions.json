@@ -110,5 +110,68 @@
 		"method": "PATCH",
 		"module": "user",
 		"isDefault": true
+	},
+	{
+		"nameKey": "course.category.create",
+		"apiPath": "/api/v1/courses/categories",
+		"method": "POST",
+		"module": "course",
+		"isDefault": false
+	},
+	{
+		"nameKey": "course.category.update",
+		"apiPath": "/api/v1/courses/categories",
+		"method": "PATCH",
+		"module": "course",
+		"isDefault": false
+	},
+	{
+		"nameKey": "course.category.delete",
+		"apiPath": "/api/v1/courses/categories",
+		"method": "DELETE",
+		"module": "course",
+		"isDefault": false
+	},
+	{
+		"nameKey": "course.create",
+		"apiPath": "/api/v1/courses",
+		"method": "POST",
+		"module": "course",
+		"isDefault": false
+	},
+	{
+		"nameKey": "course.update",
+		"apiPath": "/api/v1/courses",
+		"method": "PATCH",
+		"module": "course",
+		"isDefault": false
+	},
+	{
+		"nameKey": "course.chapter.create",
+		"apiPath": "/api/v1/courses/chapters",
+		"method": "POST",
+		"module": "course",
+		"isDefault": false
+	},
+	{
+		"nameKey": "course.chapter.update",
+		"apiPath": "/api/v1/courses/chapters",
+		"method": "PATCH",
+		"module": "course",
+		"isDefault": false
+	},
+	{
+		"nameKey": "course.lesson.create",
+		"apiPath": "/api/v1/courses/lessons",
+		"method": "POST",
+		"module": "course",
+		"isDefault": false
+	},
+	{
+		"nameKey": "course.lesson.update",
+		"apiPath": "/api/v1/courses/lessons",
+		"method": "PATCH",
+		"module": "course",
+		"isDefault": false
 	}
 ]

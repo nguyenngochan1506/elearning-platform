@@ -69,9 +69,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
                     }
 
                     ServerHttpRequest modifiedReq = request.mutate()
-                            .header("X-User-Id", String.valueOf(introspectToken.getUserId()))
                             .header("X-Organization-Id", String.valueOf(organizationId))
-                            .header("X-User-Roles", String.join(",", introspectToken.getRoles()))
                             .header("X-Internal-Secret", internalSecretKey)
                             .build();
 
