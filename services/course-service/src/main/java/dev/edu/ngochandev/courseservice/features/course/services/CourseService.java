@@ -7,6 +7,8 @@ import dev.edu.ngochandev.courseservice.features.course.dtos.req.UpdateCourseReq
 import dev.edu.ngochandev.courseservice.features.course.dtos.res.CourseDetailResponseDto;
 import dev.edu.ngochandev.courseservice.features.course.dtos.res.CourseResponseDto;
 
+import java.util.List;
+
 public interface CourseService {
     CourseResponseDto createCourse(CreateCourseRequestDto req, Long userId);
 
@@ -15,4 +17,6 @@ public interface CourseService {
     PageResponseDto<CourseResponseDto> getCourses(AdvancedFilterRequestDto filter);
 
     CourseDetailResponseDto getCourseDetail(String uuid);
+
+    Integer deleteCourse(List<String> uuids);
 }

@@ -9,6 +9,8 @@ import dev.edu.ngochandev.courseservice.features.course.services.LessonService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,11 +22,12 @@ public class LessonController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
-    public SuccessResponseDto<LessonResponseDto> createLesson(@RequestBody @Valid CreateLessonRequestDto req) {
+    public SuccessResponseDto<LessonResponseDto> createLesson(@RequestBody @Valid CreateLessonRequestDto req, @AuthenticationPrincipal Jwt jwt) {
+        Long userId = jwt.getClaim("userId");
         return SuccessResponseDto.<LessonResponseDto>builder()
                 .message(translator.translate("lesson.create.success"))
                 .status(HttpStatus.OK.value())
-                .data(lessonService.createLesson(req))
+                .data(lessonService.createLesson(req,userId))
                 .build();
     }
 

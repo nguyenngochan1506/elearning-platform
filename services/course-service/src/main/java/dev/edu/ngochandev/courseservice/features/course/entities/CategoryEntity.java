@@ -4,6 +4,7 @@ import dev.edu.ngochandev.courseservice.commons.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,6 +13,7 @@ import java.util.Set;
 @Setter
 @Entity
 @Table(name = "tbl_categories")
+@SQLRestriction("is_deleted = false")
 public class CategoryEntity extends BaseEntity {
     @Column(name = "uuid", nullable = false, unique = true)
     private String uuid;

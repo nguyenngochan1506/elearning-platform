@@ -16,4 +16,11 @@ public interface ResourceAuthorRepository extends JpaRepository<ResourceAuthorEn
             "AND ra.userId = :userId " +
             "AND ra.authorshipType IN :author")
     boolean existsByResourceUuidAndUserIdAndAuthorshipRoleIn(String resourceUuid, Long userId, List<AuthorshipType> author);
+
+    @Query("SELECT COUNT(ra) " +
+            "FROM ResourceAuthorEntity ra " +
+            "WHERE ra.resourceUuid IN :resourceUuids " +
+            "AND ra.userId = :userId " +
+            "AND ra.authorshipType IN :author")
+    long countByResourceUuidInAndUserIdAndAuthorshipRoleIn(List<String> resourceUuids, Long userId, List<AuthorshipType> author);
 }

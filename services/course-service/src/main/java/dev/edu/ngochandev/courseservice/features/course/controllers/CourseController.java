@@ -4,10 +4,7 @@ import dev.edu.ngochandev.common.dtos.req.AdvancedFilterRequestDto;
 import dev.edu.ngochandev.common.dtos.res.PageResponseDto;
 import dev.edu.ngochandev.common.dtos.res.SuccessResponseDto;
 import dev.edu.ngochandev.common.i18n.Translator;
-import dev.edu.ngochandev.courseservice.features.course.dtos.req.CreateCourseRequestDto;
-import dev.edu.ngochandev.courseservice.features.course.dtos.req.OnCreate;
-import dev.edu.ngochandev.courseservice.features.course.dtos.req.OnUpdate;
-import dev.edu.ngochandev.courseservice.features.course.dtos.req.UpdateCourseRequestDto;
+import dev.edu.ngochandev.courseservice.features.course.dtos.req.*;
 import dev.edu.ngochandev.courseservice.features.course.dtos.res.CourseDetailResponseDto;
 import dev.edu.ngochandev.courseservice.features.course.dtos.res.CourseResponseDto;
 import dev.edu.ngochandev.courseservice.features.course.services.CourseService;
@@ -70,4 +67,14 @@ public class CourseController {
                 .build();
     }
 
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAnyAuthority('SCOPE_super_admin') or @courseSecurityService.isOwner(#uuids, #jwt)")
+    public SuccessResponseDto<Integer> deleteCourse(@RequestBody DeleteCourseRequestDto req, @AuthenticationPrincipal Jwt jwt) {
+        return SuccessResponseDto.<Integer>builder()
+                .status(HttpStatus.OK.value())
+                .message(translator.translate("course.delete.success"))
+                .data(courseService.deleteCourse(req.getUuids()))
+                .build();
+    }
 }

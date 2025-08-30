@@ -11,20 +11,14 @@ import dev.edu.ngochandev.courseservice.features.course.dtos.req.CreateCourseReq
 import dev.edu.ngochandev.courseservice.features.course.dtos.req.UpdateCourseRequestDto;
 import dev.edu.ngochandev.courseservice.features.course.dtos.res.CourseDetailResponseDto;
 import dev.edu.ngochandev.courseservice.features.course.dtos.res.CourseResponseDto;
-import dev.edu.ngochandev.courseservice.features.course.entities.CategoryEntity;
-import dev.edu.ngochandev.courseservice.features.course.entities.CourseEntity;
-import dev.edu.ngochandev.courseservice.features.course.entities.ResourceAuthorEntity;
+import dev.edu.ngochandev.courseservice.features.course.entities.*;
 import dev.edu.ngochandev.courseservice.features.course.mappers.CourseMapper;
-import dev.edu.ngochandev.courseservice.features.course.repositories.CategoryRepository;
-import dev.edu.ngochandev.courseservice.features.course.repositories.CourseRepository;
-import dev.edu.ngochandev.courseservice.features.course.repositories.ResourceAuthorRepository;
+import dev.edu.ngochandev.courseservice.features.course.repositories.*;
 import dev.edu.ngochandev.courseservice.features.course.services.CourseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -38,8 +32,11 @@ import java.util.List;
 public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
     private final CategoryRepository categoryRepository;
-    private final CourseMapper courseMapper;
     private final ResourceAuthorRepository resourceAuthorRepository;
+    private final ChapterRepository chapterRepository;
+    private final LessonRepository lessonRepository;
+    private final CourseMapper courseMapper;
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -115,5 +112,25 @@ public class CourseServiceImpl implements CourseService {
     public CourseDetailResponseDto getCourseDetail(String uuid) {
         CourseEntity course = courseRepository.findByUuid(uuid).orElseThrow(() -> new ResourceNotFoundException("error.course.not-found"));
         return courseMapper.toDetailResponseDto(course);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Integer deleteCourse(List<String> uuids) {
+        List<CourseEntity> courses = courseRepository.findAllByUuidIn(uuids);
+        if(courses.isEmpty()){
+            throw new ResourceNotFoundException("error.course.not-found");
+        }
+        List<Long> courseIds = courses.stream().map(CourseEntity::getId).toList();
+
+        if (courseIds.isEmpty()) {
+            return 0;
+        }
+
+        lessonRepository.softDeleteByCourseIds(courseIds);
+        chapterRepository.softDeleteByCourseIds(courseIds);
+        courseRepository.softDeleteByIds(courseIds);
+
+        return courses.size();
     }
 }

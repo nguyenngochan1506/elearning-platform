@@ -15,8 +15,8 @@ public class CourseSecurityServiceImpl implements CourseSecurityService {
      private final ResourceAuthorRepository resourceAuthorRepository;
 
     @Override
-    public boolean isOwner(String courseUuid, Jwt jwt) {
-        if (courseUuid == null || jwt == null) {
+    public boolean isOwner(String resourceUuid, Jwt jwt) {
+        if (resourceUuid == null || jwt == null) {
             return false;
         }
 
@@ -26,7 +26,24 @@ public class CourseSecurityServiceImpl implements CourseSecurityService {
         }
 
          return resourceAuthorRepository.existsByResourceUuidAndUserIdAndAuthorshipRoleIn(
-             courseUuid, userId, List.of(AuthorshipType.AUTHOR, AuthorshipType.MAINTAINER)
+                 resourceUuid, userId, List.of(AuthorshipType.AUTHOR, AuthorshipType.MAINTAINER)
          );
+    }
+
+    @Override
+    public boolean isOwner(List<String> resourceUuids, Jwt jwt) {
+        if (resourceUuids == null || resourceUuids.isEmpty() || jwt == null) {
+            return false;
+        }
+
+        Long userId = jwt.getClaim("userId");
+        if (userId == null) {
+            return false;
+        }
+
+        long count = resourceAuthorRepository.countByResourceUuidInAndUserIdAndAuthorshipRoleIn(
+            resourceUuids, userId, List.of(AuthorshipType.AUTHOR, AuthorshipType.MAINTAINER)
+        );
+        return count == resourceUuids.size();
     }
 }

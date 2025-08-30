@@ -5,7 +5,7 @@ import dev.edu.ngochandev.courseservice.features.course.dtos.req.UpdateChapterRe
 import dev.edu.ngochandev.courseservice.features.course.dtos.res.ChapterResponseDto;
 
 public interface ChapterService {
-    ChapterResponseDto createChapter(CreateChapterRequestDto req);
+    ChapterResponseDto createChapter(CreateChapterRequestDto req, Long userId);
 
     ChapterResponseDto updateChapter(UpdateChapterRequestDto req);
 }

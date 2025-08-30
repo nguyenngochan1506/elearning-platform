@@ -9,6 +9,8 @@ import dev.edu.ngochandev.courseservice.features.course.services.ChapterService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,11 +22,12 @@ public class ChapterController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
-    public SuccessResponseDto<ChapterResponseDto> createChapter(@RequestBody @Valid CreateChapterRequestDto req){
+    public SuccessResponseDto<ChapterResponseDto> createChapter(@RequestBody @Valid CreateChapterRequestDto req, @AuthenticationPrincipal Jwt jwt){
+        Long userId = jwt.getClaim("userId");
         return SuccessResponseDto.<ChapterResponseDto>builder()
                 .message(translator.translate("chapter.create.success"))
                 .status(HttpStatus.OK.value())
-                .data(chapterService.createChapter(req))
+                .data(chapterService.createChapter(req, userId))
                 .build();
     }
     @PatchMapping

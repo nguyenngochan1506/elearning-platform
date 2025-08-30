@@ -5,6 +5,6 @@ import dev.edu.ngochandev.courseservice.features.course.dtos.req.UpdateLessonReq
 import dev.edu.ngochandev.courseservice.features.course.dtos.res.LessonResponseDto;
 
 public interface LessonService {
-    LessonResponseDto createLesson(CreateLessonRequestDto req);
+    LessonResponseDto createLesson(CreateLessonRequestDto req, Long userId);
     LessonResponseDto updateLesson(UpdateLessonRequestDto req);
 }
