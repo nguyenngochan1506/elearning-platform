@@ -5,21 +5,28 @@ import dev.edu.ngochandev.common.dtos.res.PageResponseDto;
 import dev.edu.ngochandev.common.exceptions.DuplicateResourceException;
 import dev.edu.ngochandev.common.exceptions.ResourceNotFoundException;
 import dev.edu.ngochandev.courseservice.commons.MyUtils;
+import dev.edu.ngochandev.courseservice.commons.enums.AuthorshipType;
+import dev.edu.ngochandev.courseservice.commons.enums.ResourceType;
 import dev.edu.ngochandev.courseservice.features.course.dtos.req.CreateCourseRequestDto;
 import dev.edu.ngochandev.courseservice.features.course.dtos.req.UpdateCourseRequestDto;
 import dev.edu.ngochandev.courseservice.features.course.dtos.res.CourseDetailResponseDto;
 import dev.edu.ngochandev.courseservice.features.course.dtos.res.CourseResponseDto;
 import dev.edu.ngochandev.courseservice.features.course.entities.CategoryEntity;
 import dev.edu.ngochandev.courseservice.features.course.entities.CourseEntity;
+import dev.edu.ngochandev.courseservice.features.course.entities.ResourceAuthorEntity;
 import dev.edu.ngochandev.courseservice.features.course.mappers.CourseMapper;
 import dev.edu.ngochandev.courseservice.features.course.repositories.CategoryRepository;
 import dev.edu.ngochandev.courseservice.features.course.repositories.CourseRepository;
+import dev.edu.ngochandev.courseservice.features.course.repositories.ResourceAuthorRepository;
 import dev.edu.ngochandev.courseservice.features.course.services.CourseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.HashSet;
@@ -32,9 +39,11 @@ public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
     private final CategoryRepository categoryRepository;
     private final CourseMapper courseMapper;
+    private final ResourceAuthorRepository resourceAuthorRepository;
 
     @Override
-    public CourseResponseDto createCourse(CreateCourseRequestDto req) {
+    @Transactional(rollbackFor = Exception.class)
+    public CourseResponseDto createCourse(CreateCourseRequestDto req, Long userId) {
         if(courseRepository.existsBySlug(req.getSlug())) {
             throw new DuplicateResourceException("error.slug.exists");
         }
@@ -49,7 +58,15 @@ public class CourseServiceImpl implements CourseService {
             List<CategoryEntity> categoryEntities = categoryRepository.findAllByUuid(req.getCategoryUuids());
             courseEntity.setCategories(new HashSet<>(categoryEntities));
         }
-        courseRepository.save(courseEntity);
+        courseEntity = courseRepository.save(courseEntity);
+
+        ResourceAuthorEntity authorEntity = new ResourceAuthorEntity();
+        authorEntity.setResourceUuid(courseEntity.getUuid());
+        authorEntity.setUserId(userId);
+        authorEntity.setResourceType(ResourceType.COURSE);
+        authorEntity.setAuthorshipType(AuthorshipType.AUTHOR);
+
+        resourceAuthorRepository.save(authorEntity);
         return courseMapper.toResponseDto(courseEntity);
     }
 

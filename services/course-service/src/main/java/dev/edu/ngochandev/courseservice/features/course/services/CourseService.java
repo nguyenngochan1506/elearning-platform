@@ -8,7 +8,7 @@ import dev.edu.ngochandev.courseservice.features.course.dtos.res.CourseDetailRes
 import dev.edu.ngochandev.courseservice.features.course.dtos.res.CourseResponseDto;
 
 public interface CourseService {
-    CourseResponseDto createCourse(CreateCourseRequestDto req);
+    CourseResponseDto createCourse(CreateCourseRequestDto req, Long userId);
 
     CourseResponseDto updateCourse(UpdateCourseRequestDto req);
 

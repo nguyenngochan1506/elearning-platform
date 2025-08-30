@@ -14,6 +14,9 @@ import dev.edu.ngochandev.courseservice.features.course.services.CourseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,17 +50,19 @@ public class CourseController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public SuccessResponseDto<CourseResponseDto> createCourse(@RequestBody @Validated(OnCreate.class) CreateCourseRequestDto req) {
+    public SuccessResponseDto<CourseResponseDto> createCourse(@RequestBody @Validated(OnCreate.class) CreateCourseRequestDto req, @AuthenticationPrincipal Jwt jwt) {
+        Long userId = jwt.getClaim("userId");
         return SuccessResponseDto.<CourseResponseDto>builder()
                 .status(HttpStatus.CREATED.value())
                 .message(translator.translate("course.create.success"))
-                .data(courseService.createCourse(req))
+                .data(courseService.createCourse(req, userId))
                 .build();
     }
 
     @PatchMapping
     @ResponseStatus(HttpStatus.OK)
-    public SuccessResponseDto<CourseResponseDto> updateCourse(@RequestBody @Validated(OnUpdate.class) UpdateCourseRequestDto req) {
+    @PreAuthorize("hasAnyAuthority('SCOPE_super_admin') or @courseSecurityService.isOwner(#req.uuid, #jwt)")
+    public SuccessResponseDto<CourseResponseDto> updateCourse(@RequestBody @Validated(OnUpdate.class) UpdateCourseRequestDto req, @AuthenticationPrincipal Jwt jwt) {
         return SuccessResponseDto.<CourseResponseDto>builder()
                 .status(HttpStatus.OK.value())
                 .message(translator.translate("course.update.success"))
