@@ -1,7 +1,10 @@
 package dev.edu.ngochandev.courseservice.features.course.services.impl;
 
+import dev.edu.ngochandev.common.dtos.req.AdvancedFilterRequestDto;
+import dev.edu.ngochandev.common.dtos.res.PageResponseDto;
 import dev.edu.ngochandev.common.exceptions.DuplicateResourceException;
 import dev.edu.ngochandev.common.exceptions.ResourceNotFoundException;
+import dev.edu.ngochandev.courseservice.commons.MyUtils;
 import dev.edu.ngochandev.courseservice.features.course.dtos.req.CreateCourseRequestDto;
 import dev.edu.ngochandev.courseservice.features.course.dtos.req.UpdateCourseRequestDto;
 import dev.edu.ngochandev.courseservice.features.course.dtos.res.CourseResponseDto;
@@ -13,7 +16,10 @@ import dev.edu.ngochandev.courseservice.features.course.repositories.CourseRepos
 import dev.edu.ngochandev.courseservice.features.course.services.CourseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.HashSet;
 import java.util.List;
@@ -61,5 +67,29 @@ public class CourseServiceImpl implements CourseService {
         }
         courseRepository.save(course);
         return courseMapper.toResponseDto(course);
+    }
+
+    @Override
+    public PageResponseDto<CourseResponseDto> getCourses(AdvancedFilterRequestDto filter) {
+        // pageable
+        Pageable pageable = MyUtils.createPageable(filter);
+        // search
+        Page<CourseEntity> pageItems = null;
+
+        if (StringUtils.hasLength(filter.getSearch())) {
+            pageItems = courseRepository.findBySearch("%" + filter.getSearch() + "%", pageable);
+        } else {
+            pageItems = courseRepository.findAll(pageable);
+        }
+
+        List<CourseResponseDto> itemsResponse =
+                pageItems.map(courseMapper::toResponseDto).toList();
+
+        return PageResponseDto.<CourseResponseDto>builder()
+                .currentPage(filter.getPage())
+                .totalElements(pageItems.getTotalElements())
+                .totalPages(pageItems.getTotalPages())
+                .items(itemsResponse)
+                .build();
     }
 }
