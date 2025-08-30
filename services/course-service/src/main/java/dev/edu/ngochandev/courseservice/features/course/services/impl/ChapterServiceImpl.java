@@ -4,6 +4,7 @@ import dev.edu.ngochandev.common.exceptions.ResourceNotFoundException;
 import dev.edu.ngochandev.courseservice.commons.enums.AuthorshipType;
 import dev.edu.ngochandev.courseservice.commons.enums.ResourceType;
 import dev.edu.ngochandev.courseservice.features.course.dtos.req.CreateChapterRequestDto;
+import dev.edu.ngochandev.courseservice.features.course.dtos.req.DeleteChaptersRequestDto;
 import dev.edu.ngochandev.courseservice.features.course.dtos.req.UpdateChapterRequestDto;
 import dev.edu.ngochandev.courseservice.features.course.dtos.res.ChapterResponseDto;
 import dev.edu.ngochandev.courseservice.features.course.entities.ChapterEntity;
@@ -12,6 +13,7 @@ import dev.edu.ngochandev.courseservice.features.course.entities.ResourceAuthorE
 import dev.edu.ngochandev.courseservice.features.course.mappers.ChapterMapper;
 import dev.edu.ngochandev.courseservice.features.course.repositories.ChapterRepository;
 import dev.edu.ngochandev.courseservice.features.course.repositories.CourseRepository;
+import dev.edu.ngochandev.courseservice.features.course.repositories.LessonRepository;
 import dev.edu.ngochandev.courseservice.features.course.repositories.ResourceAuthorRepository;
 import dev.edu.ngochandev.courseservice.features.course.services.ChapterService;
 import lombok.RequiredArgsConstructor;
@@ -19,12 +21,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Slf4j(topic = "CHAPTER-SERVICE")
 @RequiredArgsConstructor
 public class ChapterServiceImpl implements ChapterService {
     private final ChapterRepository chapterRepository;
     private final CourseRepository courseRepository;
+    private final LessonRepository lessonRepository;
     private final ChapterMapper chapterMapper;
     private final ResourceAuthorRepository resourceAuthorRepository;
 
@@ -58,5 +63,28 @@ public class ChapterServiceImpl implements ChapterService {
         chapter.setOrder(req.getOrder() != null ? req.getOrder() : chapter.getOrder());
         chapterRepository.save(chapter);
         return chapterMapper.toResponseDto(chapter);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Integer deleteChapter(DeleteChaptersRequestDto req) {
+        List<String> chapterUuids = req.getUuids();
+
+        if (chapterUuids == null || chapterUuids.isEmpty()) {
+            return 0;
+        }
+        List<ChapterEntity> chapters = chapterRepository.findAllByUuidIn(chapterUuids);
+
+        if (chapters.size() != chapterUuids.size()) {
+            throw new ResourceNotFoundException("error.chapter.not-found");
+        }
+        List<Long> chapterIds = chapters.stream().map(ChapterEntity::getId).toList();
+
+        if (chapterIds.isEmpty()) {
+            return 0;
+        }
+        lessonRepository.softDeleteByChapterIds(chapterIds);
+        chapterRepository.softDeleteByIds(chapterIds);
+        return chapterUuids.size();
     }
 }

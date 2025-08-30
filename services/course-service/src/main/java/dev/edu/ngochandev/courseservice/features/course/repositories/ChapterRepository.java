@@ -7,13 +7,20 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface ChapterRepository extends JpaRepository<ChapterEntity, Long> {
     Optional<ChapterEntity> findByUuid(String uuid);
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("UPDATE ChapterEntity c SET c.isDeleted = true WHERE c.course.id IN :courseIds")
     void softDeleteByCourseIds(@Param("courseIds") List<Long> courseIds);
+
+    List<ChapterEntity> findAllByUuidIn(Collection<String> uuids);
+
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE ChapterEntity c SET c.isDeleted = true WHERE c.id IN :ids")
+    void softDeleteByIds(@Param("ids") List<Long> ids);
 }

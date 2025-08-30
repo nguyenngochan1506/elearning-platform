@@ -13,7 +13,15 @@ import java.util.Optional;
 @Repository
 public interface LessonRepository extends JpaRepository<LessonEntity, Long> {
     Optional<LessonEntity> findByUuid(String uuid);
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("UPDATE LessonEntity l SET l.isDeleted = true WHERE l.chapter.id IN (SELECT c.id FROM ChapterEntity c WHERE c.course.id IN :courseIds)")
     void softDeleteByCourseIds(@Param("courseIds") List<Long> courseIds);
+
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE LessonEntity l SET l.isDeleted = true WHERE l.chapter.id IN (SELECT c.id FROM ChapterEntity c WHERE c.id IN :chapterIds)")
+    void softDeleteByChapterIds(@Param("chapterIds") List<Long> chapterIds);
+
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE LessonEntity l SET l.isDeleted = true WHERE l.uuid IN :ids")
+    void softDeleteByIds(@Param("ids") List<String> ids);
 }

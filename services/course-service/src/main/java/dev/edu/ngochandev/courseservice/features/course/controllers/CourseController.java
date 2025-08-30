@@ -69,7 +69,7 @@ public class CourseController {
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasAnyAuthority('SCOPE_super_admin') or @courseSecurityService.isOwner(#uuids, #jwt)")
+    @PreAuthorize("hasAnyAuthority('SCOPE_super_admin') or @courseSecurityService.isOwner(#req.uuids, #jwt)")
     public SuccessResponseDto<Integer> deleteCourse(@RequestBody DeleteCourseRequestDto req, @AuthenticationPrincipal Jwt jwt) {
         return SuccessResponseDto.<Integer>builder()
                 .status(HttpStatus.OK.value())
