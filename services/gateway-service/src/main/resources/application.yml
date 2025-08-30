@@ -15,6 +15,10 @@ spring:
               uri: http://localhost:8081
               predicates:
                 - Path=/api/v1/user-profile/**
+            - id: course-service
+              uri: http://localhost:8082
+              predicates:
+                - Path=/api/v1/courses/**
 
 server:
   port: 8888
@@ -31,3 +35,6 @@ app:
       - /swagger-ui/.*
       - /v3/api-docs/.*
       - /api/auth/verify-token
+      - /api/v1/courses/categories/list
+      - /api/v1/courses/list
+      - /api/v1/courses/.*
