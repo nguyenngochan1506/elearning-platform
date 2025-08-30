@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +23,8 @@ public interface LessonRepository extends JpaRepository<LessonEntity, Long> {
     void softDeleteByChapterIds(@Param("chapterIds") List<Long> chapterIds);
 
     @Modifying(clearAutomatically = true)
-    @Query("UPDATE LessonEntity l SET l.isDeleted = true WHERE l.uuid IN :ids")
-    void softDeleteByIds(@Param("ids") List<String> ids);
+    @Query("UPDATE LessonEntity l SET l.isDeleted = true WHERE l.id IN :ids")
+    void softDeleteByIds(@Param("ids") List<Long> ids);
+
+    List<LessonEntity> findAllByUuidIn(Collection<String> uuids);
 }

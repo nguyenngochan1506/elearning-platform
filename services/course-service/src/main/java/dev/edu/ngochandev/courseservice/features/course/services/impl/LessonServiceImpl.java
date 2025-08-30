@@ -4,6 +4,7 @@ import dev.edu.ngochandev.common.exceptions.ResourceNotFoundException;
 import dev.edu.ngochandev.courseservice.commons.enums.AuthorshipType;
 import dev.edu.ngochandev.courseservice.commons.enums.ResourceType;
 import dev.edu.ngochandev.courseservice.features.course.dtos.req.CreateLessonRequestDto;
+import dev.edu.ngochandev.courseservice.features.course.dtos.req.DeleteLessonsRequestDto;
 import dev.edu.ngochandev.courseservice.features.course.dtos.req.UpdateLessonRequestDto;
 import dev.edu.ngochandev.courseservice.features.course.dtos.res.LessonResponseDto;
 import dev.edu.ngochandev.courseservice.features.course.entities.ChapterEntity;
@@ -18,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Slf4j(topic = "LESSON-SERVICE")
@@ -63,5 +66,27 @@ public class LessonServiceImpl implements LessonService {
         lessonRepository.save(lesson);
 
         return lessonMapper.toResponseDto(lesson);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Integer deleteLessons(DeleteLessonsRequestDto req) {
+        List<String> lessonUuids = req.getUuids();
+
+        if (lessonUuids == null || lessonUuids.isEmpty()) {
+            return 0;
+        }
+        List<LessonEntity> lessons = lessonRepository.findAllByUuidIn(lessonUuids);
+
+        if (lessons.size() != lessonUuids.size()) {
+            throw new ResourceNotFoundException("error.lesson.not-found");
+        }
+        List<Long> lessonIds = lessons.stream().map(LessonEntity::getId).toList();
+
+        if (lessonIds.isEmpty()) {
+            return 0;
+        }
+        lessonRepository.softDeleteByIds(lessonIds);
+        return req.getUuids().size();
     }
 }

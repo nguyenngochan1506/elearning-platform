@@ -3,6 +3,7 @@ package dev.edu.ngochandev.courseservice.features.course.controllers;
 import dev.edu.ngochandev.common.dtos.res.SuccessResponseDto;
 import dev.edu.ngochandev.common.i18n.Translator;
 import dev.edu.ngochandev.courseservice.features.course.dtos.req.CreateLessonRequestDto;
+import dev.edu.ngochandev.courseservice.features.course.dtos.req.DeleteLessonsRequestDto;
 import dev.edu.ngochandev.courseservice.features.course.dtos.req.UpdateLessonRequestDto;
 import dev.edu.ngochandev.courseservice.features.course.dtos.res.LessonResponseDto;
 import dev.edu.ngochandev.courseservice.features.course.services.LessonService;
@@ -38,6 +39,16 @@ public class LessonController {
                 .message(translator.translate("lesson.updated.success"))
                 .status(HttpStatus.OK.value())
                 .data(lessonService.updateLesson(req))
+                .build();
+    }
+
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.OK)
+    public SuccessResponseDto<Integer> updateLesson(@RequestBody DeleteLessonsRequestDto req) {
+        return SuccessResponseDto.<Integer>builder()
+                .message(translator.translate("lesson.deleted.success"))
+                .status(HttpStatus.OK.value())
+                .data(lessonService.deleteLessons(req))
                 .build();
     }
 }
