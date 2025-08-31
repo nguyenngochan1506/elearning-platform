@@ -1,4 +1,4 @@
-package dev.edu.ngochandev.paymentservice.commons;
+package dev.edu.ngochandev.paymentservice.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -32,14 +32,6 @@ public class BaseEntity {
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-
-    @Column(name = "created_by", nullable = true, updatable = false)
-    @CreatedBy
-    private Long createdBy;
-
-    @Column(name = "updated_by", nullable = true)
-    @LastModifiedBy
-    private Long updatedBy;
 
     @PrePersist
     public void prePersist() {

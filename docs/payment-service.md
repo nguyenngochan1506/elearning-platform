@@ -29,10 +29,6 @@ Tài liệu này được cấu trúc theo định dạng `.md`, ưu tiên các 
 Dưới đây là cấu trúc các bảng chính, đã được cải tiến để tối ưu và bảo mật.
 
 ```dbml
-enum product_type {
-  ONE_TIME
-  SUBSCRIPTION
-}
 
 table tbl_products {
   id bigint [pk, increment]
@@ -42,9 +38,9 @@ table tbl_products {
   description text [null]
   price decimal(15, 2) [default: 0, not null]
   currency varchar(10) [default: 'VND', not null]
-  product_type product_type [default: 'ONE_TIME', not null]
   is_active boolean [default: true, not null]
-  organization_id bigint [not null]
+  organization_uuid nvarchar(36) [not null]
+  created_by int [not null, note: 'user id']
   created_at timestamp [default: `now()`]
   updated_at timestamp [default: `now()`]
 }
@@ -56,6 +52,7 @@ table tbl_payment_providers {
   logo_url text [null]
   config_details jsonb [null, note: 'Lưu trữ cấu hình an toàn, không chứa secret key']
   is_active boolean [default: true, not null]
+  created_by int [not null, note: 'user id']
   created_at timestamp [default: `now()`]
   updated_at timestamp [default: `now()`]
 }
@@ -66,12 +63,17 @@ enum product_item_type {
   WEBINAR_TICKET
 }
 
-table tbl_product_items {
-  id bigint [pk, increment]
+table tbl_products_items {
   product_id bigint [ref: > tbl_products.id]
+  item_id int [ref: > tbl_items.id]
+}
+
+table tbl_items {
+  id bigint [pk, increment]
   item_uuid varchar(36) [not null, note: 'UUID của khóa học, ebook, ...']
   item_type product_item_type [not null, note: 'Loại mặt hàng là gì?']
-  is_deleted boolean [default: false, not null]
+  is_active boolean [default: true, not null]
+  created_by int [not null, note: 'user id']
   created_at timestamp [default: `now()`]
   updated_at timestamp [default: `now()`]
 }

@@ -1,7 +1,6 @@
 package dev.edu.ngochandev.paymentservice.entities;
 
 
-import dev.edu.ngochandev.paymentservice.commons.BaseEntity;
 import dev.edu.ngochandev.paymentservice.commons.enums.CurrencyType;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -39,8 +38,11 @@ public class ProductEntity extends BaseEntity {
     @Column(name = "organization_uuid", nullable = false)
     private String organizationUuid;
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<ProductItemEntity> productItems = new HashSet<>();
+    @Column(name = "created_by", nullable = false)
+    private Long createdBy;
+
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "products")
+    private Set<ItemEntity> items = new HashSet<>();
 
     @Override
     public void prePersist(){

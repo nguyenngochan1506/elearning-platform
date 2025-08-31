@@ -12,6 +12,17 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
+  kafka:
+    bootstrap-servers: localhost:9094
+    consumer:
+      group-id: payment-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "dev.edu.ngochandev.common.events.*"
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: dev.edu.ngochandev.common.events.CourseCreateOrUpdateEvent
 server:
   port: 8083
   

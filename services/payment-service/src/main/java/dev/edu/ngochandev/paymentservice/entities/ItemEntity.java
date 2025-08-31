@@ -1,27 +1,36 @@
 package dev.edu.ngochandev.paymentservice.entities;
 
-import dev.edu.ngochandev.paymentservice.commons.BaseEntity;
 import dev.edu.ngochandev.paymentservice.commons.enums.ProductItemType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "tbl_product_items")
 @Getter
 @Setter
 @SQLRestriction("is_active = false")
-public class ProductItemEntity extends BaseEntity {
+public class ItemEntity extends BaseEntity {
     @Column(name = "item_uuid", nullable = false)
     private String itemUuid;
 
     @Column(name = "item_type", nullable = false)
     private ProductItemType itemType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
-    private ProductEntity product;
+    @Column(name = "created_by", nullable = false)
+    private Long createdBy;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "tbl_products_items",
+            joinColumns = @JoinColumn(name = "item_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id")
+    )
+    private Set<ProductEntity> products = new HashSet<>();
 
     @Override
     public void prePersist() {
