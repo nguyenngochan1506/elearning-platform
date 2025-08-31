@@ -19,6 +19,7 @@
         <module>services/common-lib</module>
         <module>services/gateway-service</module>
         <module>services/course-service</module>
+        <module>services/payment-service</module>
     </modules>
 
     <properties>
