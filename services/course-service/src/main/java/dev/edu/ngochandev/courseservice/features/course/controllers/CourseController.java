@@ -71,10 +71,11 @@ public class CourseController {
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasAnyAuthority('SCOPE_super_admin') or @courseSecurityService.isOwner(#req.uuids, #jwt)")
     public SuccessResponseDto<Integer> deleteCourse(@RequestBody DeleteCourseRequestDto req, @AuthenticationPrincipal Jwt jwt) {
+        Long userId = jwt.getClaim("userId");
         return SuccessResponseDto.<Integer>builder()
                 .status(HttpStatus.OK.value())
                 .message(translator.translate("course.delete.success"))
-                .data(courseService.deleteCourse(req.getUuids()))
+                .data(courseService.deleteCourse(req.getUuids(), userId))
                 .build();
     }
 }

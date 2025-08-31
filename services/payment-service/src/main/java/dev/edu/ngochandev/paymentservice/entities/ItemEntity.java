@@ -10,10 +10,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "tbl_product_items")
+@Table(name = "tbl_items")
 @Getter
 @Setter
-@SQLRestriction("is_active = false")
+@SQLRestriction("is_active = true")
 public class ItemEntity extends BaseEntity {
     @Column(name = "item_uuid", nullable = false)
     private String itemUuid;

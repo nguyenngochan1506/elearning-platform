@@ -25,8 +25,8 @@ public interface CourseRepository extends JpaRepository<CourseEntity, Long> {
     Page<CourseEntity> findBySearch(String search, Pageable pageable);
 
     @Query("SELECT c FROM CourseEntity c " +
-            "JOIN c.chapters ch " +
-            "JOIN ch.lessons l " +
+            "LEFT JOIN c.chapters ch " +
+            "LEFT JOIN ch.lessons l " +
             "WHERE c.uuid IN :uuids ")
     List<CourseEntity> findAllByUuidIn(List<String> uuids);
 

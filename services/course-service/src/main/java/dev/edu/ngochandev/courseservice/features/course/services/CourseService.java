@@ -18,5 +18,5 @@ public interface CourseService {
 
     CourseDetailResponseDto getCourseDetail(String uuid);
 
-    Integer deleteCourse(List<String> uuids);
+    Integer deleteCourse(List<String> uuids, Long userId);
 }

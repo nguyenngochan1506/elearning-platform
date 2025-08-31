@@ -21,11 +21,20 @@ public class CourseEventConsumer {
         log.info("CourseCreateOrUpdateEvent received for course_uuid: {}", event.getUuid());
 
         try{
-            ItemEntity item = new ItemEntity();
-            item.setItemUuid(event.getUuid());
-            item.setItemType(ProductItemType.COURSE);
-            itemRepository.save(item);
-            log.info("ItemEntity created for course_uuid: {}", event.getUuid());
+            ItemEntity itemEntity = itemRepository.findByItemUuid(event.getUuid());
+            if(itemEntity == null){
+                ItemEntity newItem = new ItemEntity();
+                newItem.setItemUuid(event.getUuid());
+                newItem.setItemType(ProductItemType.COURSE);
+                newItem.setIsActive(event.getIsActive());
+                newItem.setCreatedBy(event.getUserId());
+                itemRepository.save(newItem);
+                log.info("ItemEntity created for course_uuid: {}", event.getUuid());
+            }else{
+                itemEntity.setIsActive(event.getIsActive());
+                itemRepository.save(itemEntity);
+                log.info("ItemEntity updated for course_uuid: {}", event.getUuid());
+            }
         }catch (Exception e){
             log.error("Error processing CourseCreateOrUpdateEvent for course_uuid: {}: {}", event.getUuid(), e.getMessage());
         }

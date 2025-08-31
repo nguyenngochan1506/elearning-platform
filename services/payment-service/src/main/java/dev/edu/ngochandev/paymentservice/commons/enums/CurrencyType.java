@@ -1,8 +1,5 @@
 package dev.edu.ngochandev.paymentservice.commons.enums;
 
-import lombok.Getter;
-
-@Getter
 public enum CurrencyType {
     VND("VND", 0),
     USD("USD", 2);
@@ -17,5 +14,12 @@ public enum CurrencyType {
     }
     public static double fromStoredAmount(Long storedAmount, CurrencyType currencyType) {
         return storedAmount / Math.pow(10, currencyType.getDecimalPlaces());
+    }
+
+    public String getCode() {
+        return code;
+    }
+    public int getDecimalPlaces() {
+        return decimalPlaces;
     }
 }

@@ -2,6 +2,7 @@ package dev.edu.ngochandev.courseservice.features.course.services.impl;
 
 import dev.edu.ngochandev.common.dtos.req.AdvancedFilterRequestDto;
 import dev.edu.ngochandev.common.dtos.res.PageResponseDto;
+import dev.edu.ngochandev.common.events.CourseCreateOrUpdateEvent;
 import dev.edu.ngochandev.common.exceptions.DuplicateResourceException;
 import dev.edu.ngochandev.common.exceptions.ResourceNotFoundException;
 import dev.edu.ngochandev.courseservice.commons.MyUtils;
@@ -17,6 +18,7 @@ import dev.edu.ngochandev.courseservice.features.course.repositories.*;
 import dev.edu.ngochandev.courseservice.features.course.services.CourseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -36,6 +38,7 @@ public class CourseServiceImpl implements CourseService {
     private final ChapterRepository chapterRepository;
     private final LessonRepository lessonRepository;
     private final CourseMapper courseMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
 
     @Override
@@ -64,6 +67,9 @@ public class CourseServiceImpl implements CourseService {
         authorEntity.setAuthorshipType(AuthorshipType.AUTHOR);
 
         resourceAuthorRepository.save(authorEntity);
+
+        // Publish event after transaction commit
+        eventPublisher.publishEvent(new CourseCreateOrUpdateEvent(userId, true, courseEntity.getUuid()));
         return courseMapper.toResponseDto(courseEntity);
     }
 
@@ -116,7 +122,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Integer deleteCourse(List<String> uuids) {
+    public Integer deleteCourse(List<String> uuids, Long userId) {
         List<CourseEntity> courses = courseRepository.findAllByUuidIn(uuids);
         if(courses.isEmpty()){
             throw new ResourceNotFoundException("error.course.not-found");
@@ -130,7 +136,8 @@ public class CourseServiceImpl implements CourseService {
         lessonRepository.softDeleteByCourseIds(courseIds);
         chapterRepository.softDeleteByCourseIds(courseIds);
         courseRepository.softDeleteByIds(courseIds);
-
+        // Publish event after transaction commit
+        uuids.forEach(uuid -> eventPublisher.publishEvent(new CourseCreateOrUpdateEvent(userId, false, uuid)));
         return courses.size();
     }
 }

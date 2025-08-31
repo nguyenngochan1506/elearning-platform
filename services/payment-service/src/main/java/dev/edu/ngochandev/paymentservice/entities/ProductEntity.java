@@ -14,7 +14,7 @@ import java.util.Set;
 @Table(name = "tbl_products")
 @Getter
 @Setter
-@SQLRestriction("is_active = false")
+@SQLRestriction("is_active = true")
 public class ProductEntity extends BaseEntity {
     @Column(name = "uuid", nullable = false, unique = true)
     private String uuid;

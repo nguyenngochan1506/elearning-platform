@@ -147,6 +147,13 @@
 		"isDefault": false
 	},
 	{
+		"nameKey": "course.delete",
+		"apiPath": "/api/v1/courses",
+		"method": "DELETE",
+		"module": "course",
+		"isDefault": false
+	},
+	{
 		"nameKey": "course.chapter.create",
 		"apiPath": "/api/v1/courses/chapters",
 		"method": "POST",
@@ -161,6 +168,13 @@
 		"isDefault": false
 	},
 	{
+		"nameKey": "course.chapter.delete",
+		"apiPath": "/api/v1/courses/chapters",
+		"method": "DELETE",
+		"module": "course",
+		"isDefault": false
+	},
+	{
 		"nameKey": "course.lesson.create",
 		"apiPath": "/api/v1/courses/lessons",
 		"method": "POST",
@@ -171,6 +185,13 @@
 		"nameKey": "course.lesson.update",
 		"apiPath": "/api/v1/courses/lessons",
 		"method": "PATCH",
+		"module": "course",
+		"isDefault": false
+	},
+	{
+		"nameKey": "course.lesson.delete",
+		"apiPath": "/api/v1/courses/lessons",
+		"method": "DELETE",
 		"module": "course",
 		"isDefault": false
 	}
