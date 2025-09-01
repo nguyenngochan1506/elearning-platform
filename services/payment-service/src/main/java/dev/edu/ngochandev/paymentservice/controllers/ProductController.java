@@ -3,6 +3,7 @@ package dev.edu.ngochandev.paymentservice.controllers;
 import dev.edu.ngochandev.common.dtos.res.SuccessResponseDto;
 import dev.edu.ngochandev.common.i18n.Translator;
 import dev.edu.ngochandev.paymentservice.dtos.req.CreateProductRequestDto;
+import dev.edu.ngochandev.paymentservice.dtos.req.UpdateProductRequestDto;
 import dev.edu.ngochandev.paymentservice.dtos.res.ProductResponse;
 import dev.edu.ngochandev.paymentservice.services.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,16 @@ public class ProductController {
                 .status(HttpStatus.CREATED.value())
                 .message(translator.translate("product.create.success"))
                 .data(productService.createProduct(req))
+                .build();
+    }
+
+    @PatchMapping
+    @ResponseStatus(HttpStatus.OK)
+    public SuccessResponseDto<ProductResponse> updateProduct(@RequestBody UpdateProductRequestDto req) {
+        return SuccessResponseDto.<ProductResponse>builder()
+                .status(HttpStatus.OK.value())
+                .message(translator.translate("product.update.success"))
+                .data(productService.updateProduct(req))
                 .build();
     }
 }

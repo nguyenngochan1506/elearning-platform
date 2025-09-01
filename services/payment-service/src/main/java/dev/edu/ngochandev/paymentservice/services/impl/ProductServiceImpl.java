@@ -3,6 +3,7 @@ package dev.edu.ngochandev.paymentservice.services.impl;
 import dev.edu.ngochandev.common.exceptions.ResourceNotFoundException;
 import dev.edu.ngochandev.paymentservice.commons.enums.CurrencyType;
 import dev.edu.ngochandev.paymentservice.dtos.req.CreateProductRequestDto;
+import dev.edu.ngochandev.paymentservice.dtos.req.UpdateProductRequestDto;
 import dev.edu.ngochandev.paymentservice.dtos.res.ProductResponse;
 import dev.edu.ngochandev.paymentservice.entities.ItemEntity;
 import dev.edu.ngochandev.paymentservice.entities.ProductEntity;
@@ -27,6 +28,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponse createProduct(CreateProductRequestDto req) {
+//        TODO: check if the items are owned the user or organization or super_admin
         List<ItemEntity> items = itemRepository.findAllByItemUuidIn(req.getItemUuids());
         if(items.size() != req.getItemUuids().size()) {
             throw new ResourceNotFoundException("error.item.not_found");
@@ -44,6 +46,33 @@ public class ProductServiceImpl implements ProductService {
         product.setCreatedBy(-1L);
 
         product = productRepository.save(product);
+        return productMapper.toResponseDto(product);
+    }
+
+    @Override
+    public ProductResponse updateProduct(UpdateProductRequestDto req) {
+//        TODO: check if the items are owned the user or organization or super_admin
+
+        ProductEntity product = productRepository.findByUuid(req.getUuid())
+                .orElseThrow(() -> new ResourceNotFoundException("error.product.not_found"));
+
+        product.setName(req.getName() != null ? req.getName() : product.getName());
+        product.setDescription(req.getDescription() != null ? req.getDescription() : product.getDescription());
+        product.setThumbnail(req.getThumbnail() != null ? req.getThumbnail() : product.getThumbnail());
+        product.setPrice(req.getPrice() != null ? CurrencyType.toStoredAmount(req.getPrice(), req.getCurrency() != null ? req.getCurrency() : product.getCurrency()) : product.getPrice());
+        product.setCurrency(req.getCurrency() != null ? req.getCurrency() : product.getCurrency());
+        product.setIsActive(req.getIsActive() != null ? req.getIsActive() : product.getIsActive());
+        if(!req.getItemUuids().isEmpty()){
+            List<ItemEntity> items = itemRepository.findAllByItemUuidIn(req.getItemUuids());
+            if(items.size() != req.getItemUuids().size()) {
+                throw new ResourceNotFoundException("error.item.not_found");
+            }
+            product.setItems(new HashSet<>(items));
+        }else{
+            product.setItems(null);
+        }
+        product = productRepository.save(product);
+
         return productMapper.toResponseDto(product);
     }
 }
