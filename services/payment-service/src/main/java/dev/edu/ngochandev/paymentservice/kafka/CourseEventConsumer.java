@@ -23,14 +23,20 @@ public class CourseEventConsumer {
         try{
             ItemEntity itemEntity = itemRepository.findByItemUuid(event.getUuid());
             if(itemEntity == null){
+//                create new ItemEntity
                 ItemEntity newItem = new ItemEntity();
                 newItem.setItemUuid(event.getUuid());
                 newItem.setItemType(ProductItemType.COURSE);
                 newItem.setIsActive(event.getIsActive());
                 newItem.setCreatedBy(event.getUserId());
+                newItem.setName(event.getName());
+                newItem.setThumbnail(event.getThumbnail());
                 itemRepository.save(newItem);
                 log.info("ItemEntity created for course_uuid: {}", event.getUuid());
             }else{
+//                update
+                itemEntity.setName(event.getName() == null ? itemEntity.getName() : event.getName());
+                itemEntity.setThumbnail(event.getThumbnail() == null ? itemEntity.getThumbnail() : event.getThumbnail());
                 itemEntity.setIsActive(event.getIsActive());
                 itemRepository.save(itemEntity);
                 log.info("ItemEntity updated for course_uuid: {}", event.getUuid());

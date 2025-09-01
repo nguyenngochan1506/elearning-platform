@@ -13,4 +13,6 @@ public class CourseCreateOrUpdateEvent {
     private Long userId;
     private Boolean isActive;
     private String uuid;
+    private String name;
+    private String thumbnail;
 }

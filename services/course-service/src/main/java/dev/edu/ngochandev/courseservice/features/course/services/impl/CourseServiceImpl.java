@@ -69,12 +69,12 @@ public class CourseServiceImpl implements CourseService {
         resourceAuthorRepository.save(authorEntity);
 
         // Publish event after transaction commit
-        eventPublisher.publishEvent(new CourseCreateOrUpdateEvent(userId, true, courseEntity.getUuid()));
+        eventPublisher.publishEvent(new CourseCreateOrUpdateEvent(userId, true, courseEntity.getUuid(), courseEntity.getName(), courseEntity.getThumbnail()));
         return courseMapper.toResponseDto(courseEntity);
     }
 
     @Override
-    public CourseResponseDto updateCourse(UpdateCourseRequestDto req) {
+    public CourseResponseDto updateCourse(UpdateCourseRequestDto req, Long userId) {
         CourseEntity course = courseRepository.findByUuid(req.getUuid()).orElseThrow(() -> new ResourceNotFoundException("error.course.not-found"));
         course.setName(req.getName() != null ? req.getName() : course.getName());
         course.setDescription(req.getDescription() != null ? req.getDescription() : course.getDescription());
@@ -87,6 +87,8 @@ public class CourseServiceImpl implements CourseService {
             course.setCategories(new HashSet<>(categoryEntities));
         }
         courseRepository.save(course);
+        // Publish event after transaction commit
+        eventPublisher.publishEvent(new CourseCreateOrUpdateEvent(userId, true, course.getUuid(), course.getName(), course.getThumbnail()));
         return courseMapper.toResponseDto(course);
     }
 
@@ -137,7 +139,7 @@ public class CourseServiceImpl implements CourseService {
         chapterRepository.softDeleteByCourseIds(courseIds);
         courseRepository.softDeleteByIds(courseIds);
         // Publish event after transaction commit
-        uuids.forEach(uuid -> eventPublisher.publishEvent(new CourseCreateOrUpdateEvent(userId, false, uuid)));
+        courses.forEach(c -> eventPublisher.publishEvent(new CourseCreateOrUpdateEvent(userId, false, c.getUuid(), c.getName(), c.getThumbnail())));
         return courses.size();
     }
 }

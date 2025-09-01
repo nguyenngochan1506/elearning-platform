@@ -60,10 +60,11 @@ public class CourseController {
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasAnyAuthority('SCOPE_super_admin') or @courseSecurityService.isOwner(#req.uuid, #jwt)")
     public SuccessResponseDto<CourseResponseDto> updateCourse(@RequestBody @Validated(OnUpdate.class) UpdateCourseRequestDto req, @AuthenticationPrincipal Jwt jwt) {
+        Long userId = jwt.getClaim("userId");
         return SuccessResponseDto.<CourseResponseDto>builder()
                 .status(HttpStatus.OK.value())
                 .message(translator.translate("course.update.success"))
-                .data(courseService.updateCourse(req))
+                .data(courseService.updateCourse(req, userId))
                 .build();
     }
 

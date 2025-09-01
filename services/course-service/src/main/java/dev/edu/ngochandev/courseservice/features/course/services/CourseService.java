@@ -12,7 +12,7 @@ import java.util.List;
 public interface CourseService {
     CourseResponseDto createCourse(CreateCourseRequestDto req, Long userId);
 
-    CourseResponseDto updateCourse(UpdateCourseRequestDto req);
+    CourseResponseDto updateCourse(UpdateCourseRequestDto req, Long userId);
 
     PageResponseDto<CourseResponseDto> getCourses(AdvancedFilterRequestDto filter);
 

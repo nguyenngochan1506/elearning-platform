@@ -9,4 +9,5 @@ public interface ProductService {
     ProductResponse createProduct(CreateProductRequestDto req);
 
     ProductResponse updateProduct(UpdateProductRequestDto req);
+
 }

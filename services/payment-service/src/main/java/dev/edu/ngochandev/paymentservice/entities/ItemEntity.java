@@ -18,6 +18,12 @@ public class ItemEntity extends BaseEntity {
     @Column(name = "item_uuid", nullable = false)
     private String itemUuid;
 
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    @Column(name = "thumbnail", nullable = true)
+    private String thumbnail;
+
     @Column(name = "item_type", nullable = false)
     private ProductItemType itemType;
 
