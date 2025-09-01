@@ -24,12 +24,7 @@ public class ItemEntity extends BaseEntity {
     @Column(name = "created_by", nullable = false)
     private Long createdBy;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "tbl_products_items",
-            joinColumns = @JoinColumn(name = "item_id"),
-            inverseJoinColumns = @JoinColumn(name = "product_id")
-    )
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "items")
     private Set<ProductEntity> products = new HashSet<>();
 
     @Override

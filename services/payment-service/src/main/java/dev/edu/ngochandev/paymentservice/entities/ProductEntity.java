@@ -41,7 +41,12 @@ public class ProductEntity extends BaseEntity {
     @Column(name = "created_by", nullable = false)
     private Long createdBy;
 
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "products")
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "tbl_products_items",
+            joinColumns = @JoinColumn(name = "item_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id")
+    )
     private Set<ItemEntity> items = new HashSet<>();
 
     @Override
@@ -52,6 +57,9 @@ public class ProductEntity extends BaseEntity {
         }
         if (this.currency == null) {
             this.currency = CurrencyType.VND;
+        }
+        if(this.uuid == null) {
+            this.uuid = java.util.UUID.randomUUID().toString();
         }
     }
 }
