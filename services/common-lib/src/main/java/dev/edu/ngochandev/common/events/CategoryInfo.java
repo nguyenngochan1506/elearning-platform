@@ -5,17 +5,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CourseCreateOrUpdateEvent {
-    private Long userId;
-    private Boolean isActive;
-    private String uuid;
+public class CategoryInfo {
     private String name;
-    private String thumbnail;
-    private List<CategoryInfo> categories;
+    private String uuid;
+    private String slug;
 }

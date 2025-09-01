@@ -2,6 +2,7 @@ package dev.edu.ngochandev.courseservice.features.course.services.impl;
 
 import dev.edu.ngochandev.common.dtos.req.AdvancedFilterRequestDto;
 import dev.edu.ngochandev.common.dtos.res.PageResponseDto;
+import dev.edu.ngochandev.common.events.CategoryInfo;
 import dev.edu.ngochandev.common.events.CourseCreateOrUpdateEvent;
 import dev.edu.ngochandev.common.exceptions.DuplicateResourceException;
 import dev.edu.ngochandev.common.exceptions.ResourceNotFoundException;
@@ -54,9 +55,12 @@ public class CourseServiceImpl implements CourseService {
         courseEntity.setThumbnail(req.getThumbnail());
         courseEntity.setIsPublic(req.getIsPublic());
 
+        List<CategoryEntity> categoryEntities = null;
         if(req.getCategoryUuids() != null && !req.getCategoryUuids().isEmpty()){
-            List<CategoryEntity> categoryEntities = categoryRepository.findAllByUuid(req.getCategoryUuids());
+            categoryEntities = categoryRepository.findAllByUuid(req.getCategoryUuids());
             courseEntity.setCategories(new HashSet<>(categoryEntities));
+        }else {
+            categoryEntities = List.of();
         }
         courseEntity = courseRepository.save(courseEntity);
 
@@ -69,11 +73,13 @@ public class CourseServiceImpl implements CourseService {
         resourceAuthorRepository.save(authorEntity);
 
         // Publish event after transaction commit
-        eventPublisher.publishEvent(new CourseCreateOrUpdateEvent(userId, true, courseEntity.getUuid(), courseEntity.getName(), courseEntity.getThumbnail()));
+        List<CategoryInfo> categoryInfos = categoryEntities.stream().map(cate -> new CategoryInfo(cate.getName(), cate.getUuid(), cate.getSlug())).toList();
+        eventPublisher.publishEvent(new CourseCreateOrUpdateEvent(userId, true, courseEntity.getUuid(), courseEntity.getName(), courseEntity.getThumbnail(), categoryInfos));
         return courseMapper.toResponseDto(courseEntity);
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public CourseResponseDto updateCourse(UpdateCourseRequestDto req, Long userId) {
         CourseEntity course = courseRepository.findByUuid(req.getUuid()).orElseThrow(() -> new ResourceNotFoundException("error.course.not-found"));
         course.setName(req.getName() != null ? req.getName() : course.getName());
@@ -81,14 +87,17 @@ public class CourseServiceImpl implements CourseService {
         course.setThumbnail(req.getThumbnail() != null ? req.getThumbnail() : course.getThumbnail());
         course.setIsPublic(req.getIsPublic() != null ? req.getIsPublic() : course.getIsPublic());
         course.setSlug(req.getSlug() != null ? req.getSlug() : course.getSlug());
-
+        List<CategoryEntity> categoryEntities;
         if(req.getCategoryUuids() != null && !req.getCategoryUuids().isEmpty()){
-            List<CategoryEntity> categoryEntities = categoryRepository.findAllByUuid(req.getCategoryUuids());
+            categoryEntities = categoryRepository.findAllByUuid(req.getCategoryUuids());
             course.setCategories(new HashSet<>(categoryEntities));
+        }else{
+            categoryEntities = List.of();
         }
         courseRepository.save(course);
         // Publish event after transaction commit
-        eventPublisher.publishEvent(new CourseCreateOrUpdateEvent(userId, true, course.getUuid(), course.getName(), course.getThumbnail()));
+        List<CategoryInfo> categoryInfos = categoryEntities.stream().map(cate -> new CategoryInfo(cate.getName(), cate.getUuid(), cate.getSlug())).toList();
+        eventPublisher.publishEvent(new CourseCreateOrUpdateEvent(userId, true, course.getUuid(), course.getName(), course.getThumbnail(), categoryInfos));
         return courseMapper.toResponseDto(course);
     }
 
@@ -139,7 +148,7 @@ public class CourseServiceImpl implements CourseService {
         chapterRepository.softDeleteByCourseIds(courseIds);
         courseRepository.softDeleteByIds(courseIds);
         // Publish event after transaction commit
-        courses.forEach(c -> eventPublisher.publishEvent(new CourseCreateOrUpdateEvent(userId, false, c.getUuid(), c.getName(), c.getThumbnail())));
+        courses.forEach(c -> eventPublisher.publishEvent(new CourseCreateOrUpdateEvent(userId, false, c.getUuid(), c.getName(), c.getThumbnail(), null)));
         return courses.size();
     }
 }

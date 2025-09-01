@@ -19,7 +19,7 @@ public class CourseEventKafkaProducer {
         log.info("Handling CourseCreateOrUpdateEvent course_uuid: {}", event.getUuid());
         try {
             kafkaTemplate.send("course-create-or-update", event.getUuid(), event);
-            log.info("CourseCreateOrUpdateEvent sent to Kafka topic 'course.create-or-update' for course_uuid: {}", event.getUuid());
+            log.info("CourseCreateOrUpdateEvent sent to Kafka topic 'course-create-or-update' for course_uuid: {}", event.getUuid());
         } catch (Exception e) {
             log.error("Failed to send CourseCreateOrUpdateEvent to Kafka for course_uuid: {}. Error: {}", event.getUuid(), e.getMessage());
         }

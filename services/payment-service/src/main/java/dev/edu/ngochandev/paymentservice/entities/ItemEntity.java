@@ -33,6 +33,14 @@ public class ItemEntity extends BaseEntity {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "items")
     private Set<ProductEntity> products = new HashSet<>();
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "tbl_item_categories",
+            joinColumns = @JoinColumn(name = "item_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private Set<CategoryEntity> categories = new HashSet<>();
+
     @Override
     public void prePersist() {
         super.prePersist();
