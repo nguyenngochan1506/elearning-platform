@@ -6,6 +6,5 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring", uses = {ItemMapper.class})
 public interface ProductMapper {
-
     ProductResponse toResponseDto(ProductEntity entity);
 }

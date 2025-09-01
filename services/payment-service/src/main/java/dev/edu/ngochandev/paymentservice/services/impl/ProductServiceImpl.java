@@ -1,6 +1,9 @@
 package dev.edu.ngochandev.paymentservice.services.impl;
 
+import dev.edu.ngochandev.common.dtos.req.AdvancedFilterRequestDto;
+import dev.edu.ngochandev.common.dtos.res.PageResponseDto;
 import dev.edu.ngochandev.common.exceptions.ResourceNotFoundException;
+import dev.edu.ngochandev.paymentservice.commons.MyUtils;
 import dev.edu.ngochandev.paymentservice.commons.enums.CurrencyType;
 import dev.edu.ngochandev.paymentservice.dtos.req.CreateProductRequestDto;
 import dev.edu.ngochandev.paymentservice.dtos.req.UpdateProductRequestDto;
@@ -11,8 +14,12 @@ import dev.edu.ngochandev.paymentservice.mappers.ProductMapper;
 import dev.edu.ngochandev.paymentservice.repositories.ItemRepository;
 import dev.edu.ngochandev.paymentservice.repositories.ProductRepository;
 import dev.edu.ngochandev.paymentservice.services.ProductService;
+import dev.edu.ngochandev.paymentservice.specs.ProductSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -75,5 +82,23 @@ public class ProductServiceImpl implements ProductService {
         product = productRepository.save(product);
 
         return productMapper.toResponseDto(product);
+    }
+
+    @Override
+    public PageResponseDto<ProductResponse> getProducts(AdvancedFilterRequestDto filter) {
+        Pageable pageable = MyUtils.createPageable(filter);
+
+        Specification<ProductEntity> spec = new ProductSpecification(filter.getFilters(), filter.getSearch());
+
+        Page<ProductEntity> pageOfProducts = productRepository.findAll(spec, pageable);
+
+        List<ProductResponse> products = pageOfProducts.getContent().stream().map(productMapper::toResponseDto).toList();
+
+        return PageResponseDto.<ProductResponse>builder()
+                .items(products)
+                .currentPage(filter.getPage())
+                .totalPages(pageOfProducts.getTotalPages())
+                .totalElements(pageOfProducts.getTotalElements())
+                .build();
     }
 }

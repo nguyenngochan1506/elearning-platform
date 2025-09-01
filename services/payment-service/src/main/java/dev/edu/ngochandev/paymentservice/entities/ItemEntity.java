@@ -33,7 +33,7 @@ public class ItemEntity extends BaseEntity {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "items")
     private Set<ProductEntity> products = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "tbl_item_categories",
             joinColumns = @JoinColumn(name = "item_id"),
